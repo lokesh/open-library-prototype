@@ -1,0 +1,21 @@
+{
+  "name": "open-library-design-vision",
+  "version": "1.0.0",
+  "description": "A minimal web app with Lit components for Open Library",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "keywords": ["lit", "web-components", "vite"],
+  "author": "Lokesh Dhakar",
+  "license": "MIT",
+  "devDependencies": {
+    "vite": "^5.0.0"
+  },
+  "dependencies": {
+    "lit": "^3.1.0"
+  }
+}
+
