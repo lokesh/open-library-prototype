@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Input & Field Components - Open Library</title>
+  <link rel="stylesheet" href="/styles/index.css">
+  <script type="module" src="/src/components/index.js"></script>
+  <style>
+    .demo-section {
+      margin-bottom: var(--spacing-container);
+      padding: var(--spacing-component);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-card);
+    }
+
+    .demo-section h2 {
+      margin-top: 0;
+      margin-bottom: var(--spacing-component);
+      color: var(--color-text-primary);
+    }
+
+    .form-demo {
+      max-width: 500px;
+    }
+
+    .submit-result {
+      margin-top: var(--spacing-component);
+      padding: var(--spacing-element);
+      background-color: var(--color-background-secondary);
+      border-radius: var(--radius-card);
+      display: none;
+    }
+
+    .submit-result.show {
+      display: block;
+    }
+
+    .submit-result pre {
+      margin: 0;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+    .demo-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: var(--spacing-component);
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <ul>
+      <li><a href="/">Home</a></li>
+      <li><a href="/signup.html">Sign Up</a></li>
+      <li><a href="/add-book.html">Add a Book</a></li>
+      <li><a href="/trending.html">Trending Books</a></li>
+      <li><a href="/heading-demo.html">Heading Demo</a></li>
+      <li><a href="/input-demo.html">Input Demo</a></li>
+    </ul>
+    <ol-theme-toggle></ol-theme-toggle>
+  </nav>
+
+  <main>
+    <ol-heading element="h1" size="display-2">Input & Field Components</ol-heading>
+    <p style="margin-bottom: var(--spacing-container); color: var(--color-text-secondary);">
+      Demonstrating the <code>&lt;ol-input&gt;</code> and <code>&lt;ol-field&gt;</code> components with various configurations.
+    </p>
+
+    <!-- Basic Examples -->
+    <section class="demo-section">
+      <h2>Basic Field Examples</h2>
+      <div class="form-demo">
+        <ol-field label="Email" required>
+          <ol-input name="email" type="email" placeholder="you@example.com"></ol-input>
+        </ol-field>
+
+        <ol-field label="Username" hint="Choose a unique username">
+          <ol-input name="username" type="text" placeholder="johndoe"></ol-input>
+        </ol-field>
+
+        <ol-field label="Password" hint="At least 8 characters" required>
+          <ol-input name="password" type="password"></ol-input>
+        </ol-field>
+      </div>
+    </section>
+
+    <!-- With Errors -->
+    <section class="demo-section">
+      <h2>Fields with Error Messages</h2>
+      <div class="form-demo">
+        <ol-field label="Email" error="Please enter a valid email address" required>
+          <ol-input name="email-error" type="email" value="invalid-email"></ol-input>
+        </ol-field>
+
+        <ol-field label="Password" error="Password must be at least 8 characters" required>
+          <ol-input name="password-error" type="password" value="123"></ol-input>
+        </ol-field>
+      </div>
+    </section>
+
+    <!-- Different Input Types -->
+    <section class="demo-section">
+      <h2>Different Input Types</h2>
+      <div class="demo-row">
+        <div>
+          <ol-field label="Text Input">
+            <ol-input name="text" type="text" placeholder="Enter text"></ol-input>
+          </ol-field>
+
+          <ol-field label="Email Input">
+            <ol-input name="email-type" type="email" placeholder="you@example.com"></ol-input>
+          </ol-field>
+
+          <ol-field label="Password Input">
+            <ol-input name="password-type" type="password" placeholder="••••••••"></ol-input>
+          </ol-field>
+        </div>
+
+        <div>
+          <ol-field label="URL Input">
+            <ol-input name="url" type="url" placeholder="https://example.com"></ol-input>
+          </ol-field>
+
+          <ol-field label="Number Input">
+            <ol-input name="number" type="number" placeholder="42"></ol-input>
+          </ol-field>
+
+          <ol-field label="Date Input">
+            <ol-input name="date" type="date"></ol-input>
+          </ol-field>
+        </div>
+      </div>
+    </section>
+
+    <!-- States -->
+    <section class="demo-section">
+      <h2>Input States</h2>
+      <div class="form-demo">
+        <ol-field label="Normal Input">
+          <ol-input name="normal" type="text" placeholder="Normal state"></ol-input>
+        </ol-field>
+
+        <ol-field label="Disabled Input">
+          <ol-input name="disabled" type="text" value="Cannot edit this" disabled></ol-input>
+        </ol-field>
+
+        <ol-field label="Readonly Input">
+          <ol-input name="readonly" type="text" value="Read-only value" readonly></ol-input>
+        </ol-field>
+      </div>
+    </section>
+
+    <!-- Working Form -->
+    <section class="demo-section">
+      <h2>Working Form Example</h2>
+      <form id="demoForm" class="form-demo">
+        <ol-field label="Full Name" hint="Enter your first and last name" required>
+          <ol-input name="fullname" type="text" placeholder="Jane Doe"></ol-input>
+        </ol-field>
+
+        <ol-field label="Email Address" hint="We'll never share your email" required>
+          <ol-input name="email-form" type="email" placeholder="jane@example.com"></ol-input>
+        </ol-field>
+
+        <ol-field label="Screen Name" hint="Public and cannot be changed later" required>
+          <ol-input name="screenname" type="text" placeholder="janedoe"></ol-input>
+        </ol-field>
+
+        <ol-field label="Website" hint="Optional">
+          <ol-input name="website" type="url" placeholder="https://yoursite.com"></ol-input>
+        </ol-field>
+
+        <ol-button type="submit">Submit Form</ol-button>
+
+        <div id="submitResult" class="submit-result">
+          <strong>Form Data:</strong>
+          <pre id="formData"></pre>
+        </div>
+      </form>
+    </section>
+
+    <!-- Validation Demo -->
+    <section class="demo-section">
+      <h2>Client-Side Validation Demo</h2>
+      <form id="validationForm" class="form-demo">
+        <ol-field id="email-field" label="Email" hint="Must be a valid email" required>
+          <ol-input id="email-input" name="email-validate" type="email"></ol-input>
+        </ol-field>
+
+        <ol-field id="age-field" label="Age" hint="Must be 18 or older">
+          <ol-input id="age-input" name="age" type="number"></ol-input>
+        </ol-field>
+
+        <ol-button type="submit">Validate</ol-button>
+      </form>
+    </section>
+
+    <!-- Standalone Input (without field wrapper) -->
+    <section class="demo-section">
+      <h2>Standalone Input (without ol-field)</h2>
+      <p style="margin-bottom: var(--spacing-element); color: var(--color-text-secondary);">
+        You can also use <code>&lt;ol-input&gt;</code> directly without the field wrapper:
+      </p>
+      <div class="form-demo">
+        <label for="standalone-input" style="display: block; margin-bottom: var(--spacing-1); font-weight: 600;">
+          Standalone Input
+        </label>
+        <ol-input id="standalone-input" name="standalone" type="text" placeholder="No field wrapper"></ol-input>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // Demo form submission
+    const demoForm = document.getElementById('demoForm');
+    const submitResult = document.getElementById('submitResult');
+    const formData = document.getElementById('formData');
+
+    demoForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const data = new FormData(demoForm);
+      const obj = {};
+      data.forEach((value, key) => {
+        obj[key] = value;
+      });
+
+      formData.textContent = JSON.stringify(obj, null, 2);
+      submitResult.classList.add('show');
+    });
+
+    // Validation form with dynamic error messages
+    const validationForm = document.getElementById('validationForm');
+    const emailField = document.getElementById('email-field');
+    const emailInput = document.getElementById('email-input');
+    const ageField = document.getElementById('age-field');
+    const ageInput = document.getElementById('age-input');
+
+    // Real-time validation for email
+    emailInput.addEventListener('input', () => {
+      const value = emailInput.value;
+      if (value && !value.includes('@')) {
+        emailField.error = 'Please include an @ in the email address';
+      } else if (value && value.includes('@') && !value.includes('.')) {
+        emailField.error = 'Please enter a complete email address';
+      } else {
+        emailField.error = '';
+      }
+    });
+
+    // Validation for age
+    ageInput.addEventListener('input', () => {
+      const value = parseInt(ageInput.value);
+      if (value && value < 18) {
+        ageField.error = 'You must be 18 or older';
+      } else if (value && value > 150) {
+        ageField.error = 'Please enter a valid age';
+      } else {
+        ageField.error = '';
+      }
+    });
+
+    validationForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      // Validate email
+      if (!emailInput.value) {
+        emailField.error = 'Email is required';
+      } else if (!emailInput.value.includes('@')) {
+        emailField.error = 'Please enter a valid email address';
+      } else {
+        emailField.error = '';
+      }
+
+      // Validate age
+      const age = parseInt(ageInput.value);
+      if (age && age < 18) {
+        ageField.error = 'You must be 18 or older';
+      } else if (age && age > 150) {
+        ageField.error = 'Please enter a valid age';
+      } else {
+        ageField.error = '';
+      }
+
+      // Show success if valid
+      if (!emailField.error && !ageField.error && emailInput.value) {
+        alert('Validation passed! ✓');
+      }
+    });
+  </script>
+</body>
+</html>
+

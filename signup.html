@@ -15,36 +15,25 @@
       <li><a href="/add-book.html">Add a Book</a></li>
       <li><a href="/trending.html">Trending Books</a></li>
       <li><a href="/heading-demo.html">Heading Demo</a></li>
+      <li><a href="/input-demo.html">Input Demo</a></li>
     </ul>
     <ol-theme-toggle></ol-theme-toggle>
   </nav>
 
   <main>
-    <form class="signup-form" onsubmit="event.preventDefault(); alert('Sign up form submitted!');">
-      <div class="form-group">
-        <label for="email">Email</label>
-        <input type="email" id="email" name="email" required>
-      </div>
+    <form class="signup-form" onsubmit="handleSubmit(event)">
+      <ol-field label="Email" required>
+        <ol-input id="email" name="email" type="email" placeholder="you@example.com"></ol-input>
+      </ol-field>
 
-      <div class="form-group">
-        <label for="screenname">Screen Name</label>
-        <p class="help-text">Public and cannot be changed later.</p>
-        <input type="text" id="screenname" name="screenname" required>
-        <p class="url-preview">Your URL: https://openlibrary.org/people/screenname</p>
-      </div>
+      <ol-field label="Screen Name" hint="Public and cannot be changed later." required>
+        <ol-input id="screenname" name="screenname" type="text"></ol-input>
+      </ol-field>
+      <p class="url-preview">Your URL: https://openlibrary.org/people/screenname</p>
 
-      <div class="form-group">
-        <label for="password">Password</label>
-        <div class="password-input-wrapper">
-          <input type="password" id="password" name="password" required>
-          <button type="button" class="toggle-password" aria-label="Toggle password visibility">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-              <circle cx="12" cy="12" r="3"></circle>
-            </svg>
-          </button>
-        </div>
-      </div>
+      <ol-field label="Password" required>
+        <ol-input id="password" name="password" type="password"></ol-input>
+      </ol-field>
 
       <div class="form-group checkbox-group">
         <label class="checkbox-label">
@@ -69,29 +58,18 @@
   </main>
 
   <script>
-    // Password toggle functionality
-    const togglePasswordBtn = document.querySelector('.toggle-password');
-    const passwordInput = document.getElementById('password');
+    // Form validation and submission
+    function handleSubmit(event) {
+      event.preventDefault();
 
-    togglePasswordBtn.addEventListener('click', () => {
-      const type = passwordInput.type === 'password' ? 'text' : 'password';
-      passwordInput.type = type;
-
-      // Update the icon (swap between eye and eye-slash)
-      const svg = togglePasswordBtn.querySelector('svg');
-      if (type === 'password') {
-        svg.innerHTML = `
-          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-          <circle cx="12" cy="12" r="3"></circle>
-        `;
+      if (event.target.checkValidity()) {
+        alert('Sign up form submitted!');
+        // Form is valid - would submit to server here
       } else {
-        svg.innerHTML = `
-          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-          <circle cx="12" cy="12" r="3"></circle>
-          <line x1="1" y1="1" x2="23" y2="23"></line>
-        `;
+        // Force validation messages to show
+        event.target.reportValidity();
       }
-    });
+    }
 
     // Screen name URL preview
     const screennameInput = document.getElementById('screenname');

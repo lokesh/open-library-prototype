@@ -1,0 +1,167 @@
+╔══════════════════════════════════════════════════════════════════════╗
+║                   OL-INPUT & OL-FIELD ARCHITECTURE                   ║
+╚══════════════════════════════════════════════════════════════════════╝
+
+┌────────────────────────────────────────────────────────────────────┐
+│ HIGH-LEVEL COMPONENT: <ol-field>                                   │
+│ Purpose: Composition, Layout, Accessibility                        │
+├────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│  ┌──────────────────────────────────────────────────┐             │
+│  │ Label (with required indicator)                   │             │
+│  │ • Generates unique ID                             │             │
+│  │ • Links via aria-labelledby                       │             │
+│  └──────────────────────────────────────────────────┘             │
+│                                                                     │
+│  ┌──────────────────────────────────────────────────┐             │
+│  │ Hint Text (optional)                              │             │
+│  │ • Generates unique ID                             │             │
+│  │ • Links via aria-describedby                      │             │
+│  └──────────────────────────────────────────────────┘             │
+│                                                                     │
+│  ┌────────────────────────────────────────────────────────────┐   │
+│  │ LOW-LEVEL COMPONENT: <ol-input> (slotted)              │   │
+│  │ Purpose: Form Semantics, Value, Validation             │   │
+│  ├────────────────────────────────────────────────────────────┤   │
+│  │                                                             │   │
+│  │  ┌───────────────────────────────────────────────┐        │   │
+│  │  │ Shadow DOM                                     │        │   │
+│  │  │                                                │        │   │
+│  │  │  ┌──────────────────────────────────────┐    │        │   │
+│  │  │  │ Native <input>                        │    │        │   │
+│  │  │  │ • type="text|email|password|..."      │    │        │   │
+│  │  │  │ • name, value, placeholder            │    │        │   │
+│  │  │  │ • disabled, required, readonly        │    │        │   │
+│  │  │  └──────────────────────────────────────┘    │        │   │
+│  │  │                                                │        │   │
+│  │  │  ┌──────────────────────────────────────┐    │        │   │
+│  │  │  │ ElementInternals (FACE API)           │    │        │   │
+│  │  │  │ • Form participation                  │    │        │   │
+│  │  │  │ • Validation state                    │    │        │   │
+│  │  │  │ • FormData integration                │    │        │   │
+│  │  │  └──────────────────────────────────────┘    │        │   │
+│  │  │                                                │        │   │
+│  │  └───────────────────────────────────────────────┘        │   │
+│  │                                                             │   │
+│  └────────────────────────────────────────────────────────────┘   │
+│                                                                     │
+│  ┌──────────────────────────────────────────────────┐             │
+│  │ Error Message (optional)                          │             │
+│  │ • Generates unique ID                             │             │
+│  │ • Links via aria-describedby                      │             │
+│  │ • role="alert" for announcements                  │             │
+│  └──────────────────────────────────────────────────┘             │
+│                                                                     │
+└────────────────────────────────────────────────────────────────────┘
+
+
+════════════════════════════════════════════════════════════════════════
+
+COMPONENT INTERACTION FLOW
+
+1. USER INTERACTION
+   └─> User types in input
+       └─> Native <input> fires 'input' event
+           └─> ol-input updates value property
+               └─> ol-input updates ElementInternals
+                   └─> Form sees updated value
+                   └─> Validation runs
+                       └─> ol-field can read validation state
+
+2. VALIDATION FLOW
+   └─> User submits form
+       └─> Browser validates via ElementInternals
+           └─> Invalid inputs prevent submission
+               └─> ol-field displays error messages
+                   └─> Screen readers announce errors
+                       (role="alert" + aria-describedby)
+
+3. ACCESSIBILITY LINKING
+   ┌─────────────────────────────────────────────────────┐
+   │ <ol-field label="Email" hint="..." error="...">     │
+   │   <ol-input name="email">                           │
+   │     aria-labelledby="field-label-abc123"            │
+   │     aria-describedby="field-hint-abc123             │
+   │                      field-error-abc123"            │
+   │     aria-invalid="true"                             │
+   │   </ol-input>                                       │
+   │ </ol-field>                                         │
+   └─────────────────────────────────────────────────────┘
+
+════════════════════════════════════════════════════════════════════════
+
+USAGE PATTERNS
+
+Pattern 1: Full Field (Recommended)
+┌────────────────────────────────────────────────────────┐
+│ <ol-field label="Email" hint="..." required>          │
+│   <ol-input name="email" type="email"></ol-input>     │
+│ </ol-field>                                            │
+└────────────────────────────────────────────────────────┘
+✓ Automatic accessibility
+✓ Consistent styling
+✓ Error handling
+✓ Layout management
+
+Pattern 2: Standalone Input
+┌────────────────────────────────────────────────────────┐
+│ <label for="email">Email</label>                      │
+│ <ol-input id="email" name="email" type="email">       │
+│ </ol-input>                                            │
+└────────────────────────────────────────────────────────┘
+✓ Manual control
+✓ Custom layouts
+✓ Form participation still works
+
+Pattern 3: Dynamic Error State
+┌────────────────────────────────────────────────────────┐
+│ const field = document.querySelector('ol-field');     │
+│ field.error = "Invalid email address";                │
+│                                                        │
+│ // Automatically:                                     │
+│ // - Shows error message                             │
+│ // - Sets aria-invalid="true"                        │
+│ // - Announces to screen readers                     │
+└────────────────────────────────────────────────────────┘
+
+════════════════════════════════════════════════════════════════════════
+
+DESIGN TOKEN INTEGRATION
+
+Tier 1: Primitives
+├─ --spacing-1: 0.25rem
+├─ --color-blue-500: #3b82f6
+└─ --color-gray-300: #d1d5db
+
+Tier 2: Semantic
+├─ --color-primary: var(--color-blue-500)
+├─ --color-border: var(--color-gray-300)
+└─ --color-error: var(--color-red-500)
+
+Tier 3: Component Tokens (for ol-input)
+├─ --input-padding-x: var(--spacing-inline)
+├─ --input-padding-y: var(--spacing-inline)
+├─ --input-font-size: var(--font-body-size)
+├─ --input-border-width: 1px
+├─ --input-focus-ring: 0 0 0 3px rgba(59, 130, 246, 0.1)
+└─ --input-min-height: 40px
+
+Used by components
+└─> Consistent styling across app
+    └─> Easy theme customization
+        └─> Automatic dark mode support
+
+════════════════════════════════════════════════════════════════════════
+
+BROWSER COMPATIBILITY
+
+Form-Associated Custom Elements (FACE) support:
+├─ Chrome/Edge 77+    ✓ Full support
+├─ Firefox 93+        ✓ Full support
+└─ Safari 16.4+       ✓ Full support
+
+Fallback: Components still work without FACE, but form integration
+may require additional JavaScript for older browsers.
+
+════════════════════════════════════════════════════════════════════════
+
