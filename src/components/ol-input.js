@@ -35,36 +35,36 @@ export class OlInput extends LitElement {
       padding: var(--input-padding-y) var(--input-padding-x);
       font-size: var(--input-font-size);
       font-family: inherit;
-      color: var(--color-text-primary);
-      background-color: var(--color-bg-primary);
-      border: var(--input-border-width) solid var(--color-border-primary);
+      color: var(--input-on-surface);
+      background-color: var(--input-surface);
+      border: var(--input-border-width) solid var(--input-outline);
       border-radius: var(--radius-input);
-      transition: border-color var(--transition-input), box-shadow var(--transition-input);
       box-sizing: border-box;
     }
 
     input::placeholder {
-      color: var(--color-text-tertiary);
+      color: var(--input-placeholder-color);
     }
 
     input:hover:not(:disabled) {
-      border-color: var(--color-border-focus);
+      border-color: var(--input-outline-hovered);
     }
 
     input:focus {
       outline: none;
-      border-color: var(--color-primary);
+      border-color: var(--input-outline-focused);
       box-shadow: var(--input-focus-ring);
     }
 
     input:disabled {
       cursor: not-allowed;
-      background-color: var(--color-bg-secondary);
+      background-color: var(--input-disabled-surface);
+      opacity: var(--input-disabled-opacity);
     }
 
     /* Only show error state when explicitly marked invalid via aria-invalid */
     input[aria-invalid="true"] {
-      border-color: var(--color-error);
+      border-color: var(--input-outline-error);
     }
   `;
 

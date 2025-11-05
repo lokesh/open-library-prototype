@@ -1,59 +1,183 @@
 :root {
   /* ========================================
-     TIER 2: SEMANTIC TOKENS
-     Purpose-based tokens that reference primitives
+     TIER 2: ROLE/ALIAS TOKENS
+     Purpose-based, component-agnostic tokens that reference primitives
+     These are themeable and provide semantic meaning
      ======================================== */
 
-  /* SEMANTIC COLORS */
-  /* Brand */
+  /* === SURFACE SYSTEM === */
+  /* Surfaces define background layers in your UI */
+
+  /* Main page/app background - use for primary content areas, body background */
+  --color-surface: var(--color-neutral-50);
+
+  /* Secondary backgrounds - use for cards, sidebars, navigation, elevated panels */
+  --color-surface-variant: var(--color-neutral-cool-50);
+
+  /* Tertiary backgrounds - use for subtle differentiation, nested cards, hover states on surfaces */
+  --color-surface-tertiary: var(--color-neutral-cool-100);
+
+  /* High-contrast inverse surfaces - use for tooltips, toasts, inverse-themed components */
+  --color-surface-inverse: var(--color-neutral-cool-900);
+
+  /* Semi-transparent overlay behind modals/dialogs - blocks interaction with content below */
+  --color-scrim: rgba(0, 0, 0, 0.5);
+
+  /* === ON-SURFACE COLORS === */
+  /* "On" colors guarantee contrast with their paired surface */
+
+  /* Primary text on main surfaces - body text, headings, high-emphasis content */
+  --color-on-surface: var(--color-neutral-cool-900);
+
+  /* Secondary/muted text - captions, labels, supporting text, placeholders */
+  --color-on-surface-variant: var(--color-neutral-cool-600);
+
+  /* Tertiary/de-emphasized text - timestamps, helper text, low-priority content */
+  --color-on-surface-tertiary: var(--color-neutral-cool-500);
+
+  /* Disabled text and elements - visually indicates non-interactive state */
+  --color-on-surface-disabled: var(--color-neutral-cool-400);
+
+  /* Text on inverse surfaces - guaranteed contrast on dark backgrounds */
+  --color-on-surface-inverse: var(--color-white);
+
+  /* === PRIMARY BRAND SYSTEM === */
+  /* Use for primary actions, key interactive elements, brand expression */
+
+  /* Primary brand color - main CTAs, important buttons, active states */
   --color-primary: var(--color-blue-600);
-  --color-primary-hover: var(--color-blue-700);
-  --color-primary-active: var(--color-blue-800);
-  --color-primary-light: var(--color-blue-100);
 
-  --color-secondary: var(--color-gray-600);
-  --color-secondary-hover: var(--color-gray-700);
-  --color-secondary-active: var(--color-gray-800);
+  /* Text/icons on primary backgrounds - guaranteed contrast */
+  --color-on-primary: var(--color-white);
 
-  /* Feedback */
+  /* Lower-emphasis primary container - tinted backgrounds, chips, badges with primary meaning */
+  --color-primary-container: var(--color-blue-100);
+
+  /* Text/icons on primary containers */
+  --color-on-primary-container: var(--color-blue-900);
+
+  /* State: Hovered - apply on hover interactions */
+  --color-primary-hovered: var(--color-blue-700);
+
+  /* State: Pressed - apply on active/pressed interactions */
+  --color-primary-pressed: var(--color-blue-800);
+
+  /* State: Focused - visual indicator for keyboard focus */
+  --color-primary-focused: var(--color-blue-500);
+
+  /* === SECONDARY BRAND SYSTEM === */
+  /* Use for secondary actions, less prominent interactive elements */
+
+  --color-secondary: var(--color-neutral-cool-600);
+  --color-on-secondary: var(--color-white);
+
+  /* Lower-emphasis secondary container - alternative to primary, supporting actions */
+  --color-secondary-container: var(--color-neutral-cool-100);
+  --color-on-secondary-container: var(--color-neutral-cool-900);
+
+  /* State variants */
+  --color-secondary-hovered: var(--color-neutral-cool-700);
+  --color-secondary-pressed: var(--color-neutral-cool-800);
+  --color-secondary-focused: var(--color-neutral-cool-500);
+
+  /* === SUCCESS SYSTEM === */
+  /* Use for positive feedback, confirmations, success states */
+
   --color-success: var(--color-green-600);
-  --color-success-light: var(--color-green-100);
-  --color-success-dark: var(--color-green-700);
+  --color-on-success: var(--color-white);
+
+  /* Success container - low-emphasis success backgrounds (alerts, banners) */
+  --color-success-container: var(--color-green-100);
+  --color-on-success-container: var(--color-green-900);
+
+  /* State variants */
+  --color-success-hovered: var(--color-green-700);
+  --color-success-pressed: var(--color-green-800);
+
+  /* === ERROR SYSTEM === */
+  /* Use for errors, destructive actions, validation failures */
 
   --color-error: var(--color-red-600);
-  --color-error-light: var(--color-red-100);
-  --color-error-dark: var(--color-red-700);
+  --color-on-error: var(--color-white);
+
+  /* Error container - low-emphasis error backgrounds (alerts, validation messages) */
+  --color-error-container: var(--color-red-100);
+  --color-on-error-container: var(--color-red-900);
+
+  /* State variants */
+  --color-error-hovered: var(--color-red-700);
+  --color-error-pressed: var(--color-red-800);
+
+  /* === WARNING SYSTEM === */
+  /* Use for warnings, caution states, non-critical issues */
 
   --color-warning: var(--color-yellow-500);
-  --color-warning-light: var(--color-yellow-100);
-  --color-warning-dark: var(--color-yellow-700);
+  --color-on-warning: var(--color-neutral-cool-900);
+
+  /* Warning container - low-emphasis warning backgrounds */
+  --color-warning-container: var(--color-yellow-100);
+  --color-on-warning-container: var(--color-yellow-900);
+
+  /* State variants */
+  --color-warning-hovered: var(--color-yellow-600);
+  --color-warning-pressed: var(--color-yellow-700);
+
+  /* === INFO SYSTEM === */
+  /* Use for informational messages, tips, neutral notifications */
 
   --color-info: var(--color-blue-500);
-  --color-info-light: var(--color-blue-100);
-  --color-info-dark: var(--color-blue-700);
+  --color-on-info: var(--color-white);
 
-  /* Text */
-  --color-text-primary: var(--color-gray-900);
-  --color-text-secondary: var(--color-gray-600);
-  --color-text-tertiary: var(--color-gray-500);
-  --color-text-disabled: var(--color-gray-400);
-  --color-text-inverse: var(--color-white);
-  --color-text-link: var(--color-blue-600);
-  --color-text-link-hover: var(--color-blue-700);
+  /* Info container - low-emphasis info backgrounds */
+  --color-info-container: var(--color-blue-100);
+  --color-on-info-container: var(--color-blue-900);
 
-  /* Backgrounds */
-  --color-bg-primary: var(--color-book-50);
-  --color-bg-secondary: var(--color-gray-50);
-  --color-bg-tertiary: var(--color-gray-100);
-  --color-bg-inverse: var(--color-gray-900);
-  --color-bg-overlay: rgba(0, 0, 0, 0.5);
+  /* State variants */
+  --color-info-hovered: var(--color-blue-600);
+  --color-info-pressed: var(--color-blue-700);
 
-  /* Borders */
-  --color-border-primary: var(--color-gray-300);
-  --color-border-secondary: var(--color-gray-200);
-  --color-border-focus: var(--color-blue-500);
+  /* === BORDER & OUTLINE ROLES === */
+  /* Use for visual separation and hierarchy */
 
-  /* SEMANTIC TYPOGRAPHY */
+  /* Default borders - standard UI element borders (inputs, cards, dividers) */
+  --color-border-default: var(--color-neutral-cool-300);
+
+  /* Subtle borders - less prominent separation, nested elements */
+  --color-border-subtle: var(--color-neutral-cool-200);
+
+  /* Strong borders - high-emphasis separation, active states */
+  --color-border-strong: var(--color-neutral-cool-400);
+
+  /* Focus outline - keyboard focus indicator, accessibility critical */
+  --color-outline-focus: var(--color-blue-500);
+
+  /* Error outline - validation errors, problematic fields */
+  --color-outline-error: var(--color-red-600);
+
+  /* === LINK COLORS === */
+  /* Use for hyperlinks and text-based navigation */
+
+  --color-link: var(--color-primary);
+  --color-link-hovered: var(--color-primary-hovered);
+  --color-link-visited: var(--color-blue-800);
+
+  /* === ELEVATION ROLES === */
+  /* Semantic shadow levels - use to establish visual hierarchy */
+
+  --elevation-none: var(--shadow-0);
+  --elevation-subtle: var(--shadow-1);
+  --elevation-low: var(--shadow-2);
+  --elevation-medium: var(--shadow-3);
+  --elevation-high: var(--shadow-4);
+  --elevation-highest: var(--shadow-5);
+
+  /* === FOCUS RING === */
+  /* Accessible focus indicators */
+
+  --focus-ring-color: var(--color-outline-focus);
+  --focus-ring: 0 0 0 var(--focus-ring-width) rgba(59, 130, 246, 0.2);
+
+  /* === SEMANTIC TYPOGRAPHY === */
   /* Headings */
   --font-heading-family: var(--font-family-serif);
   --font-heading-weight: var(--font-weight-bold);
@@ -79,7 +203,7 @@
   --font-code-family: var(--font-family-mono);
   --font-code-size: var(--font-size-sm);
 
-  /* SEMANTIC SPACING */
+  /* === SEMANTIC SPACING === */
   --spacing-text-bottom: var(--spacing-1);
   --spacing-heading-bottom: var(--spacing-2);
 
@@ -89,7 +213,7 @@
   --spacing-element: var(--spacing-4);
   --spacing-inline: var(--spacing-2);
 
-  /* SEMANTIC RADIUS */
+  /* === SEMANTIC RADIUS === */
   --radius-button: var(--radius-md);        /* buttons, tabs, pills */
   --radius-input: var(--radius-md);         /* inputs, textareas */
   --radius-card: var(--radius-lg);          /* cards, panels */
@@ -99,68 +223,310 @@
   --radius-notification: var(--radius-lg);  /* notifications, alerts */
   --radius-avatar: var(--radius-full);      /* avatars, profile images */
   --radius-image: var(--radius-md);         /* general images */
+}
 
-  /* SEMANTIC TRANSITIONS */
-  --transition-button: var(--duration-fast) var(--ease-out);
-  --transition-input: var(--duration-fast) var(--ease-in-out);
-  --transition-modal: var(--duration-normal) var(--ease-out);
-  --transition-dropdown: var(--duration-fast) var(--ease-out);
-  --transition-tooltip: var(--duration-fast) var(--ease-out);
-  --transition-fade: var(--duration-normal) var(--ease-in-out);
+/* ========================================
+   TIER 3: COMPONENT TOKENS
+   Component-specific tokens for fine control
+   ======================================== */
+
+:root {
+  /* === BUTTON COMPONENTS === */
+  --button-container: var(--color-primary);
+  --button-on-container: var(--color-on-primary);
+  --button-container-hovered: var(--color-primary-hovered);
+  --button-container-pressed: var(--color-primary-pressed);
+
+  --button-padding-x: var(--spacing-element);
+  --button-padding-y: var(--spacing-inline);
+  --button-font-size: var(--font-body-size);
+  --button-font-weight: var(--font-body-weight);
+  --button-border-width: var(--border-width-1);
+  --button-focus-ring: var(--focus-ring);
+
+  /* Button size variants */
+  --button-sm-padding-x: var(--spacing-3);
+  --button-sm-padding-y: var(--spacing-1);
+  --button-sm-font-size: var(--font-body-sm-size);
+
+  --button-lg-padding-x: var(--spacing-component);
+  --button-lg-padding-y: var(--spacing-element);
+  --button-lg-font-size: var(--font-body-lg-size);
+
+  /* === INPUT COMPONENTS === */
+  --input-surface: var(--color-surface);
+  --input-on-surface: var(--color-on-surface);
+  --input-outline: var(--color-border-default);
+  --input-outline-hovered: var(--color-outline-focus);
+  --input-outline-focused: var(--color-primary);
+  --input-outline-error: var(--color-outline-error);
+
+  --input-padding-x: var(--spacing-3);
+  --input-padding-y: var(--spacing-2);
+  --input-font-size: var(--font-body-size);
+  --input-border-width: var(--border-width-1);
+  --input-focus-ring: var(--focus-ring);
+  --input-min-height: var(--control-height-md);
+  --input-placeholder-color: var(--color-on-surface-variant);
+  --input-disabled-surface: var(--color-surface-variant);
+  --input-disabled-opacity: var(--opacity-disabled);
+
+  /* === CARD COMPONENTS === */
+  --card-surface: var(--color-surface-variant);
+  --card-on-surface: var(--color-on-surface);
+  --card-outline: var(--color-border-default);
+
+  --card-padding: var(--spacing-component);
+  --card-shadow: var(--elevation-low);
+  --card-shadow-hover: var(--elevation-medium);
+  --card-border-width: var(--border-width-1);
+
+  /* === MODAL/OVERLAY COMPONENTS === */
+  --modal-surface: var(--color-surface);
+  --modal-on-surface: var(--color-on-surface);
+  --modal-scrim: var(--color-scrim);
+
+  --modal-padding: var(--spacing-container);
+  --modal-max-width: 600px;
+  --modal-shadow: var(--elevation-highest);
+
+  /* === NAVIGATION COMPONENTS === */
+  --nav-surface: var(--color-surface-variant);
+  --nav-on-surface: var(--color-on-surface);
+  --nav-outline: var(--color-border-subtle);
+
+  --nav-height: 60px;
+  --nav-padding-x: var(--spacing-component);
+  --nav-item-padding-x: var(--spacing-element);
+  --nav-item-padding-y: var(--spacing-2);
+
+  /* === BADGE COMPONENTS === */
+  --badge-padding-x: var(--spacing-2);
+  --badge-padding-y: var(--spacing-1);
+  --badge-font-size: var(--font-body-sm-size);
+  --badge-font-weight: var(--font-body-weight);
+
+  /* === NOTIFICATION COMPONENTS === */
+  --notification-surface: var(--color-surface-inverse);
+  --notification-on-surface: var(--color-on-surface-inverse);
+
+  --notification-padding: var(--spacing-element);
+  --notification-shadow: var(--elevation-high);
+  --notification-max-width: 400px;
+
+  /* === HEADING COMPONENTS === */
+  --heading-display-1-size: var(--font-size-5xl);
+  --heading-display-2-size: var(--font-size-4xl);
+  --heading-display-3-size: var(--font-size-3xl);
+  --heading-title-1-size: var(--font-size-2xl);
+  --heading-title-2-size: var(--font-size-xl);
+  --heading-title-3-size: var(--font-size-lg);
+  --heading-title-4-size: var(--font-size-md);
+  --heading-title-5-size: var(--font-size-sm);
 }
 
 /* ========================================
    DARK MODE
-   Override semantic colors when dark theme is active
+   Override TIER 2 role tokens when dark theme is active
+   Component tokens automatically adapt via role token changes
    ======================================== */
 
 body[data-theme="dark"] {
-  /* Brand - slightly lighter for better visibility */
+  /* === SURFACE SYSTEM - DARK === */
+  --color-surface: var(--color-neutral-cool-900);
+  --color-surface-variant: var(--color-neutral-cool-800);
+  --color-surface-tertiary: var(--color-neutral-cool-700);
+  --color-surface-inverse: var(--color-neutral-cool-50);
+  --color-scrim: rgba(0, 0, 0, 0.7);
+
+  /* === ON-SURFACE COLORS - DARK === */
+  --color-on-surface: var(--color-neutral-cool-100);
+  --color-on-surface-variant: var(--color-neutral-cool-400);
+  --color-on-surface-tertiary: var(--color-neutral-cool-500);
+  --color-on-surface-disabled: var(--color-neutral-cool-600);
+  --color-on-surface-inverse: var(--color-neutral-cool-900);
+
+  /* === PRIMARY BRAND - DARK === */
+  /* Slightly lighter for better visibility on dark backgrounds */
   --color-primary: var(--color-blue-500);
-  --color-primary-hover: var(--color-blue-400);
-  --color-primary-active: var(--color-blue-600);
-  --color-primary-light: var(--color-blue-900);
+  --color-on-primary: var(--color-white);
+  --color-primary-container: var(--color-blue-900);
+  --color-on-primary-container: var(--color-blue-100);
 
-  --color-secondary: var(--color-gray-400);
-  --color-secondary-hover: var(--color-gray-300);
-  --color-secondary-active: var(--color-gray-500);
+  --color-primary-hovered: var(--color-blue-400);
+  --color-primary-pressed: var(--color-blue-600);
+  --color-primary-focused: var(--color-blue-400);
 
-  /* Feedback - adjusted for dark backgrounds */
+  /* === SECONDARY BRAND - DARK === */
+  --color-secondary: var(--color-neutral-cool-400);
+  --color-on-secondary: var(--color-neutral-cool-900);
+  --color-secondary-container: var(--color-neutral-cool-700);
+  --color-on-secondary-container: var(--color-neutral-cool-100);
+
+  --color-secondary-hovered: var(--color-neutral-cool-300);
+  --color-secondary-pressed: var(--color-neutral-cool-500);
+  --color-secondary-focused: var(--color-neutral-cool-300);
+
+  /* === SUCCESS - DARK === */
   --color-success: var(--color-green-500);
-  --color-success-light: var(--color-green-900);
-  --color-success-dark: var(--color-green-400);
+  --color-on-success: var(--color-white);
+  --color-success-container: var(--color-green-900);
+  --color-on-success-container: var(--color-green-100);
 
+  --color-success-hovered: var(--color-green-400);
+  --color-success-pressed: var(--color-green-600);
+
+  /* === ERROR - DARK === */
   --color-error: var(--color-red-500);
-  --color-error-light: var(--color-red-900);
-  --color-error-dark: var(--color-red-400);
+  --color-on-error: var(--color-white);
+  --color-error-container: var(--color-red-900);
+  --color-on-error-container: var(--color-red-100);
 
+  --color-error-hovered: var(--color-red-400);
+  --color-error-pressed: var(--color-red-600);
+
+  /* === WARNING - DARK === */
   --color-warning: var(--color-yellow-500);
-  --color-warning-light: var(--color-yellow-900);
-  --color-warning-dark: var(--color-yellow-400);
+  --color-on-warning: var(--color-neutral-cool-900);
+  --color-warning-container: var(--color-yellow-900);
+  --color-on-warning-container: var(--color-yellow-100);
 
+  --color-warning-hovered: var(--color-yellow-400);
+  --color-warning-pressed: var(--color-yellow-600);
+
+  /* === INFO - DARK === */
   --color-info: var(--color-blue-400);
-  --color-info-light: var(--color-blue-900);
-  --color-info-dark: var(--color-blue-300);
+  --color-on-info: var(--color-white);
+  --color-info-container: var(--color-blue-900);
+  --color-on-info-container: var(--color-blue-100);
 
-  /* Text - inverted for dark backgrounds */
-  --color-text-primary: var(--color-gray-100);
-  --color-text-secondary: var(--color-gray-400);
-  --color-text-tertiary: var(--color-gray-500);
-  --color-text-disabled: var(--color-gray-600);
-  --color-text-inverse: var(--color-gray-900);
-  --color-text-link: var(--color-blue-400);
-  --color-text-link-hover: var(--color-blue-300);
+  --color-info-hovered: var(--color-blue-300);
+  --color-info-pressed: var(--color-blue-500);
 
-  /* Backgrounds - dark palette */
-  --color-bg-primary: var(--color-gray-900);
-  --color-bg-secondary: var(--color-gray-800);
-  --color-bg-tertiary: var(--color-gray-700);
-  --color-bg-inverse: var(--color-gray-50);
-  --color-bg-overlay: rgba(0, 0, 0, 0.7);
+  /* === BORDERS & OUTLINES - DARK === */
+  --color-border-default: var(--color-neutral-cool-700);
+  --color-border-subtle: var(--color-neutral-cool-800);
+  --color-border-strong: var(--color-neutral-cool-600);
+  --color-outline-focus: var(--color-blue-500);
+  --color-outline-error: var(--color-red-500);
 
-  /* Borders - lighter for visibility on dark backgrounds */
-  --color-border-primary: var(--color-gray-700);
-  --color-border-secondary: var(--color-gray-800);
-  --color-border-focus: var(--color-blue-500);
+  /* === LINKS - DARK === */
+  --color-link: var(--color-blue-400);
+  --color-link-hovered: var(--color-blue-300);
+  --color-link-visited: var(--color-blue-500);
+
+  /* === SHADOWS - DARK === */
+  /* Darker and more subtle shadows for dark mode */
+  --elevation-subtle: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --elevation-low: 0 1px 3px 0 rgba(0, 0, 0, 0.4), 0 1px 2px -1px rgba(0, 0, 0, 0.4);
+  --elevation-medium: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -2px rgba(0, 0, 0, 0.5);
+  --elevation-high: 0 10px 15px -3px rgba(0, 0, 0, 0.6), 0 4px 6px -4px rgba(0, 0, 0, 0.6);
+  --elevation-highest: 0 20px 25px -5px rgba(0, 0, 0, 0.7), 0 8px 10px -6px rgba(0, 0, 0, 0.7);
+
+  /* === FOCUS RING - DARK === */
+  /* Brighter for visibility in dark mode */
+  --focus-ring-color: var(--color-outline-focus);
+  --focus-ring: 0 0 0 var(--focus-ring-width) rgba(59, 130, 246, 0.4);
+
+  /* === COMPONENT TOKENS - DARK === */
+  /* Explicitly override component color tokens for clarity */
+
+  /* Button components */
+  --button-container: var(--color-primary);
+  --button-on-container: var(--color-on-primary);
+  --button-container-hovered: var(--color-primary-hovered);
+  --button-container-pressed: var(--color-primary-pressed);
+  --button-focus-ring: var(--focus-ring);
+
+  /* Input components */
+  --input-surface: var(--color-surface);
+  --input-on-surface: var(--color-on-surface);
+  --input-outline: var(--color-border-default);
+  --input-outline-hovered: var(--color-outline-focus);
+  --input-outline-focused: var(--color-primary);
+  --input-outline-error: var(--color-outline-error);
+  --input-placeholder-color: var(--color-on-surface-variant);
+  --input-disabled-surface: var(--color-surface-variant);
+  --input-focus-ring: var(--focus-ring);
+
+  /* Card components */
+  --card-surface: var(--color-surface-variant);
+  --card-on-surface: var(--color-on-surface);
+  --card-outline: var(--color-border-default);
+  --card-shadow: var(--elevation-low);
+  --card-shadow-hover: var(--elevation-medium);
+
+  /* Modal/Overlay components */
+  --modal-surface: var(--color-surface);
+  --modal-on-surface: var(--color-on-surface);
+  --modal-scrim: var(--color-scrim);
+  --modal-shadow: var(--elevation-highest);
+
+  /* Navigation components */
+  --nav-surface: var(--color-surface-variant);
+  --nav-on-surface: var(--color-on-surface);
+  --nav-outline: var(--color-border-subtle);
+
+  /* Notification components */
+  --notification-surface: var(--color-surface-inverse);
+  --notification-on-surface: var(--color-on-surface-inverse);
+  --notification-shadow: var(--elevation-high);
 }
 
+/* ========================================
+   HEADING COMPONENT STYLES (for light DOM)
+   ======================================== */
+
+.ol-heading {
+  font-family: var(--font-heading-family);
+  font-weight: var(--font-heading-weight);
+  line-height: var(--font-heading-line-height);
+  color: var(--color-on-surface);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+
+/* Display sizes - largest headings */
+.ol-heading.display-1 {
+  font-size: var(--heading-display-1-size);
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+.ol-heading.display-2 {
+  font-size: var(--heading-display-2-size);
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+.ol-heading.display-3 {
+  font-size: var(--heading-display-3-size);
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+/* Title sizes - standard headings */
+.ol-heading.title-1 {
+  font-size: var(--heading-title-1-size);
+}
+
+.ol-heading.title-2 {
+  font-size: var(--heading-title-2-size);
+}
+
+.ol-heading.title-3 {
+  font-size: var(--heading-title-3-size);
+}
+
+.ol-heading.title-4 {
+  font-size: var(--heading-title-4-size);
+}
+
+.ol-heading.title-5 {
+  font-size: var(--heading-title-5-size);
+}
+
+.ol-heading-icon {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}

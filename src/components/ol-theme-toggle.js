@@ -9,22 +9,21 @@ export class OlThemeToggle extends LitElement {
     button {
       padding: 8px 12px;
       cursor: pointer;
-      background: var(--color-bg-secondary);
-      color: var(--color-text-primary);
-      border: 1px solid var(--color-border-primary);
+      background: var(--color-surface-variant);
+      color: var(--color-on-surface);
+      border: 1px solid var(--color-border-default);
       border-radius: var(--radius-button);
       font-family: var(--font-body-family);
       font-size: var(--font-size-sm);
       font-weight: var(--font-weight-medium);
-      transition: all var(--transition-button);
       display: flex;
       align-items: center;
       gap: 6px;
     }
 
     button:hover {
-      background: var(--color-bg-tertiary);
-      border-color: var(--color-border-focus);
+      background: var(--color-surface-tertiary);
+      border-color: var(--color-outline-focus);
     }
 
     button:active {

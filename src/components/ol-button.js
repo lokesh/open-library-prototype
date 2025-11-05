@@ -11,19 +11,18 @@ export class OlButton extends LitElement {
       font-size: var(--button-font-size);
       font-weight: var(--button-font-weight);
       cursor: pointer;
-      background-color: var(--color-primary);
-      color: var(--color-text-inverse);
+      background-color: var(--button-container);
+      color: var(--button-on-container);
       border: none;
       border-radius: var(--radius-button);
-      transition: background-color var(--transition-button), transform var(--transition-button);
     }
 
     button:hover {
-      background-color: var(--color-primary-hover);
+      background-color: var(--button-container-hovered);
     }
 
     button:active {
-      background-color: var(--color-primary-active);
+      background-color: var(--button-container-pressed);
       transform: scale(0.98);
     }
 

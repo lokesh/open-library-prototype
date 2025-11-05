@@ -8,29 +8,29 @@
   --color-white: #ffffff;
   --color-black: #000000;
 
-/* Books - Inspired by book cover colors */
---color-book-50: #faf9f7;
---color-book-100: #f5f4f0;
---color-book-200: #efeee6;
---color-book-300: #dedcc8;
---color-book-400: #aca688;
---color-book-500: #8e8870;
---color-book-600: #706d5c;
---color-book-700: #54513f;
---color-book-800: #3b3830;
---color-book-900: #24231e;
+/* Neutrals - Default warm neutral (inspired by book/paper colors) */
+--color-neutral-50: #faf9f7;
+--color-neutral-100: #f5f4f0;
+--color-neutral-200: #efeee6;
+--color-neutral-300: #dedcc8;
+--color-neutral-400: #aca688;
+--color-neutral-500: #8e8870;
+--color-neutral-600: #706d5c;
+--color-neutral-700: #54513f;
+--color-neutral-800: #3b3830;
+--color-neutral-900: #24231e;
 
-  /* Grays */
-  --color-gray-50: #fafafa;
-  --color-gray-100: #f5f5f5;
-  --color-gray-200: #e0e0e0;
-  --color-gray-300: #d4d4d4;
-  --color-gray-400: #a3a3a3;
-  --color-gray-500: #737373;
-  --color-gray-600: #525252;
-  --color-gray-700: #404040;
-  --color-gray-800: #262626;
-  --color-gray-900: #171717;
+  /* Cool Neutrals - True grays for UI elements */
+  --color-neutral-cool-50: #fafafa;
+  --color-neutral-cool-100: #f5f5f5;
+  --color-neutral-cool-200: #e0e0e0;
+  --color-neutral-cool-300: #d4d4d4;
+  --color-neutral-cool-400: #a3a3a3;
+  --color-neutral-cool-500: #737373;
+  --color-neutral-cool-600: #525252;
+  --color-neutral-cool-700: #404040;
+  --color-neutral-cool-800: #262626;
+  --color-neutral-cool-900: #171717;
 
   /* Blues */
   --color-blue-50: #eff6ff;
@@ -113,20 +113,18 @@
   --line-height-relaxed: 1.75;
   --line-height-loose: 2;
 
-  /* PRIMITIVE SPACING */
+  /* PRIMITIVE SPACING - Fibonacci-inspired scale */
   --spacing-0: 0;
   --spacing-1: 0.25rem;   /* 4px */
   --spacing-2: 0.5rem;    /* 8px */
   --spacing-3: 0.75rem;   /* 12px */
   --spacing-4: 1rem;      /* 16px */
-  --spacing-5: 1.25rem;   /* 20px */
   --spacing-6: 1.5rem;    /* 24px */
   --spacing-8: 2rem;      /* 32px */
-  --spacing-10: 2.5rem;   /* 40px */
   --spacing-12: 3rem;     /* 48px */
   --spacing-16: 4rem;     /* 64px */
-  --spacing-20: 5rem;     /* 80px */
   --spacing-24: 6rem;     /* 96px */
+  --spacing-32: 8rem;     /* 128px */
 
   /* PRIMITIVE RADIUS */
   --radius-none: 0;
@@ -152,5 +150,66 @@
   --ease-out: cubic-bezier(0, 0, 0.2, 1);
   --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
   --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+  /* PRIMITIVE ELEVATION & SHADOWS */
+  --shadow-0: none;
+  --shadow-1: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-2: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+  --shadow-3: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  --shadow-4: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  --shadow-5: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+
+  /* PRIMITIVE BORDER WIDTHS */
+  --border-width-0: 0;
+  --border-width-1: 1px;
+  --border-width-2: 2px;
+  --border-width-3: 4px;
+
+  /* PRIMITIVE OPACITY */
+  --opacity-disabled: 0.4;
+  --opacity-overlay-weak: 0.3;
+  --opacity-overlay-medium: 0.5;
+  --opacity-overlay-strong: 0.7;
+
+  /* PRIMITIVE Z-INDEX */
+  --z-base: 0;
+  --z-dropdown: 1000;
+  --z-sticky: 1100;
+  --z-overlay: 1200;
+  --z-modal: 1300;
+  --z-toast: 1400;
+
+  /* PRIMITIVE BREAKPOINTS */
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+
+  /* PRIMITIVE CONTAINER WIDTHS */
+  --container-sm: 640px;
+  --container-md: 768px;
+  --container-lg: 1024px;
+  --container-xl: 1280px;
+
+  /* PRIMITIVE ICON SIZES */
+  --icon-size-xs: 0.75rem;   /* 12px */
+  --icon-size-sm: 1rem;      /* 16px */
+  --icon-size-md: 1.5rem;    /* 24px */
+  --icon-size-lg: 2rem;      /* 32px */
+  --icon-size-xl: 3rem;      /* 48px */
+
+  /* PRIMITIVE CONTROL HEIGHTS */
+  --control-height-sm: 2rem;    /* 32px */
+  --control-height-md: 2.5rem;  /* 40px */
+  --control-height-lg: 3rem;    /* 48px */
+
+  /* PRIMITIVE LETTER SPACING */
+  --letter-spacing-tight: -0.025em;
+  --letter-spacing-normal: 0;
+  --letter-spacing-wide: 0.025em;
+
+  /* PRIMITIVE FOCUS RING */
+  --focus-ring-width: 3px;
+  --focus-ring-offset: 2px;
 }
 
