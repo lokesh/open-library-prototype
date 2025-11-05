@@ -7,22 +7,29 @@ export class OlButton extends LitElement {
 
   static styles = css`
     button {
-      padding: 10px 20px;
-      font-size: 16px;
+      padding: var(--button-padding-y) var(--button-padding-x);
+      font-size: var(--button-font-size);
+      font-weight: var(--button-font-weight);
       cursor: pointer;
-      background-color: #007bff;
-      color: white;
+      background-color: var(--color-primary);
+      color: var(--color-text-inverse);
       border: none;
-      border-radius: 4px;
-      transition: background-color 0.2s;
+      border-radius: var(--radius-button);
+      transition: background-color var(--transition-button), transform var(--transition-button);
     }
 
     button:hover {
-      background-color: #0056b3;
+      background-color: var(--color-primary-hover);
     }
 
     button:active {
-      background-color: #004085;
+      background-color: var(--color-primary-active);
+      transform: scale(0.98);
+    }
+
+    button:focus {
+      outline: none;
+      box-shadow: var(--button-focus-ring);
     }
   `;
 

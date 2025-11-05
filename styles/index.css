@@ -7,20 +7,26 @@
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-  line-height: 1.6;
-  color: #333;
+  font-family: var(--font-body-family);
+  line-height: var(--font-body-line-height);
+  color: var(--color-text-primary);
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
   background-color: var(--color-bg-primary);
+  transition: background-color var(--transition-fade), color var(--transition-fade);
 }
 
 nav {
-  background-color: #f8f9fa;
+  background-color: var(--color-bg-secondary);
   padding: 15px;
   margin-bottom: 30px;
-  border-radius: 4px;
+  border-radius: var(--radius-card);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid var(--color-border-secondary);
+  transition: background-color var(--transition-fade), border-color var(--transition-fade);
 }
 
 nav ul {
@@ -28,15 +34,18 @@ nav ul {
   display: flex;
   gap: 20px;
   flex-wrap: wrap;
+  flex: 1;
 }
 
 nav a {
-  color: #007bff;
+  color: var(--color-text-link);
   text-decoration: none;
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
+  transition: color var(--transition-button);
 }
 
 nav a:hover {
+  color: var(--color-text-link-hover);
   text-decoration: underline;
 }
 
@@ -48,13 +57,13 @@ h1, h2, h3, h4, h5, h6 {
 
 h1 {
   margin-bottom: 20px;
-  color: #2c3e50;
+  color: var(--color-text-primary);
 }
 
 h2 {
   margin-top: 30px;
   margin-bottom: 15px;
-  color: #34495e;
+  color: var(--color-text-primary);
 }
 
 form {
@@ -69,24 +78,27 @@ form {
 label {
   display: block;
   margin-bottom: 5px;
-  font-weight: 500;
-  color: #555;
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
 }
 
 input[type="text"],
 input[type="email"],
 input[type="password"] {
   width: 100%;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 16px;
+  padding: var(--input-padding-y) var(--input-padding-x);
+  border: var(--input-border-width) solid var(--color-border-primary);
+  border-radius: var(--radius-input);
+  font-size: var(--input-font-size);
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  transition: border-color var(--transition-input), box-shadow var(--transition-input), background-color var(--transition-fade);
 }
 
 input:focus {
   outline: none;
-  border-color: #007bff;
-  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+  border-color: var(--color-border-focus);
+  box-shadow: var(--input-focus-ring);
 }
 
 .book-list {
@@ -97,20 +109,21 @@ input:focus {
 }
 
 .book-item {
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--color-border-primary);
   padding: 15px;
-  border-radius: 4px;
-  background-color: #fafafa;
+  border-radius: var(--radius-card);
+  background-color: var(--color-bg-secondary);
+  transition: background-color var(--transition-fade), border-color var(--transition-fade);
 }
 
 .book-item h3 {
   margin-bottom: 8px;
-  color: #2c3e50;
+  color: var(--color-text-primary);
 }
 
 .book-item p {
   margin-bottom: 5px;
-  color: #666;
-  font-size: 14px;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
 }
 
