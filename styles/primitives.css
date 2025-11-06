@@ -70,6 +70,7 @@
   --font-weight-extrabold: 800;
 
   /* Line Heights */
+  --line-height-extra-tight: 1.15;
   --line-height-tight: 1.25;
   --line-height-normal: 1.5;
   --line-height-relaxed: 1.75;

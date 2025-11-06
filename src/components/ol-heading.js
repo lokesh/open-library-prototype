@@ -29,16 +29,19 @@ export class OlHeading extends LitElement {
     .display-1 {
       font-size: var(--heading-display-1-size);
       letter-spacing: -0.02em;
+      line-height: var(--font-display-line-height);
     }
 
     .display-2 {
       font-size: var(--heading-display-2-size);
       letter-spacing: -0.02em;
+      line-height: var(--font-display-line-height);
     }
 
     .display-3 {
       font-size: var(--heading-display-3-size);
       letter-spacing: -0.01em;
+      line-height: var(--font-display-line-height);
     }
 
     /* Title sizes - standard headings */

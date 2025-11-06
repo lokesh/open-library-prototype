@@ -6,6 +6,34 @@
   <title>Open Library - Home</title>
   <link rel="stylesheet" href="/styles/index.css">
   <script type="module" src="/src/components/index.js"></script>
+  <script type="module">
+    // Load random books for trending section
+    async function loadTrendingBooks() {
+      try {
+        const response = await fetch('/data/books.json');
+        const books = await response.json();
+
+        // Randomly select 8 books
+        const shuffled = [...books].sort(() => Math.random() - 0.5);
+        const selectedBooks = shuffled.slice(0, 8);
+
+        // Populate the trending covers
+        const trendingContainer = document.querySelector('.trending-covers');
+        trendingContainer.innerHTML = selectedBooks.map(book => `
+          <img src="${book.coverUrl}" alt="${book.title} cover" class="trending-cover">
+        `).join('');
+      } catch (error) {
+        console.error('Error loading trending books:', error);
+      }
+    }
+
+    // Load books when DOM is ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', loadTrendingBooks);
+    } else {
+      loadTrendingBooks();
+    }
+  </script>
 </head>
 <body>
   <nav>
@@ -21,18 +49,18 @@
   </nav>
 
   <main>
-    <ol-heading element="h1" size="display-2">Welcome to Open Library</ol-heading>
-    <p class="lead">An open, editable library catalog, building towards a web page for every book ever published.</p>
+    <ol-section>
+      <ol-heading element="h1" size="display-2">Welcome to Open Library</ol-heading>
+      <p class="lead">An open, editable library catalog, building towards a web page for every book ever published.</p>
+    </ol-section>
 
-    <ol-heading element="h2" size="title-1">Quick Actions</ol-heading>
-    <div style="display: flex; gap: 10px; margin-top: 15px;">
-      <ol-button type="button" onclick="location.href='/trending.html'">
-        Browse Trending Books
-      </ol-button>
-      <ol-button type="button" onclick="location.href='/add-book.html'">
-        Add a Book
-      </ol-button>
-    </div>
+    <ol-section>
+      <ol-heading element="h2" size="title-1">Trending Books</ol-heading>
+      <p class="trending-subtitle">Here are the most popular books in the last 3 months.</p>
+      <div class="trending-covers">
+        <!-- Book covers will be dynamically loaded here -->
+      </div>
+    </ol-section>
   </main>
 </body>
 </html>

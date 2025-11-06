@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Button Group Demo - Open Library Design Vision</title>
+    <link rel="stylesheet" href="/styles/index.css" />
+  </head>
+  <body>
+    <div class="container">
+      <ol-heading level="1">Button Group Component Demo</ol-heading>
+
+      <ol-section>
+        <ol-heading level="2">Form Actions</ol-heading>
+        <p>Typical form action pattern with primary action on the left and secondary actions on the right.</p>
+
+        <ol-button-group>
+          <ol-button slot="primary-action" type="button">Save</ol-button>
+          <ol-button slot="secondary-actions" type="button">Cancel</ol-button>
+        </ol-button-group>
+      </ol-section>
+
+      <ol-section>
+        <ol-heading level="2">Multiple Secondary Actions</ol-heading>
+        <p>Multiple secondary actions are grouped together on the right.</p>
+
+        <ol-button-group>
+          <ol-button slot="primary-action" type="button">Publish</ol-button>
+          <ol-button slot="secondary-actions" type="button">Save Draft</ol-button>
+          <ol-button slot="secondary-actions" type="button">Preview</ol-button>
+          <ol-button slot="secondary-actions" type="button">Cancel</ol-button>
+        </ol-button-group>
+      </ol-section>
+
+      <ol-section>
+        <ol-heading level="2">Delete Confirmation</ol-heading>
+        <p>Destructive action pattern.</p>
+
+        <ol-button-group>
+          <ol-button slot="primary-action" type="button">Delete</ol-button>
+          <ol-button slot="secondary-actions" type="button">Cancel</ol-button>
+        </ol-button-group>
+      </ol-section>
+
+      <ol-section>
+        <ol-heading level="2">Responsive Behavior</ol-heading>
+        <p>Resize your browser to see the buttons stack vertically on mobile (below 640px) and arrange horizontally on desktop.</p>
+        <ul>
+          <li><strong>Mobile:</strong> Buttons are full-width and stack vertically</li>
+          <li><strong>Desktop:</strong> Primary action on the left, secondary actions on the right</li>
+        </ul>
+      </ol-section>
+    </div>
+
+    <script type="module">
+      import '/src/components/index.js';
+    </script>
+  </body>
+</html>
+

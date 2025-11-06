@@ -70,6 +70,7 @@ p.lead {
   /* font-weight: var(--font-heading-weight); */
   color: var(--color-on-surface-variant);
   margin-bottom: var(--spacing-section);
+  line-height: var(--line-height-tight);
 }
 
 form {
@@ -256,5 +257,43 @@ input:focus {
   margin-bottom: 5px;
   color: var(--color-on-surface-variant);
   font-size: var(--font-size-sm);
+}
+
+/* Trending section on home page */
+.trending-subtitle {
+  color: var(--color-on-surface-variant);
+  margin-bottom: 20px;
+}
+
+.trending-covers {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: var(--spacing-element);
+  /* margin-top: 20px; */
+  /* margin-bottom: var(--spacing-section); */
+}
+
+.trending-cover {
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  border-radius: var(--radius-image);
+  background-color: var(--color-surface-tertiary);
+  /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
+  /* transition: transform 0.2s ease; */
+}
+
+.trending-cover:hover {
+  /* transform: translateY(-4px); */
+  box-shadow: 0 0 0 var(--border-width-media) var(--color-primary);
+  cursor: pointer;
+}
+
+/* Responsive layout for trending covers */
+@media (max-width: 768px) {
+  .trending-covers {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
 }
 

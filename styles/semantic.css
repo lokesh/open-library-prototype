@@ -138,6 +138,8 @@
 
   /* === SEMANTIC TYPOGRAPHY === */
   /* Headings */
+  --font-display-line-height: var(--line-height-extra-tight);
+
   --font-heading-family: var(--font-family-serif);
   --font-heading-weight: var(--font-weight-bold);
   --font-heading-line-height: var(--line-height-tight);
@@ -182,12 +184,17 @@
   --radius-notification: var(--radius-lg);  /* notifications, alerts */
   --radius-avatar: var(--radius-full);      /* avatars, profile images */
   --radius-image: var(--radius-md);         /* general images */
+
+  /* === BORDER WIDTHS === */
+  --border-width-control: var(--border-width-2);
+  --border-width-media: var(--border-width-3);
 }
 
 /* ========================================
    TIER 3: COMPONENT TOKENS
    Component-specific tokens for fine control
    ======================================== */
+
 
 :root {
   /* === BUTTON COMPONENTS === */
@@ -223,7 +230,7 @@
   --input-padding-x: var(--spacing-3);
   --input-padding-y: var(--spacing-2);
   --input-font-size: var(--font-body-size);
-  --input-border-width: var(--border-width-1);
+  --input-border-width: var(--border-width-control);
   --input-focus-ring: var(--focus-ring);
   --input-min-height: var(--control-height-md);
   --input-placeholder-color: var(--color-on-surface-variant);
