@@ -251,12 +251,6 @@ input:focus {
   /* transition: transform 0.2s ease; */
 }
 
-.trending-cover:hover {
-  /* transform: translateY(-4px); */
-  box-shadow: 0 0 0 var(--border-width-media) var(--color-primary);
-  cursor: pointer;
-}
-
 /* Responsive layout for trending covers */
 @media (max-width: 768px) {
   .trending-covers {
