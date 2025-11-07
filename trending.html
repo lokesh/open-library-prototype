@@ -10,7 +10,7 @@
     // Load books from JSON and display random selection
     async function loadTrendingBooks() {
       try {
-        const response = await fetch('/data/books.json');
+        const response = await fetch('./data/books.json');
         const books = await response.json();
 
         // Randomly select trending books
