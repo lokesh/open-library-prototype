@@ -9,8 +9,8 @@ export class OlThemeToggle extends LitElement {
     button {
       padding: var(--spacing-inline) var(--spacing-element);
       cursor: pointer;
-      background-color: var(--color-surface-variant);
-      color: var(--color-on-surface);
+      background-color: var(--color-bg-elevated);
+      color: var(--color-text);
       border: none;
       border-radius: var(--radius-button);
       font-size: var(--font-body-sm-size);
@@ -23,7 +23,7 @@ export class OlThemeToggle extends LitElement {
     }
 
     button:hover {
-      background-color: var(--color-surface-variant-hovered);
+      background-color: var(--color-bg-elevated-hovered);
     }
 
     button:active {

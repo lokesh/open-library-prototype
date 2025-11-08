@@ -17,7 +17,7 @@ export class OlHeading extends LitElement {
       font-family: var(--font-heading-family);
       font-weight: var(--font-heading-weight);
       line-height: var(--font-heading-line-height);
-      color: var(--color-text-primary);
+      color: var(--color-text);
       margin: 0;
       margin-bottom: var(--spacing-heading-bottom);
       display: flex;
@@ -35,12 +35,6 @@ export class OlHeading extends LitElement {
     .display-2 {
       font-size: var(--heading-display-2-size);
       letter-spacing: -0.02em;
-      line-height: var(--font-display-line-height);
-    }
-
-    .display-3 {
-      font-size: var(--heading-display-3-size);
-      letter-spacing: -0.01em;
       line-height: var(--font-display-line-height);
     }
 

@@ -9,11 +9,11 @@
 body {
   font-family: var(--font-body-family);
   line-height: var(--font-body-line-height);
-  color: var(--color-on-surface);
+  color: var(--color-text);
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
-  background-color: var(--color-surface);
+  background-color: var(--color-bg);
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -24,18 +24,18 @@ h1, h2, h3, h4, h5, h6 {
 
 h1 {
   margin-bottom: 20px;
-  color: var(--color-on-surface);
+  color: var(--color-text);
 }
 
 h2 {
   margin-top: 30px;
   margin-bottom: 15px;
-  color: var(--color-on-surface);
+  color: var(--color-text);
 }
 
 p.lead {
   font-size: var(--font-h4-size);
-  color: var(--color-on-surface-variant);
+  color: var(--color-text-on-elevated);
   margin-bottom: var(--spacing-section);
   line-height: var(--line-height-tight);
 }
@@ -58,20 +58,20 @@ label {
   margin-bottom: 5px;
   font-weight: var(--font-weight-bold);
   font-size: var(--font-size-lg);
-  color: var(--color-on-surface);
+  color: var(--color-text);
 }
 
 .help-text {
   margin: 5px 0;
   font-size: var(--font-size-sm);
-  color: var(--color-on-surface-variant);
+  color: var(--color-text-on-elevated);
   line-height: 1.4;
 }
 
 .url-preview {
   margin-top: 5px;
   font-size: var(--font-size-sm);
-  color: var(--color-on-surface-variant);
+  color: var(--color-text-on-elevated);
 }
 
 input[type="text"],
@@ -113,11 +113,11 @@ input:focus {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--color-on-surface-variant);
+  color: var(--color-text-on-elevated);
 }
 
 .toggle-password:hover {
-  color: var(--color-on-surface);
+  color: var(--color-text);
 }
 
 /* Checkbox groups */
@@ -131,7 +131,7 @@ input:focus {
   gap: 10px;
   font-weight: var(--font-weight-normal);
   font-size: var(--font-size-md);
-  color: var(--color-on-surface);
+  color: var(--color-text);
   cursor: pointer;
 }
 
@@ -159,7 +159,7 @@ input:focus {
 /* Terms and login text */
 .terms-text {
   font-size: var(--font-size-sm);
-  color: var(--color-on-surface-variant);
+  color: var(--color-text-on-elevated);
   line-height: 1.5;
 }
 
@@ -175,7 +175,7 @@ input:focus {
 .login-link {
   margin-top: 24px;
   font-size: var(--font-size-md);
-  color: var(--color-on-surface);
+  color: var(--color-text);
 }
 
 .login-link a {
@@ -209,23 +209,23 @@ input:focus {
   object-fit: cover;
   border-radius: var(--radius-image);
   margin-bottom: 12px;
-  background-color: var(--color-surface-variant);
+  background-color: var(--color-bg-elevated);
 }
 
 .book-item h3 {
   margin-bottom: 8px;
-  color: var(--color-on-surface);
+  color: var(--color-text);
 }
 
 .book-item p {
   margin-bottom: 5px;
-  color: var(--color-on-surface-variant);
+  color: var(--color-text-on-elevated);
   font-size: var(--font-size-sm);
 }
 
 /* Trending section on home page */
 .trending-subtitle {
-  color: var(--color-on-surface-variant);
+  color: var(--color-text-on-elevated);
   margin-bottom: 20px;
 }
 
@@ -246,7 +246,7 @@ input:focus {
   aspect-ratio: 2 / 3;
   object-fit: cover;
   border-radius: var(--radius-image);
-  background-color: var(--color-surface-variant);
+  background-color: var(--color-bg-elevated);
 }
 
 /* Responsive layout for trending covers */
@@ -265,11 +265,6 @@ input:focus {
   margin-top: var(--spacing-element);
 }
 
-.cards-grid ol-card p {
-  color: var(--color-on-surface-variant);
-  margin: 0;
-  line-height: var(--line-height-normal);
-}
 
 /* Responsive layout for cards grid */
 @media (max-width: 768px) {

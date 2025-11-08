@@ -4,63 +4,35 @@
      These are themeable and provide semantic meaning
      ======================================== */
 
-  /* === SURFACE SYSTEM === */
-
   /* Main page/app background - use for primary content areas, body background */
-  --color-surface: var(--color-neutral-100);
+  --color-bg: var(--color-neutral-100);
+  --color-bg-hovered: var(--color-neutral-200);
 
   /* Secondary backgrounds - use for cards, sidebars, navigation, elevated panels */
-  --color-surface-variant: var(--color-neutral-200);
-  --color-surface-variant-hovered: var(--color-neutral-300);
+  --color-bg-elevated: var(--color-white);
+  --color-bg-elevated-hovered: var(--color-neutral-100);
 
+  --color-bg-recessed: var(--color-neutral-300);
+  --color-bg-recessed-hovered: var(--color-neutral-400);
 
-  /* === ON-SURFACE COLORS === */
-  /* "On" colors guarantee contrast with their paired surface */
-
-  /* Primary text on main surfaces - body text, headings, high-emphasis content */
-  --color-on-surface: var(--color-neutral-900);
+  /* === TEXT COLORS === */
+  --color-text: var(--color-neutral-900);
+  --color-text-on-elevated: var(--color-neutral-900);
+  --color-text-on-recessed: var(--color-neutral-900);
+  --color-text-on-primary: var(--color-neutral-50);
 
   /* Secondary/muted text - captions, labels, supporting text, placeholders */
-  --color-on-surface-variant: var(--color-neutral-600);
+  --color-text-secondary: var(--color-neutral-600);
 
   /* === PRIMARY BRAND SYSTEM === */
   /* Use for primary actions, key interactive elements, brand expression */
 
   /* Primary brand color - main CTAs, important buttons, active states */
   --color-primary: var(--color-brand-primary);
-
-  /* Text/icons on primary backgrounds - guaranteed contrast */
-  --color-on-primary: var(--color-white);
-
-  /* Lower-emphasis primary container - tinted backgrounds, chips, badges with primary meaning */
-  --color-primary-container: var(--color-blue-100);
-
-  /* Text/icons on primary containers */
-  --color-on-primary-container: var(--color-blue-900);
-
-  /* State: Hovered - apply on hover interactions */
   --color-primary-hovered: var(--color-brand-primary-hovered);
-
-  /* State: Pressed - apply on active/pressed interactions */
   --color-primary-pressed: var(--color-blue-800);
-
-  /* State: Focused - visual indicator for keyboard focus */
   --color-primary-focused: var(--color-blue-500);
 
-  /* === SECONDARY BRAND SYSTEM === */
-  /* Use for secondary actions, less prominent interactive elements */
-
-  --color-secondary: var(--color-neutral-600);
-  --color-on-secondary: var(--color-white);
-
-  /* Lower-emphasis secondary container - alternative to primary, supporting actions */
-  --color-secondary-container: var(--color-neutral-100);
-  --color-on-secondary-container: var(--color-neutral-900);
-
-  /* State variants */
-  --color-secondary-hovered: var(--color-neutral-700);
-  --color-secondary-pressed: var(--color-neutral-800);
-  --color-secondary-focused: var(--color-neutral-500);
 
   /* === ERROR SYSTEM === */
   /* Use for errors, destructive actions, validation failures */
@@ -72,7 +44,7 @@
   /* Use for visual separation and hierarchy */
 
   /* Default borders - standard UI element borders (inputs, cards, dividers) */
-  --color-border-default: var(--color-neutral-300);
+  --color-border: var(--color-neutral-300);
 
   /* Subtle borders - less prominent separation, nested elements */
   --color-border-subtle: var(--color-neutral-200);
@@ -107,13 +79,6 @@
   --font-heading-weight: var(--font-weight-bold);
   --font-heading-line-height: var(--line-height-tight);
 
-  --font-h1-size: var(--font-size-4xl);
-  --font-h2-size: var(--font-size-3xl);
-  --font-h3-size: var(--font-size-2xl);
-  --font-h4-size: var(--font-size-xl);
-  --font-h5-size: var(--font-size-lg);
-  --font-h6-size: var(--font-size-md);
-
   /* Body */
   --font-body-family: var(--font-family-sans);
   --font-body-size: var(--font-size-md);
@@ -122,10 +87,6 @@
 
   --font-body-sm-size: var(--font-size-sm);
   --font-body-lg-size: var(--font-size-lg);
-
-  /* Code */
-  --font-code-family: var(--font-family-mono);
-  --font-code-size: var(--font-size-sm);
 
   /* === SEMANTIC SPACING === */
   --spacing-text-bottom: var(--spacing-1);
@@ -177,9 +138,9 @@
   --button-lg-font-size: var(--font-body-lg-size);
 
   /* === INPUT COMPONENTS === */
-  --input-surface: var(--color-white);
-  --input-on-surface: var(--color-on-surface);
-  --input-outline: var(--color-border-default);
+  --input-surface: var(--color-bg-elevated);
+  --input-on-surface: var(--color-text);
+  --input-outline: var(--color-border);
   --input-outline-hovered: var(--color-outline-focus);
   --input-outline-focused: var(--color-primary);
   --input-outline-error: var(--color-outline-error);
@@ -190,23 +151,22 @@
   --input-border-width: var(--border-width-control);
   --input-focus-ring: var(--focus-ring);
   --input-min-height: var(--control-height-md);
-  --input-placeholder-color: var(--color-on-surface-variant);
-  --input-disabled-surface: var(--color-surface-variant);
+  --input-placeholder-color: var(--color-text-on-elevated);
+  --input-disabled-surface: var(--color-bg-elevated);
   --input-disabled-opacity: var(--opacity-disabled);
 
   /* === CARD COMPONENTS === */
-  --card-surface: var(--color-surface-variant);
-  --card-on-surface: var(--color-on-surface);
-  --card-outline: var(--color-border-default);
+  --card-surface: var(--color-bg-elevated);
+  --card-on-surface: var(--color-text);
+  --card-outline: var(--color-border);
 
   --card-padding: var(--spacing-component);
   --card-border-width: var(--border-width-1);
 
 
   /* === HEADING COMPONENTS === */
-  --heading-display-1-size: var(--font-size-5xl);
-  --heading-display-2-size: var(--font-size-4xl);
-  --heading-display-3-size: var(--font-size-3xl);
+  --heading-display-1-size: var(--font-size-4xl);
+  --heading-display-2-size: var(--font-size-3xl);
   --heading-title-1-size: var(--font-size-2xl);
   --heading-title-2-size: var(--font-size-xl);
   --heading-title-3-size: var(--font-size-lg);
@@ -221,34 +181,26 @@
    ======================================== */
 
 body[data-theme="dark"] {
-  /* === SURFACE SYSTEM - DARK === */
-  --color-surface: var(--color-neutral-900);
-  --color-surface-variant: var(--color-neutral-800);
-  --color-surface-variant-hovered: var(--color-neutral-700);
-  /* === ON-SURFACE COLORS - DARK === */
-  --color-on-surface: var(--color-neutral-100);
-  --color-on-surface-variant: var(--color-neutral-400);
+  /* === BACKGROUND SYSTEM - DARK === */
+  --color-bg: var(--color-neutral-900);
+  --color-bg-elevated: var(--color-neutral-800);
+  --color-bg-elevated-hovered: var(--color-neutral-700);
+  --input-surface: var(--color-bg-elevated);
+  /* === TEXT COLORS - DARK === */
+  --color-text: var(--color-neutral-100);
+  --color-text-on-elevated: var(--color-neutral-400);
+  --color-text-on-recessed: var(--color-neutral-400);
+  --color-text-on-primary: var(--color-neutral-50);
+  --color-text-secondary: var(--color-neutral-400);
 
   /* === PRIMARY BRAND - DARK === */
   /* Slightly lighter for better visibility on dark backgrounds */
   --color-primary: var(--color-brand-primary);
   --color-on-primary: var(--color-white);
-  --color-primary-container: var(--color-blue-900);
-  --color-on-primary-container: var(--color-blue-100);
 
   --color-primary-hovered: var(--color-brand-primary-hovered);
   --color-primary-pressed: var(--color-blue-600);
   --color-primary-focused: var(--color-blue-400);
-
-  /* === SECONDARY BRAND - DARK === */
-  --color-secondary: var(--color-neutral-400);
-  --color-on-secondary: var(--color-neutral-900);
-  --color-secondary-container: var(--color-neutral-700);
-  --color-on-secondary-container: var(--color-neutral-100);
-
-  --color-secondary-hovered: var(--color-neutral-300);
-  --color-secondary-pressed: var(--color-neutral-500);
-  --color-secondary-focused: var(--color-neutral-300);
 
 
   /* === ERROR - DARK === */
@@ -256,7 +208,7 @@ body[data-theme="dark"] {
 
 
   /* === BORDERS & OUTLINES - DARK === */
-  --color-border-default: var(--color-neutral-700);
+  --color-border: var(--color-neutral-700);
   --color-border-subtle: var(--color-neutral-800);
   --color-border-strong: var(--color-neutral-600);
   --color-outline-focus: var(--color-blue-500);
@@ -284,19 +236,19 @@ body[data-theme="dark"] {
   --button-focus-ring: var(--focus-ring);
 
   /* Input components */
-  --input-surface: var(--color-surface);
-  --input-on-surface: var(--color-on-surface);
-  --input-outline: var(--color-border-default);
+  /* --input-surface: var(--color-bg-recessed); */
+  --input-on-surface: var(--color-text);
+  --input-outline: var(--color-border);
   --input-outline-hovered: var(--color-outline-focus);
   --input-outline-focused: var(--color-primary);
   --input-outline-error: var(--color-outline-error);
-  --input-placeholder-color: var(--color-on-surface-variant);
-  --input-disabled-surface: var(--color-surface-variant);
+  --input-placeholder-color: var(--color-text-on-elevated);
+  --input-disabled-surface: var(--color-bg-elevated);
   --input-focus-ring: var(--focus-ring);
 
   /* Card components */
-  --card-surface: var(--color-surface-variant);
-  --card-on-surface: var(--color-on-surface);
-  --card-outline: var(--color-border-default);
+  --card-surface: var(--color-bg-elevated);
+  --card-on-surface: var(--color-text);
+  --card-outline: var(--color-border);
 
 }

@@ -79,9 +79,9 @@ export class OlButton extends LitElement {
     }
 
     button.secondary {
-      background-color: var(--color-surface-variant);
-      color: var(--color-on-surface);
-      border: var(--border-width-control) solid var(--color-border-default);
+      background-color: var(--color-bg-elevated);
+      color: var(--color-text);
+      border: var(--border-width-control) solid var(--color-border);
     }
 
     button.secondary:hover:not(:disabled) {

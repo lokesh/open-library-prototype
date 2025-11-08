@@ -40,12 +40,12 @@ export class OlMainNav extends LitElement {
     }
 
     ul::-webkit-scrollbar-thumb {
-      background: var(--color-surface-variant);
+      background: var(--color-bg-elevated);
       border-radius: 2px;
     }
 
     ul::-webkit-scrollbar-thumb:hover {
-      background: var(--color-surface-variant-hovered);
+      background: var(--color-bg-elevated-hovered);
     }
 
     li {
@@ -55,17 +55,17 @@ export class OlMainNav extends LitElement {
 
     a {
       display: block;
-      color: var(--color-on-surface);
+      color: var(--color-text);
       text-decoration: none;
       font-weight: var(--font-weight-semibold);
-      background-color: var(--color-surface-variant);
+      background-color: var(--color-bg-elevated);
       padding: var(--spacing-inline) var(--spacing-element);
       border-radius: var(--radius-button);
     }
 
     a:hover {
       text-decoration: none;
-      background-color: var(--color-surface-variant-hovered);
+      background-color: var(--color-bg-elevated-hovered);
     }
   `;
 

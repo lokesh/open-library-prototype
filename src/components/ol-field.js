@@ -32,7 +32,7 @@ export class OlField extends LitElement {
       gap: var(--spacing-1);
       font-size: var(--font-body-size);
       font-weight: var(--font-weight-semibold);
-      color: var(--color-text-primary);
+      color: var(--color-text);
       margin-bottom: var(--spacing-1);
     }
 
