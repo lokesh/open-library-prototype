@@ -1,8 +1,8 @@
 :root {
 /* ========================================
 # TIER 2: SEMANTIC TOKENS
-Here we map primitive values to specific UI roles.
-Use these (not primitives) in your components.
+Here we map primitive values (see primitives.css) to specific UI roles.
+Use these (not primitives) in most cases.
 
 There are some tokens here that appear to be component tokens, but
 are meant to be used in multiple components. e.g. input-* are
@@ -37,7 +37,6 @@ Examples:
 - --color-bg-elevated      → --color-text-on-elevated
 - --color-bg-recessed      → --color-text-on-recessed
 
-This pattern makes dark mode transitions automatic.
 ======================================== */
 
 /* Main page/app background - use for primary content areas, body background */
@@ -85,9 +84,6 @@ This pattern makes dark mode transitions automatic.
 
   /* Subtle borders - less prominent separation, nested elements */
   --color-border-subtle: var(--color-neutral-200);
-
-  /* Strong borders - high-emphasis separation, active states */
-  --color-border-strong: var(--color-neutral-400);
 
   /* Focus border - keyboard focus indicator, accessibility critical */
   --color-border-focused: var(--color-brand-primary);
@@ -153,6 +149,7 @@ This pattern makes dark mode transitions automatic.
   --border-width-divider: var(--border-width-2);
 
   --border-divider: var(--border-width-divider) solid var(--color-border);
+  --border-card: var(--border-width-1) solid var(--color-border);
   --border-control: var(--border-width-control) solid var(--color-border);
 }
 
@@ -196,15 +193,6 @@ This pattern makes dark mode transitions automatic.
   --input-disabled-surface: var(--color-bg-elevated);
   --input-disabled-opacity: var(--opacity-disabled);
 
-  /* === CARD COMPONENTS === */
-  --card-surface: var(--color-bg-elevated);
-  --card-on-surface: var(--color-text);
-  --card-outline: var(--color-border);
-
-  --card-padding: var(--spacing-component);
-  --card-border-width: var(--border-width-1);
-
-
   /* === HEADING COMPONENTS === */
   --heading-display-1-size: var(--font-size-4xl);
   --heading-display-2-size: var(--font-size-3xl);
@@ -245,7 +233,6 @@ body[data-theme="dark"] {
   /* === BORDERS & OUTLINES - DARK === */
   --color-border: var(--color-neutral-700);
   --color-border-subtle: var(--color-neutral-800);
-  --color-border-strong: var(--color-neutral-600);
   --color-border-focused: var(--color-blue-500);
   --color-border-error: var(--color-red-500);
 
@@ -254,6 +241,9 @@ body[data-theme="dark"] {
   --color-link-hovered: var(--color-blue-300);
   --color-link-visited: var(--color-blue-500);
 
+  --border-divider: var(--border-width-divider) solid var(--color-border);
+  --border-card: var(--border-width-1) solid var(--color-border);
+  --border-control: var(--border-width-control) solid var(--color-border);
 
   /* === FOCUS RING - DARK === */
   /* Brighter for visibility in dark mode */
@@ -274,9 +264,6 @@ body[data-theme="dark"] {
   --input-disabled-surface: var(--color-bg-elevated);
   --input-focus-ring: var(--focus-ring);
 
-  /* Card components */
-  --card-surface: var(--color-bg-elevated);
-  --card-on-surface: var(--color-text);
-  --card-outline: var(--color-border);
+
 
 }

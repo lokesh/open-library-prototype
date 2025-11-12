@@ -8,10 +8,10 @@ export class OlCard extends LitElement {
 
     .ol-card {
       background-color: var(--color-bg-elevated);
-      color: var(--card-on-surface);
-      border: var(--card-border-width) solid var(--card-outline);
+      color: var(--color-text-on-elevated);
+      border: var(--border-card);
       border-radius: var(--radius-card);
-      padding: var(--card-padding);
+      padding: var(--spacing-element);
       transition: box-shadow 0.2s ease;
     }
     ::slotted(p) {

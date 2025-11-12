@@ -12,7 +12,7 @@ body {
   color: var(--color-text);
   max-width: 1200px;
   margin: 0 auto;
-  padding: 20px;
+  padding: var(--spacing-6);
   background-color: var(--color-bg);
 }
 
@@ -193,7 +193,7 @@ input:focus {
 }
 
 .book-item {
-  border: 1px solid var(--card-outline);
+  border: 1px solid var(--border-card);
   padding: 15px;
   border-radius: var(--radius-card);
   background-color: var(--card-surface);
@@ -247,6 +247,9 @@ input:focus {
 
 /* Responsive layout for trending covers */
 @media (max-width: 768px) {
+  body {
+    padding: var(--spacing-3);
+  }
   .trending-covers {
     grid-template-columns: repeat(4, 1fr);
     gap: 12px;

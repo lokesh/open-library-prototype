@@ -17,6 +17,13 @@ export class OlButtonGroup extends LitElement {
       width: 100%;
     }
 
+    .secondary-actions {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-inline);
+      }
+
+
     /* Desktop layout: horizontal with primary on left, secondary on right */
     @media (min-width: 640px) {
       .button-group {
@@ -32,8 +39,7 @@ export class OlButtonGroup extends LitElement {
       }
 
       .secondary-actions {
-        display: flex;
-        gap: var(--spacing-inline);
+        flex-direction: row;
       }
 
       .secondary-actions ::slotted(*) {
