@@ -39,7 +39,7 @@ export class OlDemoPane extends LitElement {
 
     .code {
       border: var(--border-control);
-      background: var(--color-bg-elevated);
+      background: var(--color-white);
       position: relative;
       border-radius: var(--radius-card, 8px);
       overflow: hidden;
