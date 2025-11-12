@@ -40,7 +40,7 @@ Examples:
 This pattern makes dark mode transitions automatic.
 ======================================== */
 
-  /* Main page/app background - use for primary content areas, body background */
+/* Main page/app background - use for primary content areas, body background */
   --color-bg: var(--color-neutral-100);
   --color-bg-hovered: var(--color-neutral-200);
 
@@ -51,6 +51,9 @@ This pattern makes dark mode transitions automatic.
   --color-bg-recessed: var(--color-neutral-300);
   --color-bg-recessed-hovered: var(--color-neutral-400);
 
+  --color-bg-error: var(--color-red-600);
+  --color-bg-error-hovered: var(--color-red-700);
+
   /* === TEXT COLORS === */
   --color-text: var(--color-neutral-700);
   --color-text-strong: var(--color-neutral-900);
@@ -58,7 +61,7 @@ This pattern makes dark mode transitions automatic.
   --color-text-on-elevated: var(--color-neutral-800);
   --color-text-on-recessed: var(--color-neutral-800);
   --color-text-on-primary: var(--color-neutral-50);
-
+  --color-text-on-error: var(--color-white);
 
   /* === PRIMARY BRAND SYSTEM === */
   /* Use for primary actions, key interactive elements, brand expression */
@@ -148,6 +151,9 @@ This pattern makes dark mode transitions automatic.
   --border-width-control: var(--border-width-1);
   --border-width-media: var(--border-width-3);
   --border-width-divider: var(--border-width-2);
+
+  --border-divider: var(--border-width-divider) solid var(--color-border);
+  --border-control: var(--border-width-control) solid var(--color-border);
 }
 
 /* ========================================

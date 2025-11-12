@@ -10,7 +10,7 @@ body {
   font-family: var(--body-font-family);
   line-height: var(--body-line-height);
   color: var(--color-text);
-  max-width: 800px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
   background-color: var(--color-bg);
@@ -43,10 +43,6 @@ p.lead {
 form {
   max-width: 500px;
   margin: 0 0 var(--spacing-section) 0;
-}
-
-.signup-form {
-  max-width: 800px;
 }
 
 .form-group {

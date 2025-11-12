@@ -71,7 +71,7 @@ export class OlButton extends LitElement {
     /* Variant styles */
     button.primary {
       background-color: var(--color-bg-primary);
-      color: white;
+      color: var(--color-text-on-primary);
     }
 
     button.primary:hover:not(:disabled) {
@@ -89,8 +89,9 @@ export class OlButton extends LitElement {
     }
 
     button.destructive {
-      background-color: #C03;
-      color: white;
+      background-color: var(--color-bg-error);
+      border: var(--border-width-control) solid var(--color-bg-error);
+      color: var(--color-text-on-error);
     }
 
     button.destructive:hover:not(:disabled) {
