@@ -25,73 +25,6 @@
       margin-bottom: var(--spacing-component);
       color: var(--color-text);
     }
-
-    .demo-label {
-      font-size: var(--font-size-sm);
-      color: var(--color-text-secondary);
-      margin-bottom: var(--spacing-2);
-      font-family: var(--font-family-mono);
-    }
-
-    .submit-result {
-      margin-top: var(--spacing-component);
-      padding: var(--spacing-element);
-      background-color: var(--color-background-secondary);
-      border-radius: var(--radius-card);
-      display: none;
-    }
-
-    .submit-result.show {
-      display: block;
-    }
-
-    .submit-result pre {
-      margin: 0;
-      white-space: pre-wrap;
-      word-wrap: break-word;
-    }
-
-    .demo-row {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: var(--spacing-component);
-    }
-
-    .component-nav {
-      position: sticky;
-      top: var(--spacing-4);
-      margin-bottom: var(--spacing-section);
-      padding: var(--spacing-4);
-      background: var(--color-surface-variant);
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius-card);
-    }
-
-    .component-nav h3 {
-      margin: 0 0 var(--spacing-2) 0;
-      font-size: var(--font-size-base);
-    }
-
-    .component-nav ul {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-      display: flex;
-      gap: var(--spacing-4);
-      flex-wrap: wrap;
-    }
-
-    .component-nav a {
-      color: var(--color-text-link);
-      text-decoration: none;
-      /* padding: var(--spacing-1) var(--spacing-2); */
-      font-weight: var(--font-weight-semibold);
-      border-radius: var(--radius-sm);
-    }
-
-    .component-nav a:hover {
-      background-color: var(--color-bg-hover);
-    }
   </style>
 </head>
 <body>
@@ -99,6 +32,14 @@
 
   <main>
     <ol-heading element="h1" size="display-1">Components</ol-heading>
+
+    <p class="lead">
+      This page demos a set of web components created with <a href="https://lit.dev">Lit</a>. The rendered components are followed by their corresponding source code.</p>
+    <p>Lit is a small library that makes building web components easier - providing support for reactive properties, simpler templating syntax, and more. These components were used to vet the technology, to uncover benefits and drawbacks, and are not proposed as-is for production.</p>
+
+    <p>The Internet Archive UX team has adopted Lit and is introducing web components to the site.</p>
+    </p>
+
 
     <!-- DEMO PANE COMPONENT -->
     <section id="demo-pane" style="margin-top: var(--spacing-12);">
@@ -228,137 +169,6 @@
   </main>
 
   <script>
-    // Form with Validation demo
-    const validatedForm = document.getElementById('validatedForm');
-    const fullnameField = document.getElementById('fullname-field');
-    const fullnameInput = document.getElementById('fullname-input');
-    const emailField = document.getElementById('email-field');
-    const emailInput = document.getElementById('email-input');
-    const ageField = document.getElementById('age-field');
-    const ageInput = document.getElementById('age-input');
-    const websiteField = document.getElementById('website-field');
-    const websiteInput = document.getElementById('website-input');
-    const submitResult = document.getElementById('submitResult');
-    const formData = document.getElementById('formData');
-
-    if (validatedForm) {
-      // Real-time validation for full name
-      fullnameInput.addEventListener('input', () => {
-        const value = fullnameInput.value.trim();
-        if (value && value.length < 3) {
-          fullnameField.error = 'Name must be at least 3 characters';
-        } else if (value && !value.includes(' ')) {
-          fullnameField.error = 'Please enter your full name (first and last)';
-        } else {
-          fullnameField.error = '';
-        }
-      });
-
-      // Real-time validation for email
-      emailInput.addEventListener('input', () => {
-        const value = emailInput.value;
-        if (value && !value.includes('@')) {
-          emailField.error = 'Please include an @ in the email address';
-        } else if (value && value.includes('@') && !value.includes('.')) {
-          emailField.error = 'Please enter a complete email address';
-        } else {
-          emailField.error = '';
-        }
-      });
-
-      // Real-time validation for age
-      ageInput.addEventListener('input', () => {
-        const value = parseInt(ageInput.value);
-        if (ageInput.value && value < 18) {
-          ageField.error = 'You must be 18 or older';
-        } else if (value && value > 150) {
-          ageField.error = 'Please enter a valid age';
-        } else {
-          ageField.error = '';
-        }
-      });
-
-      // Real-time validation for website (optional field)
-      websiteInput.addEventListener('input', () => {
-        const value = websiteInput.value;
-        if (value && !value.startsWith('http://') && !value.startsWith('https://')) {
-          websiteField.error = 'URL must start with http:// or https://';
-        } else {
-          websiteField.error = '';
-        }
-      });
-
-      // Form submission handler
-      validatedForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-
-        // Validate all fields on submit
-        let isValid = true;
-
-        // Validate full name
-        if (!fullnameInput.value.trim()) {
-          fullnameField.error = 'Full name is required';
-          isValid = false;
-        } else if (fullnameInput.value.trim().length < 3) {
-          fullnameField.error = 'Name must be at least 3 characters';
-          isValid = false;
-        } else if (!fullnameInput.value.includes(' ')) {
-          fullnameField.error = 'Please enter your full name (first and last)';
-          isValid = false;
-        } else {
-          fullnameField.error = '';
-        }
-
-        // Validate email
-        if (!emailInput.value) {
-          emailField.error = 'Email is required';
-          isValid = false;
-        } else if (!emailInput.value.includes('@')) {
-          emailField.error = 'Please enter a valid email address';
-          isValid = false;
-        } else {
-          emailField.error = '';
-        }
-
-        // Validate age
-        const age = parseInt(ageInput.value);
-        if (!ageInput.value) {
-          ageField.error = 'Age is required';
-          isValid = false;
-        } else if (age < 18) {
-          ageField.error = 'You must be 18 or older';
-          isValid = false;
-        } else if (age > 150) {
-          ageField.error = 'Please enter a valid age';
-          isValid = false;
-        } else {
-          ageField.error = '';
-        }
-
-        // Validate website (optional, but if filled must be valid)
-        if (websiteInput.value && !websiteInput.value.startsWith('http://') && !websiteInput.value.startsWith('https://')) {
-          websiteField.error = 'URL must start with http:// or https://';
-          isValid = false;
-        } else {
-          websiteField.error = '';
-        }
-
-        // If valid, show form data
-        if (isValid) {
-          const data = new FormData(validatedForm);
-          const obj = {};
-          data.forEach((value, key) => {
-            obj[key] = value;
-          });
-
-          formData.textContent = JSON.stringify(obj, null, 2);
-          submitResult.classList.add('show');
-        } else {
-          submitResult.classList.remove('show');
-        }
-      });
-    }
-
     // Button Loading demo
     const loadingButton = document.getElementById('loadingButton');
     if (loadingButton) {
