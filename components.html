@@ -127,36 +127,38 @@
           <div style="display: flex; gap: var(--spacing-element); flex-wrap: wrap;">
             <ol-dropdown-button variant="primary">
               Actions
-              <div slot="dropdown" style="padding: 8px;">
+              <div slot="dropdown">
                 <a href="#" class="dropdown-item">View Profile</a>
                 <a href="#" class="dropdown-item">Settings</a>
-                <ol-button variant="destructive" full-width>Sign Out</ol-button>
+                <ol-button variant="secondary" full-width>Sign Out</ol-button>
               </div>
             </ol-dropdown-button>
 
             <ol-dropdown-button variant="secondary">
               Options
-              <div slot="dropdown" style="padding: 8px;">
-                <button style="display: block; width: 100%; padding: 6px; margin-bottom: 4px; cursor: pointer;">Share</button>
-                <button style="display: block; width: 100%; padding: 6px; cursor: pointer;">Export</button>
+              <div slot="dropdown">
+                <a href="#" class="dropdown-item">Read</a>
+                <a href="#" class="dropdown-item">Borrow</a>
+                <a href="#" class="dropdown-item">Locate</a>
               </div>
             </ol-dropdown-button>
           </div>
           <div style="border: var(--border-control); background: var(--color-white); border-radius: var(--radius-card); overflow: hidden;">
             <pre style="margin: 0; padding: var(--spacing-element);"><code>&lt;ol-dropdown-button variant="primary"&gt;
   Actions
-  &lt;div slot="dropdown" style="padding: 8px;"&gt;
+  &lt;div slot="dropdown"&gt;
     &lt;a href="#" class="dropdown-item"&gt;View Profile&lt;/a&gt;
     &lt;a href="#" class="dropdown-item"&gt;Settings&lt;/a&gt;
-    &lt;ol-button variant="destructive" style="width: 100%;"&gt;Sign Out&lt;/ol-button&gt;
+    &lt;ol-button variant="secondary" full-width&gt;Sign Out&lt;/ol-button&gt;
   &lt;/div&gt;
 &lt;/ol-dropdown-button&gt;
 
 &lt;ol-dropdown-button variant="secondary"&gt;
   Options
-  &lt;div slot="dropdown" style="padding: 8px;"&gt;
-    &lt;button style="display: block; width: 100%; padding: 6px; margin-bottom: 4px; cursor: pointer;"&gt;Share&lt;/button&gt;
-    &lt;button style="display: block; width: 100%; padding: 6px; cursor: pointer;"&gt;Export&lt;/button&gt;
+  &lt;div slot="dropdown"&gt;
+    &lt;a href="#" class="dropdown-item"&gt;Read&lt;/a&gt;
+    &lt;a href="#" class="dropdown-item"&gt;Borrow&lt;/a&gt;
+    &lt;a href="#" class="dropdown-item"&gt;Locate&lt;/a&gt;
   &lt;/div&gt;
 &lt;/ol-dropdown-button&gt;</code></pre>
           </div>

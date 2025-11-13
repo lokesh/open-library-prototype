@@ -162,7 +162,8 @@ export class OlDropdownButton extends LitElement {
     /* Dropdown */
     .dropdown {
       position: fixed;
-      max-width: 200px;
+      min-width: 120px;
+      max-width: 320px;
       width: max-content;
       background-color: var(--color-bg-elevated);
       border: var(--border-width-control) solid var(--color-border);
@@ -172,6 +173,7 @@ export class OlDropdownButton extends LitElement {
       opacity: 0;
       pointer-events: none;
       transition: opacity 200ms ease, transform 200ms ease;
+      padding: var(--spacing-inline);
     }
 
     .dropdown.open {
