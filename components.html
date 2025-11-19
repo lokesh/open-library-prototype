@@ -166,6 +166,32 @@
       </div>
 
       <div class="demo-section">
+        <ol-heading element="h2" size="heading-2">Star Rating</ol-heading>
+
+        <div style="display: grid; grid-template-columns: 1fr 2fr; gap: var(--spacing-component);">
+          <div>
+            <p id="ratingValue" style="color: var(--color-text-muted);">
+              Rating: 0 / 5
+            </p>
+            <ol-star-rating id="demoStarRating"></ol-star-rating>
+
+          </div>
+          <div style="border: var(--border-control); background: var(--color-white); border-radius: var(--radius-card); overflow: hidden;">
+            <pre style="margin: 0; padding: var(--spacing-element);"><code>&lt;p id="ratingValue"&gt;Rating: 0 / 5&lt;/p&gt;
+&lt;ol-star-rating id="demoStarRating"&gt;&lt;/ol-star-rating&gt;
+
+&lt;script&gt;
+  const demoStarRating = document.getElementById('demoStarRating');
+  const ratingValue = document.getElementById('ratingValue');
+  demoStarRating.addEventListener('change', (e) => {
+    ratingValue.textContent = `Rating: ${e.detail.value} / 5`;
+  });
+&lt;/script&gt;</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="demo-section">
         <ol-heading element="h2" size="heading-2">Card</ol-heading>
 
         <ol-demo-pane>
@@ -244,6 +270,15 @@
           console.log('Dropdown button main action clicked:', e.target);
         });
       });
+
+      // Star rating value display demo
+      const demoStarRating = document.getElementById('demoStarRating');
+      const ratingValue = document.getElementById('ratingValue');
+      if (demoStarRating && ratingValue) {
+        demoStarRating.addEventListener('change', (e) => {
+          ratingValue.textContent = `Rating: ${e.detail.value} / 5`;
+        });
+      }
     });
   </script>
 </body>
