@@ -268,6 +268,83 @@
       </div>
 
       <div class="demo-section">
+        <ol-heading element="h2" size="heading-2">Sortable List</ol-heading>
+
+        <ol-demo-pane>
+          <template>
+            <ol-sortable-list id="simpleSortable">
+              <ol-sortable-item>First item - drag me!</ol-sortable-item>
+              <ol-sortable-item>Second item</ol-sortable-item>
+              <ol-sortable-item>Third item</ol-sortable-item>
+              <ol-sortable-item>Fourth item</ol-sortable-item>
+            </ol-sortable-list>
+          </template>
+        </ol-demo-pane>
+      </div>
+
+      <div class="demo-section">
+        <ol-heading element="h2" size="heading-2">Sortable List - Rich Content</ol-heading>
+
+        <div style="display: grid; grid-template-columns: 1fr 2fr; gap: var(--spacing-component);">
+          <div>
+            <p id="sortOutput" style="font-size: var(--body-font-size-sm); color: var(--color-text-secondary); margin-bottom: var(--spacing-3);">
+              Drag items or use Alt+Arrow keys to reorder
+            </p>
+            <ol-sortable-list id="richSortable">
+              <ol-sortable-item>
+                <div style="display: flex; align-items: center; gap: var(--spacing-3);">
+                  <img src="https://covers.openlibrary.org/b/id/8225261-S.jpg" alt="Book cover" style="width: 40px; height: 60px; object-fit: cover; border-radius: var(--radius-button);">
+                  <div>
+                    <strong>The Great Gatsby</strong>
+                    <div style="font-size: var(--body-font-size-sm); color: var(--color-text-secondary);">F. Scott Fitzgerald</div>
+                  </div>
+                </div>
+              </ol-sortable-item>
+              <ol-sortable-item>
+                <div style="display: flex; align-items: center; gap: var(--spacing-3);">
+                  <img src="https://covers.openlibrary.org/b/id/8231856-S.jpg" alt="Book cover" style="width: 40px; height: 60px; object-fit: cover; border-radius: var(--radius-button);">
+                  <div>
+                    <strong>1984</strong>
+                    <div style="font-size: var(--body-font-size-sm); color: var(--color-text-secondary);">George Orwell</div>
+                  </div>
+                </div>
+              </ol-sortable-item>
+              <ol-sortable-item>
+                <div style="display: flex; align-items: center; gap: var(--spacing-3);">
+                  <img src="https://covers.openlibrary.org/b/id/7984916-S.jpg" alt="Book cover" style="width: 40px; height: 60px; object-fit: cover; border-radius: var(--radius-button);">
+                  <div>
+                    <strong>To Kill a Mockingbird</strong>
+                    <div style="font-size: var(--body-font-size-sm); color: var(--color-text-secondary);">Harper Lee</div>
+                  </div>
+                </div>
+              </ol-sortable-item>
+            </ol-sortable-list>
+          </div>
+          <div style="border: var(--border-control); background: var(--color-white); border-radius: var(--radius-card); overflow: hidden;">
+            <pre style="margin: 0; padding: var(--spacing-element);"><code>&lt;ol-sortable-list id="richSortable"&gt;
+  &lt;ol-sortable-item&gt;
+    &lt;div style="display: flex; align-items: center; gap: 12px;"&gt;
+      &lt;img src="cover.jpg" alt="Book" style="width: 40px;"&gt;
+      &lt;div&gt;
+        &lt;strong&gt;The Great Gatsby&lt;/strong&gt;
+        &lt;div&gt;F. Scott Fitzgerald&lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/ol-sortable-item&gt;
+  &lt;!-- More items... --&gt;
+&lt;/ol-sortable-list&gt;
+
+&lt;script&gt;
+  const list = document.getElementById('richSortable');
+  list.addEventListener('ol-sort', (e) => {
+    console.log('Moved from', e.detail.oldIndex, 'to', e.detail.newIndex);
+  });
+&lt;/script&gt;</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="demo-section">
         <ol-heading element="h2" size="heading-2">Card</ol-heading>
 
         <ol-demo-pane>
@@ -353,6 +430,15 @@
       if (demoStarRating && ratingValue) {
         demoStarRating.addEventListener('change', (e) => {
           ratingValue.textContent = `Rating: ${e.detail.value} / 5`;
+        });
+      }
+
+      // Sortable list demo
+      const richSortable = document.getElementById('richSortable');
+      const sortOutput = document.getElementById('sortOutput');
+      if (richSortable && sortOutput) {
+        richSortable.addEventListener('ol-sort', (e) => {
+          sortOutput.textContent = `Moved item from position ${e.detail.oldIndex + 1} to ${e.detail.newIndex + 1}`;
         });
       }
     });

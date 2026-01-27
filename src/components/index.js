@@ -14,3 +14,5 @@ import './ol-star-rating.js';
 import './ol-tab-group.js';
 import './ol-tab.js';
 import './ol-tab-panel.js';
+import './ol-sortable-list.js';
+import './ol-sortable-item.js';
