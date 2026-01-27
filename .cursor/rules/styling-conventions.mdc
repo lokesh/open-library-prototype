@@ -1,0 +1,115 @@
+---
+description: CSS styling conventions and design system usage
+globs: styles/**/*.css
+alwaysApply: false
+---
+
+# Styling Conventions
+
+## Design Tokens
+
+Always use CSS custom properties from the design system rather than hardcoded values.
+
+```css
+/* ❌ BAD - Hardcoded values */
+button {
+  padding: 10px 16px;
+  border-radius: 4px;
+  color: #374151;
+}
+
+/* ✅ GOOD - Use design tokens */
+button {
+  padding: var(--button-padding-y) var(--button-padding-x);
+  border-radius: var(--radius-button);
+  color: var(--color-text);
+}
+```
+
+## Available Token Categories
+
+- **Colors**: `--color-*` (bg, text, border variants)
+- **Spacing**: `--spacing-*` (1-8 scale)
+- **Typography**: `--body-font-*`, `--heading-font-*`
+- **Sizing**: `--button-padding-*`, `--input-padding-*`
+- **Borders**: `--radius-*`, `--border-width-*`
+
+## Color Usage
+
+```css
+/* Background colors */
+background-color: var(--color-bg);
+background-color: var(--color-bg-elevated);
+background-color: var(--color-bg-primary);
+
+/* Text colors */
+color: var(--color-text);
+color: var(--color-text-secondary);
+color: var(--color-text-on-primary);
+
+/* Border colors */
+border-color: var(--color-border);
+```
+
+## Responsive Design
+
+- Use mobile-first approach
+- Define breakpoints consistently
+- Test on multiple screen sizes
+
+```css
+/* ✅ GOOD - Mobile first */
+.cards-grid {
+  grid-template-columns: 1fr;
+  gap: var(--spacing-3);
+}
+
+@media (min-width: 768px) {
+  .cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-element);
+  }
+}
+```
+
+## State Styles
+
+Always style interactive states:
+
+```css
+/* ✅ GOOD - All states covered */
+button {
+  background-color: var(--color-bg-primary);
+}
+
+button:hover:not(:disabled) {
+  background-color: var(--color-bg-primary-hovered);
+}
+
+button:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-primary);
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+```
+
+## Naming Conventions
+
+- Use kebab-case for CSS class names
+- Use descriptive names that indicate purpose
+- Avoid overly specific selectors
+
+```css
+/* ✅ GOOD */
+.book-list { }
+.trending-covers { }
+.password-input-wrapper { }
+
+/* ❌ BAD */
+.bl { }
+.div1 { }
+.container-wrapper-inner-box { }
+```

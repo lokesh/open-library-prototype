@@ -1,0 +1,286 @@
+---
+description: Web component standards for ol-* components using Lit
+globs: src/components/ol-*.js
+alwaysApply: false
+---
+
+# OL Component Standards
+
+## Naming Conventions
+
+- All components must use `ol-` prefix (e.g., `ol-button`, `ol-card`)
+- Use kebab-case for component names
+- Class names should be PascalCase (e.g., `OlButton`, `OlCard`)
+
+## API Design
+
+- **Start narrow** - Easy to add features, hard to remove them
+- **Attribute names**: Use kebab-case consistently
+- **Boolean attributes**: Presence = true (no value needed)
+  ```html
+  <!-- ✅ GOOD -->
+  <ol-button disabled loading>Submit</ol-button>
+  
+  <!-- ❌ BAD -->
+  <ol-button disabled="true" loading="true">Submit</ol-button>
+  ```
+- **Document thoroughly**: Use JSDoc with @example for real usage patterns
+
+## Component Structure
+
+```javascript
+// ✅ GOOD - Complete structure with Lit
+import { LitElement, html, css } from 'lit';
+
+/**
+ * Component description
+ * 
+ * @element ol-component-name
+ * @prop {string} variant - Description
+ * @slot - Default slot description
+ */
+export class OlComponentName extends LitElement {
+  static properties = {
+    variant: { type: String, reflect: true }
+  };
+
+  static styles = css`
+    :host {
+      display: block;
+    }
+  `;
+
+  constructor() {
+    super();
+    this.variant = 'default';
+  }
+
+  render() {
+    return html`<slot></slot>`;
+  }
+}
+
+customElements.define('ol-component-name', OlComponentName);
+```
+
+## Properties
+
+- Use `static properties` for reactive properties
+- Set `reflect: true` for attributes that should reflect to DOM
+- Initialize all properties in constructor
+- Use camelCase in JS, kebab-case in HTML attributes
+
+```javascript
+// ✅ GOOD
+static properties = {
+  fullWidth: { type: Boolean, reflect: true, attribute: 'full-width' }
+};
+
+// HTML usage: <ol-button full-width>
+```
+
+## Styling
+
+- Use `static styles` with Lit's `css` tagged template
+- **Use OL design tokens** from vars.css (colors, spacing, typography)
+- Support `:host` selector for component-level styling
+- Use `:host([attribute])` for attribute-based styling
+- **Test responsiveness** at mobile/tablet/desktop breakpoints
+- **Visible focus indicators** for all interactive elements
+
+```javascript
+static styles = css`
+  :host {
+    display: inline-block;
+  }
+
+  :host([full-width]) {
+    display: block;
+  }
+
+  button {
+    background-color: var(--color-bg-primary);
+    color: var(--color-text-on-primary);
+    border-radius: var(--radius-button);
+  }
+
+  /* ✅ GOOD - Visible focus indicator */
+  button:focus-visible {
+    outline: var(--focus-ring-width) solid var(--color-primary);
+  }
+`;
+```
+
+## Event Handling
+
+- Use Lit's `@event` syntax for event listeners
+- Prefix private methods with underscore
+- **Use kebab-case for custom event names**
+- Dispatch custom events for component interactions
+- **Document all emitted events** in JSDoc
+
+```javascript
+// ✅ GOOD
+render() {
+  return html`
+    <button @click=${this._handleClick}>
+      <slot></slot>
+    </button>
+  `;
+}
+
+/**
+ * Handles button click
+ * @fires ol-button-click - Emitted when button is clicked
+ */
+_handleClick(e) {
+  this.dispatchEvent(new CustomEvent('ol-button-click', { 
+    detail: { timestamp: Date.now() },
+    bubbles: true,
+    composed: true
+  }));
+}
+```
+
+## HTML & Semantics
+
+- **Use appropriate semantic HTML** inside components
+- Add `role` attribute when needed (e.g., `role="dialog"`, `role="menu"`)
+- **Interactive elements need accessible names** via:
+  - Visible text content
+  - `aria-label` attribute
+  - `aria-labelledby` reference
+
+```javascript
+// ✅ GOOD - Accessible button
+render() {
+  return html`
+    <button aria-label="Close dialog">
+      <svg><!-- close icon --></svg>
+    </button>
+  `;
+}
+```
+
+## Keyboard & Focus Behavior
+
+For interactive elements, ensure:
+
+- **Tab order** matches visual order
+- **Enter/Space** triggers actions on buttons and clickable elements
+- **Arrow keys + Home/End** for composite widgets (menus, radio groups, lists)
+- **Escape** dismisses overlays and modals
+- **Visible focus indicators** on all focusable elements
+- **Focus trapping** for modal dialogs
+
+```javascript
+// ✅ GOOD - Keyboard support example
+_handleKeyDown(e) {
+  if (e.key === 'Escape' && this.open) {
+    this.open = false;
+    this._previousFocus?.focus();
+  }
+  if (e.key === 'Enter' || e.key === ' ') {
+    e.preventDefault();
+    this._handleAction();
+  }
+}
+```
+
+## Accessibility
+
+- **Use appropriate ARIA roles** for custom widgets
+- **aria-live** for dynamic content announcements
+- **aria-busy** during loading states
+- **aria-expanded** for collapsible content
+- **aria-selected** for selectable items
+- **aria-disabled** for disabled state (in addition to `disabled` attribute)
+
+```javascript
+// ✅ GOOD - Accessible loading state
+render() {
+  return html`
+    <button 
+      ?disabled=${this.loading}
+      aria-busy=${this.loading ? 'true' : 'false'}
+    >
+      ${this.loading ? 'Loading...' : 'Submit'}
+    </button>
+  `;
+}
+
+// ✅ GOOD - Accessible expandable section
+render() {
+  return html`
+    <button 
+      @click=${this._toggle}
+      aria-expanded=${this.expanded ? 'true' : 'false'}
+      aria-controls="content-panel"
+    >
+      Toggle
+    </button>
+    <div id="content-panel" ?hidden=${!this.expanded}>
+      <slot></slot>
+    </div>
+  `;
+}
+```
+
+## Lifecycle & Performance
+
+- **Clean up in disconnectedCallback**
+  - Remove event listeners
+  - Clear timers and intervals
+  - Cancel pending requests
+- **Debounce expensive operations** (searches, API calls)
+- **Avoid work in constructor** for SSR compatibility
+
+```javascript
+// ✅ GOOD - Cleanup example
+connectedCallback() {
+  super.connectedCallback();
+  this._resizeObserver = new ResizeObserver(this._handleResize);
+  this._resizeObserver.observe(this);
+}
+
+disconnectedCallback() {
+  super.disconnectedCallback();
+  this._resizeObserver?.disconnect();
+  this._debounceTimer && clearTimeout(this._debounceTimer);
+}
+```
+
+## Server-Side Rendering (SSR)
+
+- **No side effects in constructor** (use `connectedCallback` instead)
+- **Hydration-friendly**: Component should upgrade without layout shift when JS loads
+- Initialize state in `connectedCallback`, not constructor
+
+```javascript
+// ✅ GOOD - SSR-friendly
+constructor() {
+  super();
+  // Only set default property values
+  this.variant = 'default';
+}
+
+connectedCallback() {
+  super.connectedCallback();
+  // Side effects go here
+  this._setupListeners();
+}
+
+// ❌ BAD - Side effects in constructor
+constructor() {
+  super();
+  this.addEventListener('click', this._handleClick);
+  fetch('/api/data'); // Never do this!
+}
+```
+
+## Documentation
+
+- Always include JSDoc with @element, @prop, @slot, @fires tags
+- Add usage examples in JSDoc with @example
+- Document public methods, properties, and events
+- Include accessibility notes when relevant

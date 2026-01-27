@@ -1,0 +1,41 @@
+---
+description: General coding standards for Open Library project
+alwaysApply: true
+---
+
+# General Coding Standards
+
+## Code Quality
+
+- Write clear, descriptive variable and function names
+- Add JSDoc comments for exported functions and classes
+- Keep functions focused on a single responsibility
+- Use modern JavaScript features (ES6+)
+
+## File Organization
+
+- Group related components and utilities together
+- Use index.js for clean exports
+
+## Error Handling
+
+```javascript
+// ❌ BAD - Silent failures
+try {
+  await fetchData();
+} catch (e) {}
+
+// ✅ GOOD - Log and handle errors
+try {
+  await fetchData();
+} catch (error) {
+  console.error('Failed to fetch data:', error);
+  throw new Error('Unable to retrieve data', { cause: error });
+}
+```
+
+
+## Accessibility
+
+- Always include appropriate ARIA attributes
+- Ensure keyboard navigation works
