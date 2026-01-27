@@ -166,6 +166,82 @@
       </div>
 
       <div class="demo-section">
+        <ol-heading element="h2" size="heading-2">Tab Group</ol-heading>
+
+        <ol-demo-pane>
+          <template>
+            <ol-tab-group active="general">
+              <ol-tab panel="general">General</ol-tab>
+              <ol-tab panel="details">Details</ol-tab>
+              <ol-tab panel="reviews">Reviews</ol-tab>
+              <ol-tab panel="disabled" disabled>Disabled</ol-tab>
+
+              <ol-tab-panel name="general">
+                <p>This is the general information panel. Use tabs to organize content into separate views that users can navigate between.</p>
+              </ol-tab-panel>
+              <ol-tab-panel name="details">
+                <p>Here you'll find detailed specifications and additional information about the item.</p>
+              </ol-tab-panel>
+              <ol-tab-panel name="reviews">
+                <p>User reviews and ratings appear in this panel.</p>
+              </ol-tab-panel>
+              <ol-tab-panel name="disabled">
+                <p>This panel is associated with a disabled tab.</p>
+              </ol-tab-panel>
+            </ol-tab-group>
+          </template>
+        </ol-demo-pane>
+      </div>
+
+      <div class="demo-section">
+        <ol-heading element="h2" size="heading-2">Tab Group - Bottom Placement</ol-heading>
+
+        <ol-demo-pane>
+          <template>
+            <ol-tab-group placement="bottom" active="overview">
+              <ol-tab panel="overview">Overview</ol-tab>
+              <ol-tab panel="specs">Specifications</ol-tab>
+              <ol-tab panel="support">Support</ol-tab>
+
+              <ol-tab-panel name="overview">
+                <p>Product overview with key features and highlights.</p>
+              </ol-tab-panel>
+              <ol-tab-panel name="specs">
+                <p>Technical specifications and dimensions.</p>
+              </ol-tab-panel>
+              <ol-tab-panel name="support">
+                <p>Contact support and FAQ section.</p>
+              </ol-tab-panel>
+            </ol-tab-group>
+          </template>
+        </ol-demo-pane>
+      </div>
+
+      <div class="demo-section">
+        <ol-heading element="h2" size="heading-2">Tab Group - Vertical (Start)</ol-heading>
+
+        <ol-demo-pane>
+          <template>
+            <ol-tab-group placement="start" active="account">
+              <ol-tab panel="account">Account</ol-tab>
+              <ol-tab panel="security">Security</ol-tab>
+              <ol-tab panel="notifications">Notifications</ol-tab>
+
+              <ol-tab-panel name="account">
+                <p>Manage your account settings and profile information.</p>
+              </ol-tab-panel>
+              <ol-tab-panel name="security">
+                <p>Update password and security preferences.</p>
+              </ol-tab-panel>
+              <ol-tab-panel name="notifications">
+                <p>Configure email and push notification preferences.</p>
+              </ol-tab-panel>
+            </ol-tab-group>
+          </template>
+        </ol-demo-pane>
+      </div>
+
+      <div class="demo-section">
         <ol-heading element="h2" size="heading-2">Star Rating</ol-heading>
 
         <div style="display: grid; grid-template-columns: 1fr 2fr; gap: var(--spacing-component);">
