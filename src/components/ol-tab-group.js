@@ -200,6 +200,12 @@ export class OlTabGroup extends LitElement {
    * @param {KeyboardEvent} event
    */
   _handleKeyDown(event) {
+    // Only handle keyboard navigation when focus is on a tab element
+    // This prevents intercepting arrow keys from other components (e.g., search inputs)
+    const target = event.composedPath()[0];
+    const isTabFocused = target?.tagName === 'OL-TAB';
+    if (!isTabFocused) return;
+
     const tabs = this._getTabs().filter(tab => !tab.disabled);
     if (tabs.length === 0) return;
 
