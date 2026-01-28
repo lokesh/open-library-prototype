@@ -21,7 +21,7 @@
     </header>
 
     <div class="edit-book-layout">
-      <ol-tab-group placement="start" active="work" class="edit-book-tabs">
+      <ol-tab-group placement="start" active="work" sync-url class="edit-book-tabs">
         <ol-tab panel="work">Work</ol-tab>
         <ol-tab panel="edition">Edition</ol-tab>
         <ol-tab panel="series">Series</ol-tab>
@@ -92,6 +92,7 @@ In the years that follow, he becomes entranced by one of the few things that rem
                 src="/data/series.json"
                 search-field="title"
                 display-primary="title"
+                display-secondary="bookCountLabel"
                 placeholder="Search for a series..."
                 min-chars="2"
                 max-results="8"
@@ -137,13 +138,13 @@ In the years that follow, he becomes entranced by one of the few things that rem
   loadBooksData();
 
   /**
-   * Get a random selection of books to simulate "books in this series"
-   * @param {number} min - Minimum number of books
-   * @param {number} max - Maximum number of books
+   * Get a selection of books to simulate "books in this series"
+   * @param {number} count - Number of books to return
    * @returns {Array} Array of books with added position field
    */
-  function getRandomSeriesBooks(min = 1, max = 10) {
-    const count = Math.floor(Math.random() * (max - min + 1)) + min;
+  function getSeriesBooks(count) {
+    if (count <= 0) return [];
+    
     const shuffled = [...booksData].sort(() => Math.random() - 0.5);
     const selected = shuffled.slice(0, count);
 
@@ -273,8 +274,8 @@ In the years that follow, he becomes entranced by one of the few things that rem
    */
   function handleSeriesSelect(event) {
     const series = event.detail.item;
-    // Generate mock books for existing series
-    const seriesBooks = getRandomSeriesBooks(1, 10);
+    // Generate mock books matching the series book count
+    const seriesBooks = getSeriesBooks(series.bookCount || 0);
     addSeriesCard(series, seriesBooks);
   }
 

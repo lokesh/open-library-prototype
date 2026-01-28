@@ -8,6 +8,7 @@ import { LitElement, html, css } from 'lit';
  * @prop {string} active - The name of the currently active panel
  * @prop {string} placement - Tab position: 'top', 'bottom', 'start', 'end' (default: 'top')
  * @prop {string} activation - Tab activation mode: 'auto' or 'manual' (default: 'auto')
+ * @prop {boolean} syncUrl - Whether to sync the active tab with the URL hash (default: false)
  *
  * @slot nav - Slot for ol-tab elements (automatically assigned by ol-tab)
  * @slot - Default slot for ol-tab-panel elements
@@ -25,12 +26,23 @@ import { LitElement, html, css } from 'lit';
  *   <ol-tab-panel name="custom">This is the custom tab panel.</ol-tab-panel>
  *   <ol-tab-panel name="advanced">This is the advanced tab panel.</ol-tab-panel>
  * </ol-tab-group>
+ *
+ * @example
+ * <!-- With URL sync - the URL hash will reflect the active tab -->
+ * <ol-tab-group active="general" sync-url>
+ *   <ol-tab panel="general">General</ol-tab>
+ *   <ol-tab panel="settings">Settings</ol-tab>
+ *
+ *   <ol-tab-panel name="general">General content</ol-tab-panel>
+ *   <ol-tab-panel name="settings">Settings content</ol-tab-panel>
+ * </ol-tab-group>
  */
 export class OlTabGroup extends LitElement {
   static properties = {
     active: { type: String, reflect: true },
     placement: { type: String, reflect: true },
-    activation: { type: String, reflect: true }
+    activation: { type: String, reflect: true },
+    syncUrl: { type: Boolean, reflect: true, attribute: 'sync-url' }
   };
 
   static styles = css`
@@ -94,23 +106,43 @@ export class OlTabGroup extends LitElement {
     this.active = '';
     this.placement = 'top';
     this.activation = 'auto';
+    this.syncUrl = false;
     this._handleTabSelect = this._handleTabSelect.bind(this);
     this._handleKeyDown = this._handleKeyDown.bind(this);
+    this._handlePopState = this._handlePopState.bind(this);
   }
 
   connectedCallback() {
     super.connectedCallback();
     this.addEventListener('ol-tab-select', this._handleTabSelect);
     this.addEventListener('keydown', this._handleKeyDown);
+    
+    // Listen for browser navigation if URL sync is enabled
+    if (this.syncUrl) {
+      window.addEventListener('popstate', this._handlePopState);
+    }
   }
 
   disconnectedCallback() {
     super.disconnectedCallback();
     this.removeEventListener('ol-tab-select', this._handleTabSelect);
     this.removeEventListener('keydown', this._handleKeyDown);
+    
+    // Clean up popstate listener
+    if (this.syncUrl) {
+      window.removeEventListener('popstate', this._handlePopState);
+    }
   }
 
   firstUpdated() {
+    // If URL sync is enabled, try to read the active tab from the URL hash
+    if (this.syncUrl) {
+      const hashTab = this._getTabFromUrl();
+      if (hashTab) {
+        this.active = hashTab;
+      }
+    }
+    
     // Set initial active tab if not specified
     if (!this.active) {
       const firstTab = this._getTabs()[0];
@@ -118,6 +150,12 @@ export class OlTabGroup extends LitElement {
         this.active = firstTab.panel;
       }
     }
+    
+    // Update URL to reflect initial active tab (without adding to history)
+    if (this.syncUrl && this.active) {
+      this._updateUrl(this.active, true);
+    }
+    
     this._updateActiveState();
   }
 
@@ -192,6 +230,49 @@ export class OlTabGroup extends LitElement {
     const { panel } = event.detail;
     if (panel && panel !== this.active) {
       this.active = panel;
+      
+      // Update URL if sync is enabled
+      if (this.syncUrl) {
+        this._updateUrl(panel);
+      }
+    }
+  }
+
+  /**
+   * Get the active tab name from the URL hash
+   * @returns {string|null} The panel name from the hash, or null if not found/invalid
+   */
+  _getTabFromUrl() {
+    const hash = window.location.hash.slice(1); // Remove the '#'
+    if (!hash) return null;
+    
+    // Verify this is a valid panel name
+    const tabs = this._getTabs();
+    const matchingTab = tabs.find(tab => tab.panel === hash && !tab.disabled);
+    return matchingTab ? hash : null;
+  }
+
+  /**
+   * Update the URL hash to reflect the active tab
+   * @param {string} panel - The panel name to set in the URL
+   * @param {boolean} replace - If true, replace history state instead of pushing
+   */
+  _updateUrl(panel, replace = false) {
+    const newUrl = `${window.location.pathname}${window.location.search}#${panel}`;
+    if (replace) {
+      window.history.replaceState(null, '', newUrl);
+    } else {
+      window.history.pushState(null, '', newUrl);
+    }
+  }
+
+  /**
+   * Handle browser back/forward navigation
+   */
+  _handlePopState() {
+    const hashTab = this._getTabFromUrl();
+    if (hashTab && hashTab !== this.active) {
+      this.active = hashTab;
     }
   }
 
@@ -257,6 +338,11 @@ export class OlTabGroup extends LitElement {
         if (this.activation === 'manual') {
           event.preventDefault();
           this.active = tabs[currentIndex].panel;
+          
+          // Update URL if sync is enabled
+          if (this.syncUrl) {
+            this._updateUrl(tabs[currentIndex].panel);
+          }
         }
         return;
       default:
@@ -280,6 +366,11 @@ export class OlTabGroup extends LitElement {
     // Auto activation: switch tab immediately on focus
     if (this.activation === 'auto') {
       this.active = nextTab.panel;
+      
+      // Update URL if sync is enabled
+      if (this.syncUrl) {
+        this._updateUrl(nextTab.panel);
+      }
     }
   }
 
@@ -292,6 +383,11 @@ export class OlTabGroup extends LitElement {
     const tab = tabs.find(t => t.panel === panelName);
     if (tab && !tab.disabled) {
       this.active = panelName;
+      
+      // Update URL if sync is enabled
+      if (this.syncUrl) {
+        this._updateUrl(panelName);
+      }
     }
   }
 
