@@ -16,3 +16,4 @@ import './ol-tab.js';
 import './ol-tab-panel.js';
 import './ol-sortable-list.js';
 import './ol-sortable-item.js';
+import './ol-search.js';
