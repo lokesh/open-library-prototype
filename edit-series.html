@@ -235,19 +235,14 @@
 
     <form class="edit-series-form">
       <div class="series-name-field">
-        <ol-field label="Series Name" required>
+        <ol-field label="Series Name">
           <ol-input name="series-name" value="The Hunger Games" placeholder="Enter series name"></ol-input>
         </ol-field>
       </div>
 
       <section class="series-books-section">
-        <ol-heading element="h2" size="title-2">Books in this Series</ol-heading>
-        <p style="color: var(--color-text-secondary); margin-top: var(--spacing-2);">
-          Edit positions directly. Leave blank for unnumbered entries.
-        </p>
-
         <div class="add-book-search">
-          <ol-field label="Add a Book">
+          <ol-field label="Add a Book" hint="Edit positions directly. Leave blank for unnumbered entries.">
             <ol-search
               id="book-search"
               src="/public/data/books.json"
@@ -260,6 +255,7 @@
             ></ol-search>
           </ol-field>
         </div>
+
 
         <div class="series-books-table">
           <div class="series-books-header">
