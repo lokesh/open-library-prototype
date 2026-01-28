@@ -282,3 +282,184 @@ input:focus {
   }
 }
 
+/* Book detail page */
+.book-detail {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: var(--spacing-section);
+}
+
+.book-detail-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-element);
+}
+
+.book-detail-cover {
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  border-radius: var(--radius-image);
+  background-color: var(--color-bg-elevated);
+}
+
+.book-detail-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+.book-detail-main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-element);
+}
+
+.book-detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--spacing-element);
+}
+
+.book-detail-title-group {
+  flex: 1;
+}
+
+.book-detail-author {
+  font-size: var(--font-size-lg);
+  color: var(--color-text-secondary);
+  margin-bottom: 0;
+}
+
+.book-detail-author a {
+  color: var(--color-link);
+  text-decoration: none;
+}
+
+.book-detail-author a:hover {
+  text-decoration: underline;
+}
+
+.book-detail-description p {
+  color: var(--color-text);
+  line-height: var(--line-height-relaxed);
+}
+
+/* Responsive layout for book detail */
+@media (max-width: 768px) {
+  .book-detail {
+    grid-template-columns: 1fr;
+  }
+
+  .book-detail-sidebar {
+    max-width: 200px;
+  }
+
+  .book-detail-header {
+    flex-direction: column;
+    gap: var(--spacing-3);
+  }
+}
+
+/* Edit book page */
+.edit-book-header {
+  margin-bottom: var(--spacing-section);
+}
+
+.edit-book-subtitle {
+  font-size: var(--font-size-lg);
+  color: var(--color-text-secondary);
+  margin-bottom: 0;
+}
+
+.edit-book-layout {
+  margin-bottom: var(--spacing-section);
+}
+
+.edit-book-tabs {
+  min-height: 500px;
+}
+
+/* Make tabs sticky in vertical layout */
+.edit-book-tabs::part(nav) {
+  position: sticky;
+  top: var(--spacing-4);
+  align-self: flex-start;
+  min-width: 140px;
+  padding-right: var(--spacing-4);
+}
+
+.edit-book-form {
+  max-width: 600px;
+}
+
+.edit-book-form textarea {
+  width: 100%;
+  padding: var(--input-padding-y) var(--input-padding-x);
+  font-size: var(--input-font-size);
+  font-family: inherit;
+  color: var(--input-color-text);
+  background-color: var(--input-color-bg);
+  border: var(--input-border-width) solid var(--input-border);
+  border-radius: var(--radius-input);
+  resize: vertical;
+  min-height: 120px;
+}
+
+.edit-book-form textarea:focus {
+  outline: none;
+  border-color: var(--input-border-focused);
+  box-shadow: var(--input-focus-ring);
+}
+
+.edit-book-footer {
+  display: flex;
+  gap: var(--spacing-3);
+  justify-content: flex-end;
+  padding-top: var(--spacing-section);
+  border-top: var(--border-divider);
+}
+
+/* Stub content for placeholder tabs */
+.stub-content {
+  max-width: 500px;
+}
+
+.stub-content p {
+  color: var(--color-text-secondary);
+}
+
+.stub-description {
+  margin-top: var(--spacing-4);
+  margin-bottom: var(--spacing-2);
+}
+
+.stub-list {
+  list-style: disc;
+  padding-left: var(--spacing-6);
+  color: var(--color-text-secondary);
+}
+
+.stub-list li {
+  margin-bottom: var(--spacing-1);
+}
+
+/* Responsive layout for edit book page */
+@media (max-width: 768px) {
+  .edit-book-tabs::part(nav) {
+    position: static;
+    min-width: auto;
+    padding-right: 0;
+    padding-bottom: var(--spacing-4);
+  }
+
+  .edit-book-footer {
+    flex-direction: column;
+  }
+
+  .edit-book-footer ol-button {
+    width: 100%;
+  }
+}
+

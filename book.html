@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Goldfinch - Open Library</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,100..900&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles/index.css">
+  <script type="module" src="/src/components/index.js"></script>
+</head>
+<body>
+
+  <ol-main-nav></ol-main-nav>
+
+  <main>
+    <div class="book-detail">
+      <aside class="book-detail-sidebar">
+        <img 
+          src="https://covers.openlibrary.org/b/id/7884297-L.jpg" 
+          alt="The Goldfinch book cover" 
+          class="book-detail-cover"
+        >
+        <div class="book-detail-actions">
+          <ol-button variant="primary" full-width>Want to Read</ol-button>
+          <ol-button variant="secondary" full-width>Currently Reading</ol-button>
+          <ol-button variant="secondary" full-width>Already Read</ol-button>
+        </div>
+      </aside>
+
+      <section class="book-detail-main">
+        <header class="book-detail-header">
+          <div class="book-detail-title-group">
+            <ol-heading element="h1" size="display-2">The Goldfinch</ol-heading>
+            <p class="book-detail-author">by <a href="#">Donna Tartt</a></p>
+          </div>
+          <ol-button variant="secondary" onclick="window.location.href='edit-book.html'">Edit</ol-button>
+        </header>
+
+        <div class="book-detail-description">
+          <ol-heading element="h2" size="title-3">Description</ol-heading>
+          <p>The author of the classic bestsellers The Secret History and The Little Friend returns with a brilliant, highly anticipated new novel. A young boy in New York City, Theo Decker, miraculously survives an accident that takes the life of his mother. Alone and abandoned by his father, Theo is taken in by a friend's family and struggles to make sense of his new life.</p>
+          <p>In the years that follow, he becomes entranced by one of the few things that reminds him of his mother: a small, mysteriously captivating painting that ultimately draws Theo into the art underworld. Composed with the skills of a master, The Goldfinch is a haunted odyssey through present-day America, and a drama of almost unbearable acuity and power. It is a story of loss and obsession, survival and self-invention, and the enormous power of art.</p>
+        </div>
+      </section>
+    </div>
+  </main>
+
+</body>
+</html>

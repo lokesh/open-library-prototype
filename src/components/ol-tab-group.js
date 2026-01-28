@@ -123,7 +123,7 @@ export class OlTabGroup extends LitElement {
 
   updated(changedProperties) {
     super.updated(changedProperties);
-    if (changedProperties.has('active')) {
+    if (changedProperties.has('active') || changedProperties.has('placement')) {
       this._updateActiveState();
     }
   }
@@ -158,6 +158,7 @@ export class OlTabGroup extends LitElement {
     tabs.forEach(tab => {
       const isActive = tab.panel === this.active;
       tab.active = isActive;
+      tab.placement = this.placement;
       tab.id = `tab-${tab.panel}`;
     });
 

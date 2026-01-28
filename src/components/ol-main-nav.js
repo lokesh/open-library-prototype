@@ -72,6 +72,7 @@ export class OlMainNav extends LitElement {
       <nav>
         <ul>
           <li><a href="index.html">Home</a></li>
+          <li><a href="book.html">Book</a></li>
           <li><a href="signup.html">Sign Up</a></li>
           <li><a href="components.html">Components</a></li>
           <li><a href="forms.html">Tests</a></li>

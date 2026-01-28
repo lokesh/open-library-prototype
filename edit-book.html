@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Book - Open Library</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,100..900&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles/index.css">
+  <script type="module" src="/src/components/index.js"></script>
+</head>
+<body>
+
+  <ol-main-nav></ol-main-nav>
+
+  <main>
+    <header class="edit-book-header">
+      <ol-heading element="h1" size="display-2">Edit Book</ol-heading>
+      <p class="edit-book-subtitle">The Goldfinch by Donna Tartt</p>
+    </header>
+
+    <div class="edit-book-layout">
+      <ol-tab-group placement="start" active="work" class="edit-book-tabs">
+        <ol-tab panel="work">Work</ol-tab>
+        <ol-tab panel="edition">Edition</ol-tab>
+        <ol-tab panel="series">Series</ol-tab>
+
+        <ol-tab-panel name="work">
+          <form class="edit-book-form">
+            <ol-field label="Title" required>
+              <ol-input name="title" value="The Goldfinch" placeholder="Enter book title"></ol-input>
+            </ol-field>
+
+            <ol-field label="Subtitle">
+              <ol-input name="subtitle" placeholder="Enter subtitle (optional)"></ol-input>
+            </ol-field>
+
+            <ol-field label="Author(s)" hint="Use semicolons to separate multiple authors">
+              <ol-input name="authors" value="Donna Tartt" placeholder="e.g. Jane Doe; John Smith"></ol-input>
+            </ol-field>
+
+            <div class="form-group">
+              <label for="description">Description</label>
+              <textarea id="description" name="description" rows="6" placeholder="Enter book description">The author of the classic bestsellers The Secret History and The Little Friend returns with a brilliant, highly anticipated new novel. A young boy in New York City, Theo Decker, miraculously survives an accident that takes the life of his mother. Alone and abandoned by his father, Theo is taken in by a friend's family and struggles to make sense of his new life.
+
+In the years that follow, he becomes entranced by one of the few things that reminds him of his mother: a small, mysteriously captivating painting that ultimately draws Theo into the art underworld.</textarea>
+            </div>
+
+            <ol-field label="Subjects" hint="Use commas to separate subjects">
+              <ol-input name="subjects" value="Fiction, Coming of age, New York, Art" placeholder="e.g. Fiction, Mystery, Thriller"></ol-input>
+            </ol-field>
+
+            <ol-field label="First Published Year">
+              <ol-input name="first_published" value="2013" placeholder="e.g. 2013"></ol-input>
+            </ol-field>
+          </form>
+        </ol-tab-panel>
+
+        <ol-tab-panel name="edition">
+          <div class="stub-content">
+            <ol-heading element="h2" size="title-2">Edition Details</ol-heading>
+            <p>Edition editing functionality coming soon.</p>
+            <p class="stub-description">This section will include fields for:</p>
+            <ul class="stub-list">
+              <li>Publisher</li>
+              <li>Publication Date</li>
+              <li>ISBN</li>
+              <li>Number of Pages</li>
+              <li>Format (Hardcover, Paperback, etc.)</li>
+              <li>Language</li>
+            </ul>
+          </div>
+        </ol-tab-panel>
+
+        <ol-tab-panel name="series">
+          <div class="stub-content">
+            <ol-heading element="h2" size="title-2">Series Information</ol-heading>
+            <p>Series editing functionality coming soon.</p>
+            <p class="stub-description">This section will include fields for:</p>
+            <ul class="stub-list">
+              <li>Series Name</li>
+              <li>Volume Number</li>
+              <li>Related Works</li>
+            </ul>
+          </div>
+        </ol-tab-panel>
+      </ol-tab-group>
+    </div>
+
+    <footer class="edit-book-footer">
+      <ol-button variant="secondary" onclick="window.location.href='book.html'">Cancel</ol-button>
+      <ol-button variant="primary">Save Changes</ol-button>
+    </footer>
+  </main>
+
+</body>
+</html>

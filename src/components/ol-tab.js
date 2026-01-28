@@ -8,6 +8,7 @@ import { LitElement, html, css } from 'lit';
  * @prop {string} panel - The name of the panel this tab controls
  * @prop {boolean} active - Whether the tab is currently active
  * @prop {boolean} disabled - Whether the tab is disabled
+ * @prop {string} placement - Tab position inherited from parent: 'top', 'bottom', 'start', 'end'
  *
  * @slot - Tab label content
  *
@@ -18,7 +19,8 @@ export class OlTab extends LitElement {
   static properties = {
     panel: { type: String, reflect: true },
     active: { type: Boolean, reflect: true },
-    disabled: { type: Boolean, reflect: true }
+    disabled: { type: Boolean, reflect: true },
+    placement: { type: String, reflect: true }
   };
 
   static styles = css`
@@ -42,6 +44,15 @@ export class OlTab extends LitElement {
       transition: color 150ms ease, border-color 150ms ease;
     }
 
+    /* Vertical placement: indicator on the left side instead of bottom */
+    :host([placement="start"]) .tab,
+    :host([placement="end"]) .tab {
+      border-bottom: none;
+      border-left: 2px solid transparent;
+      width: 100%;
+      justify-content: flex-start;
+    }
+
     .tab:hover:not(:disabled) {
       color: var(--color-text);
     }
@@ -49,6 +60,12 @@ export class OlTab extends LitElement {
     :host([active]) .tab {
       color: var(--color-brand-primary);
       border-bottom-color: var(--color-brand-primary);
+    }
+
+    :host([active][placement="start"]) .tab,
+    :host([active][placement="end"]) .tab {
+      border-bottom-color: transparent;
+      border-left-color: var(--color-brand-primary);
     }
 
     .tab:focus-visible {
@@ -69,6 +86,7 @@ export class OlTab extends LitElement {
     this.panel = '';
     this.active = false;
     this.disabled = false;
+    this.placement = 'top';
   }
 
   connectedCallback() {
