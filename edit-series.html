@@ -39,7 +39,7 @@
     .series-books-header {
       display: grid;
       grid-template-columns: 64px 1fr auto;
-      gap: var(--spacing-3);
+      gap: var(--spacing-6);
       padding: var(--spacing-2) 0;
       border-bottom: 1px solid var(--color-border);
     }
@@ -52,10 +52,53 @@
       letter-spacing: 0.05em;
     }
 
+    .series-books-header-cell.sortable {
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: var(--spacing-1);
+      user-select: none;
+      transition: color 150ms ease;
+      background: none;
+      border: none;
+      padding: 0;
+      font-family: inherit;
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-medium);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--color-text-secondary);
+    }
+
+    .series-books-header-cell.sortable:focus {
+      outline: none;
+      color: var(--color-text);
+    }
+
+    .series-books-header-cell.sortable:focus-visible {
+      box-shadow: var(--input-focus-ring);
+      border-radius: var(--radius-button);
+    }
+
+    .series-books-header-cell.sortable:hover {
+      color: var(--color-text);
+    }
+
+    .sort-icon {
+      width: 0.625rem;
+      height: 0.625rem;
+      flex-shrink: 0;
+      transition: transform 150ms ease, opacity 150ms ease;
+    }
+
+    .sort-icon.desc {
+      transform: rotate(180deg);
+    }
+
     .series-book-row {
       display: grid;
       grid-template-columns: 64px 1fr auto;
-      gap: var(--spacing-3);
+      gap: var(--spacing-6);
       padding: var(--spacing-3) 0;
       border-bottom: 1px solid var(--color-border);
     }
@@ -220,7 +263,12 @@
 
         <div class="series-books-table">
           <div class="series-books-header">
-            <div class="series-books-header-cell">Position</div>
+            <button type="button" class="series-books-header-cell sortable" id="sort-position-btn" aria-label="Sort by position">
+              Position
+              <svg class="sort-icon" id="sort-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 17a.75.75 0 01-.75-.75V5.612L5.29 9.77a.75.75 0 01-1.08-1.04l5.25-5.5a.75.75 0 011.08 0l5.25 5.5a.75.75 0 11-1.08 1.04l-3.96-4.158V16.25A.75.75 0 0110 17z" clip-rule="evenodd" />
+              </svg>
+            </button>
             <div class="series-books-header-cell">Book</div>
             <div class="series-books-header-cell"></div>
           </div>
@@ -238,6 +286,9 @@
   </main>
 
 <script type="module">
+  // Sort state: 'asc' (ascending) or 'desc' (descending)
+  let sortDirection = 'asc';
+
   // Hardcoded series data for "The Hunger Games"
   const seriesData = {
     title: "The Hunger Games",
@@ -339,17 +390,47 @@
     const container = document.getElementById('series-books-list');
     if (!container) return;
 
-    // Sort books by position
+    // Sort books by position based on current sort direction
     const sortedBooks = [...seriesData.books].sort((a, b) => {
-      const posA = a.seriesPosition || Infinity;
-      const posB = b.seriesPosition || Infinity;
-      return posA - posB;
+      const posA = a.seriesPosition ?? Infinity;
+      const posB = b.seriesPosition ?? Infinity;
+
+      if (sortDirection === 'asc') {
+        return posA - posB;
+      } else {
+        // For descending, put Infinity (null positions) at the end
+        if (posA === Infinity && posB === Infinity) return 0;
+        if (posA === Infinity) return 1;
+        if (posB === Infinity) return -1;
+        return posB - posA;
+      }
     });
 
     container.innerHTML = sortedBooks.map(book => createBookRowHTML(book)).join('');
 
+    // Update sort icon state
+    updateSortIcon();
+
     // Set up input validation for position fields
     setupPositionInputs();
+  }
+
+  /**
+   * Update the sort icon to reflect current sort direction
+   */
+  function updateSortIcon() {
+    const sortIcon = document.getElementById('sort-icon');
+    if (sortIcon) {
+      sortIcon.classList.toggle('desc', sortDirection === 'desc');
+    }
+  }
+
+  /**
+   * Toggle sort direction and re-render
+   */
+  function toggleSortDirection() {
+    sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+    renderBooksList();
   }
 
   /**
@@ -399,6 +480,22 @@
   };
 
   /**
+   * Get the next available position (max + 1)
+   * @returns {number} The next position number
+   */
+  function getNextPosition() {
+    const positions = seriesData.books
+      .map(b => b.seriesPosition)
+      .filter(pos => pos != null && Number.isFinite(pos));
+
+    if (positions.length === 0) {
+      return 1;
+    }
+
+    return Math.floor(Math.max(...positions)) + 1;
+  }
+
+  /**
    * Add a book to the series
    * @param {Object} book - Book data from search selection
    */
@@ -413,6 +510,9 @@
       return;
     }
 
+    // Calculate next position (max existing position + 1)
+    const nextPosition = getNextPosition();
+
     // Create a new book entry for the series
     const newBook = {
       id: book.id || `book-${Date.now()}`,
@@ -420,7 +520,7 @@
       coverUrl: book.coverUrl,
       author: book.author,
       firstPublished: book.firstPublished,
-      seriesPosition: null // New books get no position by default
+      seriesPosition: nextPosition
     };
 
     seriesData.books.push(newBook);
@@ -440,9 +540,20 @@
     });
   }
 
+  /**
+   * Set up sort button click handler
+   */
+  function setupSortButton() {
+    const sortBtn = document.getElementById('sort-position-btn');
+    if (!sortBtn) return;
+
+    sortBtn.addEventListener('click', toggleSortDirection);
+  }
+
   // Initialize on page load
   renderBooksList();
   setupBookSearch();
+  setupSortButton();
 </script>
 
 </body>

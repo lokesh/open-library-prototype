@@ -145,7 +145,7 @@ In the years that follow, he becomes entranced by one of the few things that rem
   function getBooksForSeries(seriesTitle) {
     // Filter books that belong to this series
     const seriesBooks = booksData.filter(book => book.series === seriesTitle);
-    
+
     // Sort by series position and map to expected format
     return seriesBooks
       .sort((a, b) => (a.seriesPosition || 0) - (b.seriesPosition || 0))
@@ -170,7 +170,7 @@ In the years that follow, he becomes entranced by one of the few things that rem
 
     // Fall back to mock data for other series
     if (count <= 0) return [];
-    
+
     const shuffled = [...booksData].filter(b => !b.series).sort(() => Math.random() - 0.5);
     const selected = shuffled.slice(0, count);
 
@@ -194,6 +194,9 @@ In the years that follow, he becomes entranced by one of the few things that rem
     const hasBooks = seriesBooks.length > 0;
     // Total books in series = existing books + this book we're adding
     const totalBooksInSeries = seriesBooks.length + 1;
+    // Find the highest position number among existing books
+    const highestPosition = seriesBooks.reduce((max, book) =>
+      Math.max(max, book.position || 0), 0);
 
     const booksListHTML = seriesBooks.map(book => `
       <li class="series-book-item">
@@ -220,7 +223,7 @@ In the years that follow, he becomes entranced by one of the few things that rem
     ` : '';
 
     return `
-      <div class="series-card" data-card-id="${cardId}" data-series-id="${series.id || series.title}" data-has-books="${hasBooks}" data-total-books="${totalBooksInSeries}">
+      <div class="series-card" data-card-id="${cardId}" data-series-id="${series.id || series.title}" data-has-books="${hasBooks}" data-total-books="${totalBooksInSeries}" data-highest-position="${highestPosition}">
         <div class="series-card-header">
           <div class="series-card-title-group">
             <h3 class="series-card-name"><a href="edit-series.html" class="series-card-link">${series.title}</a></h3>
@@ -386,11 +389,13 @@ In the years that follow, he becomes entranced by one of the few things that rem
         const positionTag = card.querySelector('.series-position-tag');
         if (positionTag) {
           const totalBooks = parseInt(card.dataset.totalBooks, 10) || 1;
+          const highestPosition = parseFloat(card.dataset.highestPosition) || 0;
           const numValue = parseFloat(cleaned);
 
           if (!isNaN(numValue)) {
-            // Position entered: show "#X of Y in series"
-            positionTag.textContent = `#${cleaned} of ${totalBooks} in series`;
+            // Position entered: show "#X of Y in the series" where Y = max(highestPosition, enteredPosition)
+            const displayTotal = Math.max(highestPosition, numValue);
+            positionTag.textContent = `#${cleaned} of ${displayTotal} in the series`;
           } else {
             // No position: show "X books in series"
             positionTag.textContent = totalBooks === 1 ? '1 book in series' : `${totalBooks} books in series`;
