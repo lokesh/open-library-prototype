@@ -445,6 +445,33 @@ input:focus {
   margin-bottom: var(--spacing-1);
 }
 
+/* Form actions within tab panels */
+.form-actions {
+  display: flex;
+  gap: var(--spacing-3);
+  justify-content: flex-start;
+  margin-top: var(--spacing-section);
+  padding-top: var(--spacing-section);
+  border-top: var(--border-divider);
+}
+
+/* Series content */
+.series-content {
+  max-width: 500px;
+}
+
+.series-content p {
+  color: var(--color-text-secondary);
+}
+
+.series-content ol-field {
+  margin-top: var(--spacing-4);
+}
+
+.series-selected {
+  margin-top: var(--spacing-4);
+}
+
 /* Responsive layout for edit book page */
 @media (max-width: 768px) {
   .edit-book-tabs::part(nav) {
@@ -454,11 +481,11 @@ input:focus {
     padding-bottom: var(--spacing-4);
   }
 
-  .edit-book-footer {
+  .form-actions {
     flex-direction: column;
   }
 
-  .edit-book-footer ol-button {
+  .form-actions ol-button {
     width: 100%;
   }
 }
