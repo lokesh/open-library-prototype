@@ -17,7 +17,7 @@
   <main>
     <header class="edit-book-header">
       <ol-heading element="h1" size="display-2">Edit Book</ol-heading>
-      <p class="edit-book-subtitle">The Goldfinch by Donna Tartt</p>
+      <ol-heading element="p" size="title-2" color="secondary">The Goldfinch by Donna Tartt</ol-heading>
     </header>
 
     <div class="edit-book-layout">
@@ -87,7 +87,7 @@ In the years that follow, he becomes entranced by one of the few things that rem
           <div class="series-content">
             <ol-heading element="h2" size="title-2">Series Information</ol-heading>
 
-            <ol-field hint="Search for an existing series to add this book to">
+            <ol-field hint="Add this book to a series">
               <ol-search
                 src="/data/series.json"
                 search-field="title"
@@ -95,9 +95,15 @@ In the years that follow, he becomes entranced by one of the few things that rem
                 placeholder="Search for a series..."
                 min-chars="2"
                 max-results="8"
-              ></ol-search>
+              >
+                <div slot="no-results" style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+                  <span>No match found.</span>
+                  <ol-button variant="secondary" size="small">Create a new series</ol-button>
+                </div>
+              </ol-search>
             </ol-field>
 
+            <ol-heading element="h3" size="title-4" id="series-heading" hidden>This book is part of the following series:</ol-heading>
             <div class="series-selected" id="selected-series">
               <!-- Selected series will appear here -->
             </div>
@@ -107,6 +113,295 @@ In the years that follow, he becomes entranced by one of the few things that rem
     </div>
 
   </main>
+
+<script type="module">
+  // Store for books data (for mock series books)
+  let booksData = [];
+
+  // Counter for unique card IDs
+  let cardIdCounter = 0;
+
+  // Load books data on page load
+  async function loadBooksData() {
+    try {
+      const response = await fetch('/data/books.json');
+      if (!response.ok) {
+        throw new Error(`Failed to load books: ${response.statusText}`);
+      }
+      booksData = await response.json();
+    } catch (error) {
+      console.error('Failed to load books data:', error);
+    }
+  }
+
+  loadBooksData();
+
+  /**
+   * Get a random selection of books to simulate "books in this series"
+   * @param {number} min - Minimum number of books
+   * @param {number} max - Maximum number of books
+   * @returns {Array} Array of books with added position field
+   */
+  function getRandomSeriesBooks(min = 1, max = 10) {
+    const count = Math.floor(Math.random() * (max - min + 1)) + min;
+    const shuffled = [...booksData].sort(() => Math.random() - 0.5);
+    const selected = shuffled.slice(0, count);
+
+    // Sort by firstPublished and add position
+    return selected
+      .sort((a, b) => (a.firstPublished || 0) - (b.firstPublished || 0))
+      .map((book, index) => ({
+        ...book,
+        position: index + 1
+      }));
+  }
+
+  /**
+   * Create the series card HTML
+   * @param {Object} series - The selected series object
+   * @param {Array} seriesBooks - Books in this series
+   * @param {string} cardId - Unique ID for this card
+   * @returns {string} HTML string
+   */
+  function createSeriesCardHTML(series, seriesBooks, cardId) {
+    const hasBooks = seriesBooks.length > 0;
+    // Total books in series = existing books + this book we're adding
+    const totalBooksInSeries = seriesBooks.length + 1;
+
+    const booksListHTML = seriesBooks.map(book => `
+      <li class="series-book-item">
+        <span class="series-book-position">${book.position}</span>
+        <div class="series-book-info">
+          <div class="series-book-title">${book.title}</div>
+          <div class="series-book-year">${book.firstPublished || 'Unknown'}</div>
+        </div>
+      </li>
+    `).join('');
+
+    // Only include popover HTML if there are books
+    const existingBooksText = seriesBooks.length === 1
+      ? '1 existing book in series'
+      : `${seriesBooks.length} existing books in series`;
+
+    const popoverHTML = hasBooks ? `
+          <div class="series-books-popover" data-popover-for="${cardId}">
+            <div class="series-books-header">${existingBooksText}</div>
+            <ul class="series-books-list">
+              ${booksListHTML}
+            </ul>
+          </div>
+    ` : '';
+
+    return `
+      <div class="series-card" data-card-id="${cardId}" data-series-id="${series.id || series.title}" data-has-books="${hasBooks}" data-total-books="${totalBooksInSeries}">
+        <div class="series-card-header">
+          <div class="series-card-title-group">
+            <h3 class="series-card-name">${series.title}</h3>
+            <span class="series-position-tag">${totalBooksInSeries === 1 ? '1 book' : `${totalBooksInSeries} books`} in series</span>
+          </div>
+          <button class="series-card-remove" aria-label="Remove series" type="button">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
+            </svg>
+          </button>
+        </div>
+        <div class="series-position-field">
+          <label class="series-position-label" for="series-position-${cardId}">
+            Position in series
+            <span class="series-position-hint">(e.g., 1, 2.5, -1)</span>
+          </label>
+          <input
+            type="text"
+            inputmode="decimal"
+            id="series-position-${cardId}"
+            class="series-position-input"
+            placeholder="Enter position..."
+            autocomplete="off"
+          >${popoverHTML}
+        </div>
+      </div>
+    `;
+  }
+
+  /**
+   * Add a series card to the container
+   * @param {Object} series - The series object with at least a title
+   * @param {Array} seriesBooks - Books in this series (empty array for new series)
+   */
+  function addSeriesCard(series, seriesBooks) {
+    const container = document.getElementById('selected-series');
+    const cardId = `series-card-${++cardIdCounter}`;
+
+    // Check if this series is already added
+    const existingCard = container.querySelector(`[data-series-id="${series.id || series.title}"]`);
+    if (existingCard) {
+      // Focus the existing card's input instead
+      const input = existingCard.querySelector('.series-position-input');
+      if (input) input.focus();
+      return;
+    }
+
+    // Create card element
+    const cardElement = document.createElement('div');
+    cardElement.innerHTML = createSeriesCardHTML(series, seriesBooks, cardId);
+    const card = cardElement.firstElementChild;
+
+    // Append to container
+    container.appendChild(card);
+
+    // Show the series heading
+    const seriesHeading = document.getElementById('series-heading');
+    if (seriesHeading) {
+      seriesHeading.hidden = false;
+    }
+
+    // Set up event listeners for this card
+    setupCardEventListeners(card);
+
+    // Focus the position input
+    const positionInput = card.querySelector('.series-position-input');
+    if (positionInput) {
+      requestAnimationFrame(() => {
+        positionInput.focus();
+      });
+    }
+  }
+
+  /**
+   * Handle series selection from search
+   * @param {CustomEvent} event - The ol-search-select event
+   */
+  function handleSeriesSelect(event) {
+    const series = event.detail.item;
+    // Generate mock books for existing series
+    const seriesBooks = getRandomSeriesBooks(1, 10);
+    addSeriesCard(series, seriesBooks);
+  }
+
+  /**
+   * Handle creating a new series
+   * @param {string} seriesName - Name for the new series
+   */
+  function handleCreateNewSeries(seriesName = 'New Series') {
+    const series = {
+      id: `new-${Date.now()}`,
+      title: seriesName
+    };
+    // New series has no existing books
+    addSeriesCard(series, []);
+  }
+
+  /**
+   * Set up event listeners for a series card
+   * @param {HTMLElement} card - The card element
+   */
+  function setupCardEventListeners(card) {
+    const removeBtn = card.querySelector('.series-card-remove');
+    const positionInput = card.querySelector('.series-position-input');
+    const popover = card.querySelector('.series-books-popover');
+    const hasBooks = card.dataset.hasBooks === 'true';
+
+    // Remove button
+    if (removeBtn) {
+      removeBtn.addEventListener('click', () => {
+        card.remove();
+
+        // Hide the heading if no series remain
+        const container = document.getElementById('selected-series');
+        const seriesHeading = document.getElementById('series-heading');
+        if (seriesHeading && container && container.children.length === 0) {
+          seriesHeading.hidden = true;
+        }
+      });
+    }
+
+    // Position input focus/blur to show/hide popover (only if there are books)
+    if (positionInput) {
+      if (popover && hasBooks) {
+        positionInput.addEventListener('focus', () => {
+          popover.classList.add('open');
+        });
+
+        positionInput.addEventListener('blur', () => {
+          // Small delay to allow clicking inside popover if needed
+          setTimeout(() => {
+            popover.classList.remove('open');
+          }, 150);
+        });
+      }
+
+      // Only allow numbers (including decimals and negatives)
+      positionInput.addEventListener('input', (e) => {
+        let value = e.target.value;
+
+        // Allow: digits, one minus at start, one decimal point
+        let cleaned = '';
+        let hasDecimal = false;
+
+        for (let i = 0; i < value.length; i++) {
+          const char = value[i];
+
+          if (char === '-' && cleaned === '') {
+            cleaned += char;
+          } else if (char === '.' && !hasDecimal) {
+            cleaned += char;
+            hasDecimal = true;
+          } else if (char >= '0' && char <= '9') {
+            cleaned += char;
+          }
+        }
+
+        if (cleaned !== value) {
+          e.target.value = cleaned;
+        }
+
+        // Update the position tag
+        const positionTag = card.querySelector('.series-position-tag');
+        if (positionTag) {
+          const totalBooks = parseInt(card.dataset.totalBooks, 10) || 1;
+          const numValue = parseFloat(cleaned);
+
+          if (!isNaN(numValue)) {
+            // Position entered: show "#X of Y in series"
+            positionTag.textContent = `#${cleaned} of ${totalBooks} in series`;
+          } else {
+            // No position: show "X books in series"
+            positionTag.textContent = totalBooks === 1 ? '1 book in series' : `${totalBooks} books in series`;
+          }
+        }
+      });
+
+      // Close popover on Escape
+      positionInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          positionInput.blur();
+        }
+      });
+    }
+  }
+
+  // Listen for series selection
+  document.addEventListener('ol-search-select', handleSeriesSelect);
+
+  // Listen for "Create a new series" button clicks
+  document.addEventListener('click', (e) => {
+    const createBtn = e.target.closest('ol-button');
+    if (createBtn && createBtn.textContent.trim() === 'Create a new series') {
+      e.preventDefault();
+
+      // Get the search component and its current query
+      const searchComponent = document.querySelector('ol-search');
+      const seriesName = searchComponent?._query?.trim() || 'New Series';
+
+      // Close the search popover
+      if (searchComponent) {
+        searchComponent.clear();
+      }
+
+      handleCreateNewSeries(seriesName);
+    }
+  });
+</script>
 
 </body>
 </html>

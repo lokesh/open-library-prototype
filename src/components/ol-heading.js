@@ -1,16 +1,34 @@
 import { LitElement, css } from 'lit';
 import { html, unsafeStatic } from 'lit/static-html.js';
 
+/**
+ * Heading component with configurable element, size, and color
+ *
+ * @element ol-heading
+ * @prop {string} element - HTML element to render (h1-h6, p, span)
+ * @prop {string} size - Size variant (display-1, display-2, title-1 through title-5)
+ * @prop {string} color - Color variant (default, secondary)
+ * @prop {string} icon - Optional icon to display before text
+ *
+ * @example
+ * <ol-heading element="h1" size="display-1">Main Title</ol-heading>
+ * <ol-heading element="p" size="title-2" color="secondary">Subtitle</ol-heading>
+ */
 export class OlHeading extends LitElement {
   static properties = {
     element: { type: String },
     size: { type: String },
+    color: { type: String, reflect: true },
     icon: { type: String },
   };
 
   static styles = css`
     :host {
       display: block;
+    }
+
+    :host([hidden]) {
+      display: none;
     }
 
     .ol-heading {
@@ -67,12 +85,18 @@ export class OlHeading extends LitElement {
       align-items: center;
       flex-shrink: 0;
     }
+
+    /* Color variants */
+    :host([color="secondary"]) .ol-heading {
+      color: var(--color-text-secondary);
+    }
   `;
 
   constructor() {
     super();
     this.element = 'h1';
     this.size = 'title-1';
+    this.color = 'default';
     this.icon = '';
   }
 

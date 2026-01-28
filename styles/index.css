@@ -472,6 +472,197 @@ input:focus {
   margin-top: var(--spacing-4);
 }
 
+/* Series card */
+.series-card {
+  background-color: var(--color-bg-elevated);
+  border: var(--border-card);
+  border-radius: var(--radius-card);
+  padding: var(--spacing-4);
+}
+
+.series-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--spacing-2);
+  margin-bottom: var(--spacing-3);
+}
+
+.series-card-title-group {
+  flex: 1;
+  min-width: 0;
+}
+
+.series-card + .series-card {
+  margin-top: var(--spacing-3);
+}
+
+.series-card-name {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);
+  margin: 0;
+}
+
+.series-position-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-1);
+  font-size: var(--font-size-sm);
+  color: var(--color-white);
+  background-color: var(--color-text-secondary);
+  padding: var(--spacing-1) var(--spacing-2);
+  border-radius: var(--radius-avatar);
+  margin-top: var(--spacing-1);
+}
+
+.series-card-remove {
+  background: none;
+  border: none;
+  padding: var(--spacing-1);
+  cursor: pointer;
+  color: var(--color-text-secondary);
+  border-radius: var(--radius-button);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.series-card-remove:hover {
+  background-color: var(--color-bg-hovered);
+  color: var(--color-text);
+}
+
+.series-card-remove svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Position field */
+.series-position-field {
+  position: relative;
+}
+
+.series-position-label {
+  display: block;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-1);
+}
+
+.series-position-hint {
+  font-weight: var(--font-weight-normal);
+  color: var(--color-text-secondary);
+  opacity: 0.8;
+}
+
+.series-position-input {
+  width: 100%;
+  padding: var(--input-padding-y) var(--input-padding-x);
+  font-size: var(--input-font-size);
+  font-family: inherit;
+  color: var(--input-color-text);
+  background-color: var(--input-color-bg);
+  border: var(--input-border-width) solid var(--input-border);
+  border-radius: var(--radius-input);
+}
+
+.series-position-input::placeholder {
+  color: var(--input-color-placeholder);
+}
+
+.series-position-input:hover:not(:disabled) {
+  border-color: var(--input-border-hovered);
+}
+
+.series-position-input:focus {
+  outline: none;
+  border-color: var(--input-border-focused);
+  box-shadow: var(--input-focus-ring);
+}
+
+/* Series books popover */
+.series-books-popover {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: var(--spacing-1);
+  background-color: var(--color-bg-elevated);
+  border: var(--border-width-control) solid var(--color-border);
+  border-radius: var(--radius-input);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  z-index: 100;
+  max-height: 280px;
+  overflow-y: auto;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-4px);
+  transition: opacity 150ms ease, transform 150ms ease;
+}
+
+.series-books-popover.open {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.series-books-header {
+  padding: var(--spacing-2) var(--spacing-3);
+  border-bottom: 1px solid var(--color-border);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+}
+
+.series-books-list {
+  list-style: none;
+  margin: 0;
+  padding: var(--spacing-1) 0;
+}
+
+.series-book-item {
+  padding: var(--spacing-2) var(--spacing-3);
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: var(--spacing-2);
+  align-items: center;
+}
+
+.series-book-item:not(:last-child) {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.series-book-position {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-secondary);
+  min-width: 32px;
+  text-align: center;
+  background-color: var(--color-bg-hovered);
+  padding: var(--spacing-1) var(--spacing-2);
+  border-radius: var(--radius-button);
+}
+
+.series-book-info {
+  min-width: 0;
+}
+
+.series-book-title {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.series-book-year {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+}
+
 /* Responsive layout for edit book page */
 @media (max-width: 768px) {
   .edit-book-tabs::part(nav) {

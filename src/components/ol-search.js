@@ -14,6 +14,8 @@ import { LitElement, html, css } from 'lit';
  * @prop {number} maxResults - Maximum number of results to show (default: 5)
  * @prop {boolean} disabled - Whether the input is disabled
  * 
+ * @slot no-results - Custom content to display when no results are found (defaults to "No results found")
+ * 
  * @fires ol-search-select - Emitted when a result is selected, with { detail: { item } }
  * 
  * @example
@@ -24,6 +26,14 @@ import { LitElement, html, css } from 'lit';
  *   display-secondary="author,firstPublished"
  *   placeholder="Search books..."
  * ></ol-search>
+ * 
+ * @example
+ * <!-- With custom no-results content -->
+ * <ol-search src="/data/series.json" search-field="title">
+ *   <div slot="no-results">
+ *     No match found. <button>Create new</button>
+ *   </div>
+ * </ol-search>
  */
 export class OlSearch extends LitElement {
   static properties = {
@@ -185,6 +195,11 @@ export class OlSearch extends LitElement {
       text-align: center;
       color: var(--color-text-secondary);
       font-size: var(--body-font-size-sm);
+    }
+
+    /* Slotted no-results content inherits text styles */
+    .no-results ::slotted(*) {
+      color: var(--color-text-secondary);
     }
 
     /* Loading state */
@@ -538,7 +553,9 @@ export class OlSearch extends LitElement {
           ` : ''}
 
           ${showNoResults ? html`
-            <div class="no-results" aria-live="polite">No results found</div>
+            <div class="no-results" aria-live="polite">
+              <slot name="no-results">No results found</slot>
+            </div>
           ` : ''}
         </div>
       </div>
