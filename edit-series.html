@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Series - Open Library</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,100..900&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles/index.css">
+  <script type="module" src="/src/components/index.js"></script>
+  <style>
+    .edit-series-header {
+      margin-bottom: var(--spacing-section);
+    }
+
+    .edit-series-form {
+      max-width: 700px;
+    }
+
+    .series-name-field {
+      margin-bottom: var(--spacing-section);
+    }
+
+    .series-books-section {
+      margin-top: var(--spacing-section);
+    }
+
+    .add-book-search {
+      margin-top: var(--spacing-4);
+      margin-bottom: var(--spacing-4);
+    }
+
+    .series-books-table {
+      margin-top: var(--spacing-4);
+      border-top: 1px solid var(--color-border);
+    }
+
+    .series-books-header {
+      display: grid;
+      grid-template-columns: 64px 1fr auto;
+      gap: var(--spacing-3);
+      padding: var(--spacing-2) 0;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .series-books-header-cell {
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .series-book-row {
+      display: grid;
+      grid-template-columns: 64px 1fr auto;
+      gap: var(--spacing-3);
+      padding: var(--spacing-3) 0;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .series-book-row:last-child {
+      border-bottom: none;
+    }
+
+    .series-book-position-cell {
+      display: flex;
+      justify-content: center;
+    }
+
+    .series-book-position-input {
+      width: 56px;
+      padding: var(--spacing-2);
+      font-size: var(--font-size-sm);
+      font-family: inherit;
+      color: var(--input-color-text);
+      background-color: var(--input-color-bg);
+      border: var(--input-border-width) solid var(--input-border);
+      border-radius: var(--radius-input);
+      text-align: center;
+    }
+
+    .series-book-position-input::placeholder {
+      color: var(--input-color-placeholder);
+    }
+
+    .series-book-position-input:hover:not(:disabled) {
+      border-color: var(--input-border-hovered);
+    }
+
+    .series-book-position-input:focus {
+      outline: none;
+      border-color: var(--input-border-focused);
+      box-shadow: var(--input-focus-ring);
+    }
+
+    .series-book-info {
+      display: flex;
+
+      gap: var(--spacing-3);
+      min-width: 0;
+    }
+
+    .series-book-cover {
+      width: 40px;
+      aspect-ratio: 2 / 3;
+      object-fit: cover;
+      border-radius: var(--radius-image);
+      background-color: var(--color-bg-hovered);
+      flex-shrink: 0;
+    }
+
+    .series-book-details {
+      min-width: 0;
+    }
+
+    .series-book-title {
+      font-size: var(--font-size-md);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-text);
+      margin: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .series-book-meta {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+      margin: 0;
+    }
+
+    .series-book-remove {
+      padding: var(--spacing-2);
+      color: var(--color-text-secondary);
+      background: none;
+      border: none;
+      border-radius: var(--radius-button);
+      cursor: pointer;
+      transition: color 150ms ease, background-color 150ms ease;
+    }
+
+    .series-book-remove:hover {
+      color: var(--color-error);
+      background-color: var(--color-bg-hovered);
+    }
+
+    .series-book-remove:focus {
+      outline: none;
+      box-shadow: var(--input-focus-ring);
+    }
+
+    .series-book-remove svg {
+      width: 1.25rem;
+      height: 1.25rem;
+      display: block;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: var(--spacing-3);
+      justify-content: flex-start;
+      margin-top: var(--spacing-section);
+      padding-top: var(--spacing-section);
+      border-top: var(--border-divider);
+    }
+
+    @media (max-width: 768px) {
+      .series-book-cover {
+        width: 32px;
+      }
+
+      .form-actions {
+        flex-direction: column;
+      }
+
+      .form-actions ol-button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<ol-main-nav></ol-main-nav>
+
+  <main>
+    <header class="edit-series-header">
+      <ol-heading element="h1" size="display-2">Edit Series</ol-heading>
+    </header>
+
+    <form class="edit-series-form">
+      <div class="series-name-field">
+        <ol-field label="Series Name" required>
+          <ol-input name="series-name" value="The Hunger Games" placeholder="Enter series name"></ol-input>
+        </ol-field>
+      </div>
+
+      <section class="series-books-section">
+        <ol-heading element="h2" size="title-2">Books in this Series</ol-heading>
+        <p style="color: var(--color-text-secondary); margin-top: var(--spacing-2);">
+          Edit positions directly. Leave blank for unnumbered entries.
+        </p>
+
+        <div class="add-book-search">
+          <ol-field label="Add a Book">
+            <ol-search
+              id="book-search"
+              src="/public/data/books.json"
+              search-field="title"
+              display-primary="title"
+              display-secondary="author,firstPublished"
+              placeholder="Search for a book to add..."
+              min-chars="2"
+              max-results="8"
+            ></ol-search>
+          </ol-field>
+        </div>
+
+        <div class="series-books-table">
+          <div class="series-books-header">
+            <div class="series-books-header-cell">Position</div>
+            <div class="series-books-header-cell">Book</div>
+            <div class="series-books-header-cell"></div>
+          </div>
+          <div id="series-books-list">
+            <!-- Books will be populated by JavaScript -->
+          </div>
+        </div>
+      </section>
+
+      <div class="form-actions">
+        <ol-button variant="secondary" onclick="window.location.href='edit-book.html?tab=series'">Cancel</ol-button>
+        <ol-button variant="primary">Save Changes</ol-button>
+      </div>
+    </form>
+  </main>
+
+<script type="module">
+  // Hardcoded series data for "The Hunger Games"
+  const seriesData = {
+    title: "The Hunger Games",
+    author: "Suzanne Collins",
+    books: [
+      {
+        id: "hunger-games-0",
+        title: "The Ballad of Songbirds and Snakes",
+        coverUrl: "https://covers.openlibrary.org/b/id/10387030-L.jpg",
+        author: "Suzanne Collins",
+        firstPublished: 2020,
+        seriesPosition: 0
+      },
+      {
+        id: "hunger-games-0.5",
+        title: "Sunrise on the Reaping",
+        coverUrl: "https://covers.openlibrary.org/b/id/14807533-L.jpg",
+        author: "Suzanne Collins",
+        firstPublished: 2025,
+        seriesPosition: 0.5
+      },
+      {
+        id: "hunger-games-1",
+        title: "The Hunger Games",
+        coverUrl: "https://covers.openlibrary.org/b/id/8741214-L.jpg",
+        author: "Suzanne Collins",
+        firstPublished: 2008,
+        seriesPosition: 1
+      },
+      {
+        id: "hunger-games-2",
+        title: "Catching Fire",
+        coverUrl: "https://covers.openlibrary.org/b/id/8360927-L.jpg",
+        author: "Suzanne Collins",
+        firstPublished: 2009,
+        seriesPosition: 2
+      },
+      {
+        id: "hunger-games-3",
+        title: "Mockingjay",
+        coverUrl: "https://covers.openlibrary.org/b/id/8360928-L.jpg",
+        author: "Suzanne Collins",
+        firstPublished: 2010,
+        seriesPosition: 3
+      }
+    ]
+  };
+
+  /**
+   * Create HTML for a single book row
+   * @param {Object} book - Book data object
+   * @returns {string} HTML string
+   */
+  function createBookRowHTML(book) {
+    return `
+      <div class="series-book-row" data-book-id="${book.id}">
+        <div class="series-book-position-cell">
+          <input
+            type="text"
+            inputmode="decimal"
+            id="position-${book.id}"
+            class="series-book-position-input"
+            value="${book.seriesPosition ?? ''}"
+            placeholder="—"
+            autocomplete="off"
+            aria-label="Position for ${book.title}"
+          />
+        </div>
+        <div class="series-book-info">
+          <img
+            class="series-book-cover"
+            src="${book.coverUrl}"
+            alt=""
+            loading="lazy"
+          />
+          <div class="series-book-details">
+            <h3 class="series-book-title">${book.title}</h3>
+            <p class="series-book-meta">${book.firstPublished}</p>
+          </div>
+        </div>
+        <button
+          type="button"
+          class="series-book-remove"
+          aria-label="Remove ${book.title} from series"
+          onclick="removeBookFromSeries('${book.id}')"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M8.75 1A2.75 2.75 0 006 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 10.23 1.482l.149-.022.841 10.518A2.75 2.75 0 007.596 19h4.807a2.75 2.75 0 002.742-2.53l.841-10.519.149.023a.75.75 0 00.23-1.482A41.03 41.03 0 0014 3.193V3.75A2.75 2.75 0 0011.25 1h-2.5zM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4zM8.58 7.72a.75.75 0 00-1.5.06l.3 7.5a.75.75 0 101.5-.06l-.3-7.5zm4.34.06a.75.75 0 10-1.5-.06l-.3 7.5a.75.75 0 101.5.06l.3-7.5z" clip-rule="evenodd" />
+          </svg>
+        </button>
+      </div>
+    `;
+  }
+
+  /**
+   * Render the books list
+   */
+  function renderBooksList() {
+    const container = document.getElementById('series-books-list');
+    if (!container) return;
+
+    // Sort books by position
+    const sortedBooks = [...seriesData.books].sort((a, b) => {
+      const posA = a.seriesPosition || Infinity;
+      const posB = b.seriesPosition || Infinity;
+      return posA - posB;
+    });
+
+    container.innerHTML = sortedBooks.map(book => createBookRowHTML(book)).join('');
+
+    // Set up input validation for position fields
+    setupPositionInputs();
+  }
+
+  /**
+   * Set up position input validation
+   */
+  function setupPositionInputs() {
+    const inputs = document.querySelectorAll('.series-book-position-input');
+
+    inputs.forEach(input => {
+      input.addEventListener('input', (e) => {
+        let value = e.target.value;
+
+        // Allow: digits, one minus at start, one decimal point
+        let cleaned = '';
+        let hasDecimal = false;
+
+        for (let i = 0; i < value.length; i++) {
+          const char = value[i];
+
+          if (char === '-' && cleaned === '') {
+            cleaned += char;
+          } else if (char === '.' && !hasDecimal) {
+            cleaned += char;
+            hasDecimal = true;
+          } else if (char >= '0' && char <= '9') {
+            cleaned += char;
+          }
+        }
+
+        if (cleaned !== value) {
+          e.target.value = cleaned;
+        }
+      });
+    });
+  }
+
+  /**
+   * Remove a book from the series
+   * @param {string} bookId - ID of the book to remove
+   */
+  window.removeBookFromSeries = function(bookId) {
+    const index = seriesData.books.findIndex(b => b.id === bookId);
+    if (index !== -1) {
+      seriesData.books.splice(index, 1);
+      renderBooksList();
+    }
+  };
+
+  /**
+   * Add a book to the series
+   * @param {Object} book - Book data from search selection
+   */
+  function addBookToSeries(book) {
+    // Check if book is already in the series
+    const existingBook = seriesData.books.find(b =>
+      b.title === book.title && b.author === book.author
+    );
+
+    if (existingBook) {
+      console.log('Book already exists in series:', book.title);
+      return;
+    }
+
+    // Create a new book entry for the series
+    const newBook = {
+      id: book.id || `book-${Date.now()}`,
+      title: book.title,
+      coverUrl: book.coverUrl,
+      author: book.author,
+      firstPublished: book.firstPublished,
+      seriesPosition: null // New books get no position by default
+    };
+
+    seriesData.books.push(newBook);
+    renderBooksList();
+  }
+
+  /**
+   * Set up book search event listener
+   */
+  function setupBookSearch() {
+    const searchInput = document.getElementById('book-search');
+    if (!searchInput) return;
+
+    searchInput.addEventListener('ol-search-select', (event) => {
+      const selectedBook = event.detail.item;
+      addBookToSeries(selectedBook);
+    });
+  }
+
+  // Initialize on page load
+  renderBooksList();
+  setupBookSearch();
+</script>
+
+</body>
+</html>

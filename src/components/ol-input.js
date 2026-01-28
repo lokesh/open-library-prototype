@@ -4,6 +4,13 @@ import { LitElement, html, css } from 'lit';
  * ol-input: A low-level, form-associated input component
  * Uses shadow DOM and implements ElementInternals for native form integration (FACE)
  * Handles form semantics, focus delegation, and value management
+ * 
+ * @element ol-input
+ * @prop {string} size - Input size: "default", "large", or "xlarge"
+ * 
+ * @example
+ * <ol-input size="large" placeholder="Enter title"></ol-input>
+ * <ol-input size="xlarge" value="The Hunger Games"></ol-input>
  */
 export class OlInput extends LitElement {
   static formAssociated = true;
@@ -17,6 +24,7 @@ export class OlInput extends LitElement {
     required: { type: Boolean, reflect: true },
     readonly: { type: Boolean, reflect: true },
     autocomplete: { type: String },
+    size: { type: String, reflect: true },
   };
 
   static styles = css`
@@ -42,8 +50,27 @@ export class OlInput extends LitElement {
       box-sizing: border-box;
     }
 
+    /* Large size */
+    :host([size="large"]) input {
+      font-size: var(--font-size-xl);
+      padding: var(--spacing-3) var(--spacing-4);
+      min-height: 52px;
+    }
+
+    /* Extra large size */
+    :host([size="xlarge"]) input {
+      font-size: var(--font-size-2xl);
+      font-weight: var(--font-weight-bold);
+      padding: var(--spacing-4) var(--spacing-5);
+      min-height: 64px;
+    }
+
     input::placeholder {
       color: var(--input-color-placeholder);
+    }
+
+    :host([size="xlarge"]) input::placeholder {
+      font-weight: var(--font-weight-normal);
     }
 
     input:hover:not(:disabled) {
@@ -81,6 +108,7 @@ export class OlInput extends LitElement {
     this.required = false;
     this.readonly = false;
     this.autocomplete = '';
+    this.size = 'default';
   }
 
   // Form-associated callbacks

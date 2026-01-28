@@ -138,14 +138,40 @@ In the years that follow, he becomes entranced by one of the few things that rem
   loadBooksData();
 
   /**
+   * Get books for a specific series from our data
+   * @param {string} seriesTitle - The series title to look up
+   * @returns {Array} Array of books in the series with position field
+   */
+  function getBooksForSeries(seriesTitle) {
+    // Filter books that belong to this series
+    const seriesBooks = booksData.filter(book => book.series === seriesTitle);
+    
+    // Sort by series position and map to expected format
+    return seriesBooks
+      .sort((a, b) => (a.seriesPosition || 0) - (b.seriesPosition || 0))
+      .map(book => ({
+        ...book,
+        position: book.seriesPosition
+      }));
+  }
+
+  /**
    * Get a selection of books to simulate "books in this series"
-   * @param {number} count - Number of books to return
+   * @param {string} seriesTitle - The series title
+   * @param {number} count - Number of books to return (used for mock data)
    * @returns {Array} Array of books with added position field
    */
-  function getSeriesBooks(count) {
+  function getSeriesBooks(seriesTitle, count) {
+    // First check if we have real data for this series
+    const realBooks = getBooksForSeries(seriesTitle);
+    if (realBooks.length > 0) {
+      return realBooks;
+    }
+
+    // Fall back to mock data for other series
     if (count <= 0) return [];
     
-    const shuffled = [...booksData].sort(() => Math.random() - 0.5);
+    const shuffled = [...booksData].filter(b => !b.series).sort(() => Math.random() - 0.5);
     const selected = shuffled.slice(0, count);
 
     // Sort by firstPublished and add position
@@ -197,7 +223,7 @@ In the years that follow, he becomes entranced by one of the few things that rem
       <div class="series-card" data-card-id="${cardId}" data-series-id="${series.id || series.title}" data-has-books="${hasBooks}" data-total-books="${totalBooksInSeries}">
         <div class="series-card-header">
           <div class="series-card-title-group">
-            <h3 class="series-card-name">${series.title}</h3>
+            <h3 class="series-card-name"><a href="edit-series.html" class="series-card-link">${series.title}</a></h3>
             <span class="series-position-tag">${totalBooksInSeries === 1 ? '1 book' : `${totalBooksInSeries} books`} in series</span>
           </div>
           <button class="series-card-remove" aria-label="Remove series" type="button">
@@ -274,8 +300,8 @@ In the years that follow, he becomes entranced by one of the few things that rem
    */
   function handleSeriesSelect(event) {
     const series = event.detail.item;
-    // Generate mock books matching the series book count
-    const seriesBooks = getSeriesBooks(series.bookCount || 0);
+    // Get books for this series (real data if available, otherwise mock)
+    const seriesBooks = getSeriesBooks(series.title, series.bookCount || 0);
     addSeriesCard(series, seriesBooks);
   }
 

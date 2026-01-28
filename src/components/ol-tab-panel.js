@@ -30,6 +30,10 @@ export class OlTabPanel extends LitElement {
       display: none;
     }
 
+    :host(:focus) {
+      outline: none;
+    }
+
     .panel {
       padding: var(--spacing-4);
     }

@@ -138,5 +138,55 @@
     "author": "Scott F. Crider",
     "firstPublished": 2005,
     "status": "locate"
+  },
+  {
+    "id": "hunger-games-0",
+    "title": "The Ballad of Songbirds and Snakes",
+    "coverUrl": "https://covers.openlibrary.org/b/id/10387030-L.jpg",
+    "author": "Suzanne Collins",
+    "firstPublished": 2020,
+    "status": "read",
+    "series": "The Hunger Games",
+    "seriesPosition": 0
+  },
+  {
+    "id": "hunger-games-0.5",
+    "title": "Sunrise on the Reaping",
+    "coverUrl": "https://covers.openlibrary.org/b/id/14807533-L.jpg",
+    "author": "Suzanne Collins",
+    "firstPublished": 2025,
+    "status": "want-to-read",
+    "series": "The Hunger Games",
+    "seriesPosition": 0.5
+  },
+  {
+    "id": "hunger-games-1",
+    "title": "The Hunger Games",
+    "coverUrl": "https://covers.openlibrary.org/b/id/8741214-L.jpg",
+    "author": "Suzanne Collins",
+    "firstPublished": 2008,
+    "status": "read",
+    "series": "The Hunger Games",
+    "seriesPosition": 1
+  },
+  {
+    "id": "hunger-games-2",
+    "title": "Catching Fire",
+    "coverUrl": "https://covers.openlibrary.org/b/id/8360927-L.jpg",
+    "author": "Suzanne Collins",
+    "firstPublished": 2009,
+    "status": "read",
+    "series": "The Hunger Games",
+    "seriesPosition": 2
+  },
+  {
+    "id": "hunger-games-3",
+    "title": "Mockingjay",
+    "coverUrl": "https://covers.openlibrary.org/b/id/8360928-L.jpg",
+    "author": "Suzanne Collins",
+    "firstPublished": 2010,
+    "status": "read",
+    "series": "The Hunger Games",
+    "seriesPosition": 3
   }
 ]

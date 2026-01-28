@@ -504,6 +504,16 @@ input:focus {
   margin: 0;
 }
 
+.series-card-link {
+  color: var(--color-link);
+  text-decoration: none;
+}
+
+.series-card-link:hover {
+  text-decoration: underline;
+  color: var(--color-link-hovered);
+}
+
 .series-position-tag {
   display: inline-flex;
   align-items: center;
