@@ -89,14 +89,25 @@
       // Filter modal
       const filterModal = document.getElementById('filter-modal');
       if (filterBar && filterModal) {
+        // Restore saved modal filters
+        const countFilters = (f) => Object.values(f).reduce((sum, v) => sum + (Array.isArray(v) ? v.length : 0), 0);
+        const saved = localStorage.getItem('ol-modal-filters');
+        if (saved) {
+          try {
+            const parsed = JSON.parse(saved);
+            filterModal.filters = parsed;
+            filterBar.modalFilterCount = countFilters(parsed);
+          } catch {}
+        }
+
         filterBar.addEventListener('ol-filter-bar-more', () => {
           filterModal.open = true;
         });
         filterModal.addEventListener('ol-filter-modal-apply', (e) => {
           filterModal.open = false;
           const f = e.detail.filters;
-          const categoryCount = Object.values(f).filter(v => Array.isArray(v) && v.length > 0).length;
-          filterBar.modalFilterCount = categoryCount;
+          filterBar.modalFilterCount = countFilters(f);
+          localStorage.setItem('ol-modal-filters', JSON.stringify(f));
           runSearch(f);
         });
         filterModal.addEventListener('ol-filter-modal-close', () => {

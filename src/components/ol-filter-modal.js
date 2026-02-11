@@ -257,20 +257,19 @@ export class OlFilterModal extends LitElement {
     }
 
     .reset-btn {
-      background: none;
-      border: none;
+      background: transparent;
+      border: 1px solid var(--color-border);
       font-size: var(--body-font-size);
       font-family: inherit;
       font-weight: var(--font-weight-medium);
-      color: var(--color-text-secondary);
+      color: var(--color-text);
       cursor: pointer;
       padding: var(--spacing-2) var(--spacing-3);
       border-radius: var(--radius-button);
-      text-decoration: underline;
     }
 
     .reset-btn:hover {
-      color: var(--color-text);
+      background: var(--color-bg-hovered);
     }
 
     .reset-btn:focus-visible {
@@ -281,7 +280,6 @@ export class OlFilterModal extends LitElement {
     .reset-btn:disabled {
       opacity: 0.4;
       cursor: default;
-      text-decoration: none;
     }
 
     .apply-btn {
