@@ -8,7 +8,7 @@ const FILTER_SECTIONS = [
     id: 'subjects',
     label: 'Subjects',
     field: 'subjects',
-    options: ['Fiction', 'History', 'Science', 'Biography', 'Philosophy', 'Art', 'Technology', 'Politics', 'Education', 'Religion'],
+    options: ['Fiction', 'History', 'Science', 'Biography', 'Philosophy', 'Art', 'Technology', 'Politics', 'Religion'],
   },
   {
     id: 'publisher',
@@ -21,12 +21,6 @@ const FILTER_SECTIONS = [
     label: 'People',
     field: 'people',
     options: ['Napoleon', 'Shakespeare', 'Lincoln', 'Einstein', 'Cleopatra', 'Darwin'],
-  },
-  {
-    id: 'format',
-    label: 'Format',
-    field: 'format',
-    options: ['eBooks', 'Audiobooks'],
   },
 ];
 
@@ -328,7 +322,6 @@ export class OlFilterModal extends LitElement {
       subjects: [],
       publishers: [],
       people: [],
-      format: [],
       authors: [],
     };
   }

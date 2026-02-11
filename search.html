@@ -94,7 +94,10 @@
         });
         filterModal.addEventListener('ol-filter-modal-apply', (e) => {
           filterModal.open = false;
-          runSearch(e.detail.filters);
+          const f = e.detail.filters;
+          const categoryCount = Object.values(f).filter(v => Array.isArray(v) && v.length > 0).length;
+          filterBar.modalFilterCount = categoryCount;
+          runSearch(f);
         });
         filterModal.addEventListener('ol-filter-modal-close', () => {
           filterModal.open = false;

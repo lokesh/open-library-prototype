@@ -159,6 +159,11 @@ export class OlSearchModal extends LitElement {
       }
     }
 
+
+    .filter-bar-modal {
+      padding: var(--spacing-2) var(--spacing-4) var(--spacing-2);
+    }
+
     /* ─── Category Tabs ─── */
 
     .category-tabs {
@@ -601,7 +606,7 @@ export class OlSearchModal extends LitElement {
           </div>
 
           <!-- Filter Bar (condensed) -->
-          <ol-search-filter-bar compact></ol-search-filter-bar>
+          <ol-search-filter-bar class="filter-bar-modal" compact></ol-search-filter-bar>
 
           <!-- Body: Past Searches or Results -->
           <div class="modal-body" id="search-results-list" role="listbox" aria-label="Search results">

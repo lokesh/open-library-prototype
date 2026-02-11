@@ -246,7 +246,7 @@ input:focus {
 
 .trending-covers {
   display: grid;
-  grid-template-columns: repeat(8, 1fr);
+  grid-template-columns: repeat(8,minmax(0,1fr));
   gap: var(--spacing-element);
 }
 
@@ -256,12 +256,20 @@ input:focus {
   gap: 8px;
 }
 
-.trending-cover {
-  width: 100%;
+.trending-cover-wrapper {
+  position: relative;
   aspect-ratio: 2 / 3;
-  object-fit: cover;
+  overflow: hidden;
   border-radius: var(--radius-image);
   background-color: var(--color-bg-elevated);
+}
+
+.trending-cover {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 /* Responsive layout for trending covers */

@@ -26,7 +26,9 @@
           const buttonLabel = book.status.charAt(0).toUpperCase() + book.status.slice(1);
           return `
             <div class="trending-book">
-              <img src="${book.coverUrl}" alt="${book.title} cover" class="trending-cover">
+              <div class="trending-cover-wrapper">
+                <img src="${book.coverUrl}" alt="${book.title} cover" class="trending-cover">
+              </div>
               <ol-button variant="secondary" size="small" full-width>${buttonLabel}</ol-button>
             </div>
           `;

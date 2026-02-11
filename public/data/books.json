@@ -155,7 +155,7 @@
     "coverUrl": "https://covers.openlibrary.org/b/id/14807533-L.jpg",
     "author": "Suzanne Collins",
     "firstPublished": 2025,
-    "status": "want-to-read",
+    "status": "read",
     "series": "The Hunger Games",
     "seriesPosition": 0.5
   },
@@ -188,5 +188,705 @@
     "status": "read",
     "series": "The Hunger Games",
     "seriesPosition": 3
+  },
+  {
+    "title": "Pride and Prejudice",
+    "coverUrl": "https://covers.openlibrary.org/b/id/14348537-L.jpg",
+    "author": "Jane Austen",
+    "firstPublished": 1813,
+    "status": "read"
+  },
+  {
+    "title": "Jane Eyre",
+    "coverUrl": "https://covers.openlibrary.org/b/id/8235363-L.jpg",
+    "author": "Charlotte Brontë",
+    "firstPublished": 1847,
+    "status": "read"
+  },
+  {
+    "title": "Wuthering Heights",
+    "coverUrl": "https://covers.openlibrary.org/b/id/12818862-L.jpg",
+    "author": "Emily Brontë",
+    "firstPublished": 1847,
+    "status": "read"
+  },
+  {
+    "title": "Great Expectations",
+    "coverUrl": "https://covers.openlibrary.org/b/id/13322313-L.jpg",
+    "author": "Charles Dickens",
+    "firstPublished": 1861,
+    "status": "read"
+  },
+  {
+    "title": "A Tale of Two Cities",
+    "coverUrl": "https://covers.openlibrary.org/b/id/13301713-L.jpg",
+    "author": "Charles Dickens",
+    "firstPublished": 1859,
+    "status": "read"
+  },
+  {
+    "title": "Oliver Twist",
+    "coverUrl": "https://covers.openlibrary.org/b/id/13300802-L.jpg",
+    "author": "Charles Dickens",
+    "firstPublished": 1838,
+    "status": "read"
+  },
+  {
+    "title": "Moby Dick",
+    "coverUrl": "https://covers.openlibrary.org/b/id/10544254-L.jpg",
+    "author": "Herman Melville",
+    "firstPublished": 1851,
+    "status": "read"
+  },
+  {
+    "title": "The Great Gatsby",
+    "coverUrl": "https://covers.openlibrary.org/b/id/10590366-L.jpg",
+    "author": "F. Scott Fitzgerald",
+    "firstPublished": 1925,
+    "status": "locate"
+  },
+  {
+    "title": "To Kill a Mockingbird",
+    "coverUrl": "https://covers.openlibrary.org/b/id/14351077-L.jpg",
+    "author": "Harper Lee",
+    "firstPublished": 1960,
+    "status": "read"
+  },
+  {
+    "title": "The Catcher in the Rye",
+    "coverUrl": "https://covers.openlibrary.org/b/id/9273490-L.jpg",
+    "author": "J. D. Salinger",
+    "firstPublished": 1951,
+    "status": "read"
+  },
+  {
+    "title": "Little Women",
+    "coverUrl": "https://covers.openlibrary.org/b/id/8775559-L.jpg",
+    "author": "Louisa May Alcott",
+    "firstPublished": 1868,
+    "status": "read"
+  },
+  {
+    "title": "Frankenstein",
+    "coverUrl": "https://covers.openlibrary.org/b/id/12356249-L.jpg",
+    "author": "Mary Shelley",
+    "firstPublished": 1818,
+    "status": "read"
+  },
+  {
+    "title": "Dracula",
+    "coverUrl": "https://covers.openlibrary.org/b/id/12216503-L.jpg",
+    "author": "Bram Stoker",
+    "firstPublished": 1897,
+    "status": "read"
+  },
+  {
+    "title": "The Picture of Dorian Gray",
+    "coverUrl": "https://covers.openlibrary.org/b/id/14314858-L.jpg",
+    "author": "Oscar Wilde",
+    "firstPublished": 1890,
+    "status": "read"
+  },
+  {
+    "title": "Alice's Adventures in Wonderland",
+    "coverUrl": "https://covers.openlibrary.org/b/id/10527843-L.jpg",
+    "author": "Lewis Carroll",
+    "firstPublished": 1865,
+    "status": "read"
+  },
+  {
+    "title": "Treasure Island",
+    "coverUrl": "https://covers.openlibrary.org/b/id/13859660-L.jpg",
+    "author": "Robert Louis Stevenson",
+    "firstPublished": 1883,
+    "status": "locate"
+  },
+  {
+    "title": "The Adventures of Huckleberry Finn",
+    "coverUrl": "https://covers.openlibrary.org/b/id/8157718-L.jpg",
+    "author": "Mark Twain",
+    "firstPublished": 1884,
+    "status": "read"
+  },
+  {
+    "title": "Robinson Crusoe",
+    "coverUrl": "https://covers.openlibrary.org/b/id/368541-L.jpg",
+    "author": "Daniel Defoe",
+    "firstPublished": 1719,
+    "status": "locate"
+  },
+  {
+    "title": "Madame Bovary",
+    "coverUrl": "https://covers.openlibrary.org/b/id/12993424-L.jpg",
+    "author": "Gustave Flaubert",
+    "firstPublished": 1857,
+    "status": "read"
+  },
+  {
+    "title": "Anna Karenina",
+    "coverUrl": "https://covers.openlibrary.org/b/id/2560652-L.jpg",
+    "author": "Leo Tolstoy",
+    "firstPublished": 1877,
+    "status": "locate"
+  },
+  {
+    "title": "One Hundred Years of Solitude",
+    "coverUrl": "https://covers.openlibrary.org/b/id/12627383-L.jpg",
+    "author": "Gabriel García Márquez",
+    "firstPublished": 1967,
+    "status": "read"
+  },
+  {
+    "title": "Beloved",
+    "coverUrl": "https://covers.openlibrary.org/b/id/8261367-L.jpg",
+    "author": "Toni Morrison",
+    "firstPublished": 1987,
+    "status": "read"
+  },
+  {
+    "title": "The Color Purple",
+    "coverUrl": "https://covers.openlibrary.org/b/id/8564628-L.jpg",
+    "author": "Alice Walker",
+    "firstPublished": 1982,
+    "status": "borrow"
+  },
+  {
+    "title": "Slaughterhouse-Five",
+    "coverUrl": "https://covers.openlibrary.org/b/id/12727001-L.jpg",
+    "author": "Kurt Vonnegut",
+    "firstPublished": 1969,
+    "status": "read"
+  },
+  {
+    "title": "Catch-22",
+    "coverUrl": "https://covers.openlibrary.org/b/id/6468653-L.jpg",
+    "author": "Joseph Heller",
+    "firstPublished": 1961,
+    "status": "read"
+  },
+  {
+    "title": "Of Mice and Men",
+    "coverUrl": "https://covers.openlibrary.org/b/id/14319003-L.jpg",
+    "author": "John Steinbeck",
+    "firstPublished": 1937,
+    "status": "read"
+  },
+  {
+    "title": "The Grapes of Wrath",
+    "coverUrl": "https://covers.openlibrary.org/b/id/12715902-L.jpg",
+    "author": "John Steinbeck",
+    "firstPublished": 1939,
+    "status": "read"
+  },
+  {
+    "title": "To the Lighthouse",
+    "coverUrl": "https://covers.openlibrary.org/b/id/8231846-L.jpg",
+    "author": "Virginia Woolf",
+    "firstPublished": 1927,
+    "status": "read"
+  },
+  {
+    "title": "The Bell Jar",
+    "coverUrl": "https://covers.openlibrary.org/b/id/8477115-L.jpg",
+    "author": "Sylvia Plath",
+    "firstPublished": 1963,
+    "status": "read"
+  },
+  {
+    "title": "Invisible Man",
+    "coverUrl": "https://covers.openlibrary.org/b/id/998256-L.jpg",
+    "author": "Ralph Ellison",
+    "firstPublished": 1952,
+    "status": "read"
+  },
+  {
+    "title": "Nineteen Eighty-Four",
+    "coverUrl": "https://covers.openlibrary.org/b/id/9267242-L.jpg",
+    "author": "George Orwell",
+    "firstPublished": 1949,
+    "status": "read"
+  },
+  {
+    "title": "Animal Farm",
+    "coverUrl": "https://covers.openlibrary.org/b/id/11261770-L.jpg",
+    "author": "George Orwell",
+    "firstPublished": 1945,
+    "status": "read"
+  },
+  {
+    "title": "Brave New World",
+    "coverUrl": "https://covers.openlibrary.org/b/id/8231823-L.jpg",
+    "author": "Aldous Huxley",
+    "firstPublished": 1932,
+    "status": "read"
+  },
+  {
+    "title": "Fahrenheit 451",
+    "coverUrl": "https://covers.openlibrary.org/b/id/12993656-L.jpg",
+    "author": "Ray Bradbury",
+    "firstPublished": 1953,
+    "status": "read"
+  },
+  {
+    "title": "Lord of the Flies",
+    "coverUrl": "https://covers.openlibrary.org/b/id/8684447-L.jpg",
+    "author": "William Golding",
+    "firstPublished": 1954,
+    "status": "read"
+  },
+  {
+    "title": "The Handmaid's Tale",
+    "coverUrl": "https://covers.openlibrary.org/b/id/8231851-L.jpg",
+    "author": "Margaret Atwood",
+    "firstPublished": 1985,
+    "status": "read"
+  },
+  {
+    "title": "A Clockwork Orange",
+    "coverUrl": "https://covers.openlibrary.org/b/id/13151224-L.jpg",
+    "author": "Anthony Burgess",
+    "firstPublished": 1962,
+    "status": "read"
+  },
+  {
+    "title": "Things Fall Apart",
+    "coverUrl": "https://covers.openlibrary.org/b/id/12816943-L.jpg",
+    "author": "Chinua Achebe",
+    "firstPublished": 1958,
+    "status": "read"
+  },
+  {
+    "title": "Dune",
+    "coverUrl": "https://covers.openlibrary.org/b/id/11481354-L.jpg",
+    "author": "Frank Herbert",
+    "firstPublished": 1965,
+    "status": "read"
+  },
+  {
+    "title": "The Lord of the Rings",
+    "coverUrl": "https://covers.openlibrary.org/b/id/14625765-L.jpg",
+    "author": "J.R.R. Tolkien",
+    "firstPublished": 1954,
+    "status": "read"
+  },
+  {
+    "title": "The Hobbit",
+    "coverUrl": "https://covers.openlibrary.org/b/id/14627509-L.jpg",
+    "author": "J.R.R. Tolkien",
+    "firstPublished": 1937,
+    "status": "borrow"
+  },
+  {
+    "title": "Ender's Game",
+    "coverUrl": "https://covers.openlibrary.org/b/id/12996033-L.jpg",
+    "author": "Orson Scott Card",
+    "firstPublished": 1985,
+    "status": "locate"
+  },
+  {
+    "title": "Neuromancer",
+    "coverUrl": "https://covers.openlibrary.org/b/id/283860-L.jpg",
+    "author": "William Gibson",
+    "firstPublished": 1984,
+    "status": "read"
+  },
+  {
+    "title": "The Hitchhiker's Guide to the Galaxy",
+    "coverUrl": "https://covers.openlibrary.org/b/id/12986869-L.jpg",
+    "author": "Douglas Adams",
+    "firstPublished": 1979,
+    "status": "read"
+  },
+  {
+    "title": "Good Omens",
+    "coverUrl": "https://covers.openlibrary.org/b/id/10482258-L.jpg",
+    "author": "Neil Gaiman",
+    "firstPublished": 1990,
+    "status": "read"
+  },
+  {
+    "title": "American Gods",
+    "coverUrl": "https://covers.openlibrary.org/b/id/8494659-L.jpg",
+    "author": "Neil Gaiman",
+    "firstPublished": 2001,
+    "status": "locate"
+  },
+  {
+    "title": "The Name of the Wind",
+    "coverUrl": "https://covers.openlibrary.org/b/id/11480483-L.jpg",
+    "author": "Patrick Rothfuss",
+    "firstPublished": 2007,
+    "status": "read"
+  },
+  {
+    "title": "Harry Potter and the Philosopher's Stone",
+    "coverUrl": "https://covers.openlibrary.org/b/id/15155833-L.jpg",
+    "author": "J. K. Rowling",
+    "firstPublished": 1997,
+    "status": "read"
+  },
+  {
+    "title": "Project Hail Mary",
+    "coverUrl": "https://covers.openlibrary.org/b/id/11200092-L.jpg",
+    "author": "Andy Weir",
+    "firstPublished": 2021,
+    "status": "read"
+  },
+  {
+    "title": "The Time Machine",
+    "coverUrl": "https://covers.openlibrary.org/b/id/9009316-L.jpg",
+    "author": "H. G. Wells",
+    "firstPublished": 1895,
+    "status": "read"
+  },
+  {
+    "title": "The Shining",
+    "coverUrl": "https://covers.openlibrary.org/b/id/12376585-L.jpg",
+    "author": "Stephen King",
+    "firstPublished": 1977,
+    "status": "read"
+  },
+  {
+    "title": "The Stand",
+    "coverUrl": "https://covers.openlibrary.org/b/id/9255992-L.jpg",
+    "author": "Stephen King",
+    "firstPublished": 1978,
+    "status": "read"
+  },
+  {
+    "title": "Gone Girl",
+    "coverUrl": "https://covers.openlibrary.org/b/id/8368314-L.jpg",
+    "author": "Gillian Flynn",
+    "firstPublished": 2012,
+    "status": "read"
+  },
+  {
+    "title": "The Girl on the Train",
+    "coverUrl": "https://covers.openlibrary.org/b/id/7350360-L.jpg",
+    "author": "Paula Hawkins",
+    "firstPublished": 2015,
+    "status": "read"
+  },
+  {
+    "title": "The Da Vinci Code",
+    "coverUrl": "https://covers.openlibrary.org/b/id/9255229-L.jpg",
+    "author": "Dan Brown",
+    "firstPublished": 2003,
+    "status": "read"
+  },
+  {
+    "title": "And Then There Were None",
+    "coverUrl": "https://covers.openlibrary.org/b/id/11172296-L.jpg",
+    "author": "Agatha Christie",
+    "firstPublished": 1939,
+    "status": "read"
+  },
+  {
+    "title": "The Woman in White",
+    "coverUrl": "https://covers.openlibrary.org/b/id/4684227-L.jpg",
+    "author": "Wilkie Collins",
+    "firstPublished": 1859,
+    "status": "read"
+  },
+  {
+    "title": "The Hound of the Baskervilles",
+    "coverUrl": "https://covers.openlibrary.org/b/id/8063264-L.jpg",
+    "author": "Arthur Conan Doyle",
+    "firstPublished": 1902,
+    "status": "read"
+  },
+  {
+    "title": "The Adventures of Sherlock Holmes",
+    "coverUrl": "https://covers.openlibrary.org/b/id/6717853-L.jpg",
+    "author": "Arthur Conan Doyle",
+    "firstPublished": 1892,
+    "status": "borrow"
+  },
+  {
+    "title": "Murder on the Orient Express",
+    "coverUrl": "https://covers.openlibrary.org/b/id/14582832-L.jpg",
+    "author": "Agatha Christie",
+    "firstPublished": 1934,
+    "status": "read"
+  },
+  {
+    "title": "The Spy Who Came in from the Cold",
+    "coverUrl": "https://covers.openlibrary.org/b/id/7013626-L.jpg",
+    "author": "John le Carré",
+    "firstPublished": 1963,
+    "status": "read"
+  },
+  {
+    "title": "Where the Crawdads Sing",
+    "coverUrl": "https://covers.openlibrary.org/b/id/8362947-L.jpg",
+    "author": "Delia Owens",
+    "firstPublished": 2018,
+    "status": "read"
+  },
+  {
+    "title": "Normal People",
+    "coverUrl": "https://covers.openlibrary.org/b/id/8794265-L.jpg",
+    "author": "Sally Rooney",
+    "firstPublished": 2018,
+    "status": "read"
+  },
+  {
+    "title": "Circe",
+    "coverUrl": "https://covers.openlibrary.org/b/id/8739376-L.jpg",
+    "author": "Madeline Miller",
+    "firstPublished": 2018,
+    "status": "read"
+  },
+  {
+    "title": "The Song of Achilles",
+    "coverUrl": "https://covers.openlibrary.org/b/id/7098465-L.jpg",
+    "author": "Madeline Miller",
+    "firstPublished": 2011,
+    "status": "read"
+  },
+  {
+    "title": "Pachinko",
+    "coverUrl": "https://covers.openlibrary.org/b/id/8044605-L.jpg",
+    "author": "Min Jin Lee",
+    "firstPublished": 2017,
+    "status": "read"
+  },
+  {
+    "title": "A Man Called Ove",
+    "coverUrl": "https://covers.openlibrary.org/b/id/7437001-L.jpg",
+    "author": "Fredrik Backman",
+    "firstPublished": 2012,
+    "status": "read"
+  },
+  {
+    "title": "The Kite Runner",
+    "coverUrl": "https://covers.openlibrary.org/b/id/14846827-L.jpg",
+    "author": "Khaled Hosseini",
+    "firstPublished": 2003,
+    "status": "locate"
+  },
+  {
+    "title": "Life of Pi",
+    "coverUrl": "https://covers.openlibrary.org/b/id/12840573-L.jpg",
+    "author": "Yann Martel",
+    "firstPublished": 2001,
+    "status": "read"
+  },
+  {
+    "title": "The Road",
+    "coverUrl": "https://covers.openlibrary.org/b/id/198120-L.jpg",
+    "author": "Cormac McCarthy",
+    "firstPublished": 2006,
+    "status": "read"
+  },
+  {
+    "title": "The Alchemist",
+    "coverUrl": "https://covers.openlibrary.org/b/id/7414780-L.jpg",
+    "author": "Paulo Coelho",
+    "firstPublished": 1988,
+    "status": "borrow"
+  },
+  {
+    "title": "Sapiens",
+    "coverUrl": "https://covers.openlibrary.org/b/id/8634250-L.jpg",
+    "author": "Yuval Noah Harari",
+    "firstPublished": 2011,
+    "status": "read"
+  },
+  {
+    "title": "Educated",
+    "coverUrl": "https://covers.openlibrary.org/b/id/8314077-L.jpg",
+    "author": "Tara Westover",
+    "firstPublished": 2018,
+    "status": "read"
+  },
+  {
+    "title": "The Diary of a Young Girl",
+    "coverUrl": "https://covers.openlibrary.org/b/id/8584021-L.jpg",
+    "author": "Anne Frank",
+    "firstPublished": 1947,
+    "status": "locate"
+  },
+  {
+    "title": "Crime and Punishment",
+    "coverUrl": "https://covers.openlibrary.org/b/id/14911181-L.jpg",
+    "author": "Fyodor Dostoevsky",
+    "firstPublished": 1866,
+    "status": "read"
+  },
+  {
+    "title": "The Brothers Karamazov",
+    "coverUrl": "https://covers.openlibrary.org/b/id/8272336-L.jpg",
+    "author": "Fyodor Dostoevsky",
+    "firstPublished": 1880,
+    "status": "read"
+  },
+  {
+    "title": "War and Peace",
+    "coverUrl": "https://covers.openlibrary.org/b/id/12621906-L.jpg",
+    "author": "Leo Tolstoy",
+    "firstPublished": 1869,
+    "status": "read"
+  },
+  {
+    "title": "Les Misérables",
+    "coverUrl": "https://covers.openlibrary.org/b/id/12721865-L.jpg",
+    "author": "Victor Hugo",
+    "firstPublished": 1862,
+    "status": "read"
+  },
+  {
+    "title": "The Count of Monte Cristo",
+    "coverUrl": "https://covers.openlibrary.org/b/id/14566393-L.jpg",
+    "author": "Alexandre Dumas",
+    "firstPublished": 1844,
+    "status": "read"
+  },
+  {
+    "title": "Don Quixote",
+    "coverUrl": "https://covers.openlibrary.org/b/id/14428305-L.jpg",
+    "author": "Miguel de Cervantes",
+    "firstPublished": 1605,
+    "status": "read"
+  },
+  {
+    "title": "The Three Musketeers",
+    "coverUrl": "https://covers.openlibrary.org/b/id/11929973-L.jpg",
+    "author": "Alexandre Dumas",
+    "firstPublished": 1844,
+    "status": "read"
+  },
+  {
+    "title": "The Little Prince",
+    "coverUrl": "https://covers.openlibrary.org/b/id/10708272-L.jpg",
+    "author": "Antoine de Saint-Exupéry",
+    "firstPublished": 1943,
+    "status": "read"
+  },
+  {
+    "title": "The Metamorphosis",
+    "coverUrl": "https://covers.openlibrary.org/b/id/12820198-L.jpg",
+    "author": "Franz Kafka",
+    "firstPublished": 1915,
+    "status": "read"
+  },
+  {
+    "title": "Anne of Green Gables",
+    "coverUrl": "https://covers.openlibrary.org/b/id/14641084-L.jpg",
+    "author": "Lucy Maud Montgomery",
+    "firstPublished": 1908,
+    "status": "read"
+  },
+  {
+    "title": "The Secret Garden",
+    "coverUrl": "https://covers.openlibrary.org/b/id/12622062-L.jpg",
+    "author": "Frances Hodgson Burnett",
+    "firstPublished": 1911,
+    "status": "read"
+  },
+  {
+    "title": "The Wind in the Willows",
+    "coverUrl": "https://covers.openlibrary.org/b/id/13335427-L.jpg",
+    "author": "Kenneth Grahame",
+    "firstPublished": 1908,
+    "status": "read"
+  },
+  {
+    "title": "The Call of the Wild",
+    "coverUrl": "https://covers.openlibrary.org/b/id/12393037-L.jpg",
+    "author": "Jack London",
+    "firstPublished": 1903,
+    "status": "borrow"
+  },
+  {
+    "title": "A Christmas Carol",
+    "coverUrl": "https://covers.openlibrary.org/b/id/13299222-L.jpg",
+    "author": "Charles Dickens",
+    "firstPublished": 1843,
+    "status": "read"
+  },
+  {
+    "title": "The Wonderful Wizard of Oz",
+    "coverUrl": "https://covers.openlibrary.org/b/id/552443-L.jpg",
+    "author": "L. Frank Baum",
+    "firstPublished": 1900,
+    "status": "borrow"
+  },
+  {
+    "title": "Gulliver's Travels",
+    "coverUrl": "https://covers.openlibrary.org/b/id/12717083-L.jpg",
+    "author": "Jonathan Swift",
+    "firstPublished": 1726,
+    "status": "read"
+  },
+  {
+    "title": "Sense and Sensibility",
+    "coverUrl": "https://covers.openlibrary.org/b/id/9278292-L.jpg",
+    "author": "Jane Austen",
+    "firstPublished": 1811,
+    "status": "read"
+  },
+  {
+    "title": "Emma",
+    "coverUrl": "https://covers.openlibrary.org/b/id/9278312-L.jpg",
+    "author": "Jane Austen",
+    "firstPublished": 1815,
+    "status": "read"
+  },
+  {
+    "title": "Ethan Frome",
+    "coverUrl": "https://covers.openlibrary.org/b/id/8303480-L.jpg",
+    "author": "Edith Wharton",
+    "firstPublished": 1911,
+    "status": "read"
+  },
+  {
+    "title": "Dubliners",
+    "coverUrl": "https://covers.openlibrary.org/b/id/8216412-L.jpg",
+    "author": "James Joyce",
+    "firstPublished": 1914,
+    "status": "locate"
+  },
+  {
+    "title": "Death on the Nile",
+    "coverUrl": "https://covers.openlibrary.org/b/id/14066646-L.jpg",
+    "author": "Agatha Christie",
+    "firstPublished": 1937,
+    "status": "locate"
+  },
+  {
+    "title": "Angels & Demons",
+    "coverUrl": "https://covers.openlibrary.org/b/id/11408459-L.jpg",
+    "author": "Dan Brown",
+    "firstPublished": 2000,
+    "status": "read"
+  },
+  {
+    "title": "Flatland",
+    "coverUrl": "https://covers.openlibrary.org/b/id/10069547-L.jpg",
+    "author": "Edwin Abbott Abbott",
+    "firstPublished": 1884,
+    "status": "read"
+  },
+  {
+    "title": "The Name of the Rose",
+    "coverUrl": "https://covers.openlibrary.org/b/id/8598263-L.jpg",
+    "author": "Umberto Eco",
+    "firstPublished": 1980,
+    "status": "read"
+  },
+  {
+    "title": "The Strange Case of Dr. Jekyll and Mr. Hyde",
+    "coverUrl": "https://covers.openlibrary.org/b/id/295773-L.jpg",
+    "author": "Robert Louis Stevenson",
+    "firstPublished": 1886,
+    "status": "read"
+  },
+  {
+    "title": "The Secret Adversary",
+    "coverUrl": "https://covers.openlibrary.org/b/id/14590159-L.jpg",
+    "author": "Agatha Christie",
+    "firstPublished": 1922,
+    "status": "read"
   }
 ]

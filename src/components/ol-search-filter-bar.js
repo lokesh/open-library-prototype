@@ -3,6 +3,7 @@ import { LitElement, html, css, svg, nothing } from 'lit';
 const STORAGE_KEY_FORMAT = 'ol-filter-format';
 const STORAGE_KEY_AVAILABLE = 'ol-filter-available-now';
 const STORAGE_KEY_LANGUAGE = 'ol-filter-language';
+const STORAGE_KEY_EBOOK_TYPE = 'ol-filter-ebook-type';
 
 const FORMAT_OPTIONS = [
   { id: 'all', label: 'All' },
@@ -28,6 +29,11 @@ const LANGUAGE_OPTIONS = [
   'Japanese',
 ];
 
+const EBOOK_TYPE_OPTIONS = [
+  { id: 'full', label: 'Full eBooks' },
+  { id: 'preview', label: 'Preview Only' },
+];
+
 export class OlSearchFilterBar extends LitElement {
   static properties = {
     compact: { type: Boolean, reflect: true },
@@ -35,8 +41,10 @@ export class OlSearchFilterBar extends LitElement {
     _availableNow: { type: Boolean, state: true },
     _activeSubjects: { type: Array, state: true },
     _activeLanguage: { type: String, state: true },
+    _ebookType: { type: String, state: true },
     _showMoreFilters: { type: Boolean, state: true },
     _languageOpen: { type: Boolean, state: true },
+    modalFilterCount: { type: Number, attribute: 'modal-filter-count' },
   };
 
   static styles = css`
@@ -63,10 +71,10 @@ export class OlSearchFilterBar extends LitElement {
         box-sizing: border-box;
       }
 
-      :host([compact]) .filter-bar {
-        padding-left: var(--spacing-6);
-        padding-right: var(--spacing-6);
-      }
+      // :host([compact]) .filter-bar {
+      //   padding-left: var(--spacing-6);
+      //   padding-right: var(--spacing-6);
+      // }
     }
 
     .filter-bar::-webkit-scrollbar {
@@ -302,6 +310,7 @@ export class OlSearchFilterBar extends LitElement {
     /* ─── More filters toggle ─── */
 
     .more-btn {
+      position: relative;
       display: inline-flex;
       align-items: center;
       gap: var(--spacing-1);
@@ -329,20 +338,61 @@ export class OlSearchFilterBar extends LitElement {
       outline-offset: 2px;
     }
 
+    .more-btn.has-filters {
+      background: var(--color-bg-primary);
+      border-color: var(--color-bg-primary);
+      color: var(--color-text-on-primary);
+    }
+
+    .more-btn.has-filters:hover {
+      background: var(--color-bg-primary-hovered);
+    }
+
     .more-btn svg {
       width: 14px;
       height: 14px;
     }
 
-    /* ─── More filters row (mobile only) ─── */
+    .more-btn .badge {
+      position: absolute;
+      top: -7px;
+      right: -12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 18px;
+      height: 18px;
+      border-radius: var(--radius-full);
+      background: var(--color-bg-primary);
+      color: var(--color-bg-elevated);
+      font-size: 10px;
+      font-weight: var(--font-weight-semibold);
+      line-height: 1;
+      box-shadow: 0 0 0 2px var(--color-bg);
+    }
 
-    .more-row {
-      display: block;
+    /* ─── Sub row (ebook type + more filters) ─── */
+
+    .sub-row {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-2);
       padding-bottom: var(--spacing-1);
     }
 
+    // @media (max-width: 767px) {
+    //   :host([compact]) .sub-row {
+    //     padding-left: var(--spacing-6);
+    //     padding-right: var(--spacing-6);
+    //   }
+    // }
+
     @media (min-width: 768px) {
-      .more-row {
+      .sub-row .more-btn {
+        display: none;
+      }
+
+      .sub-row:not(:has(.segment-group)) {
         display: none;
       }
     }
@@ -391,11 +441,6 @@ export class OlSearchFilterBar extends LitElement {
     }
 
     /* ─── Compact mode (modal) ─── */
-
-    :host([compact]) .filter-bar {
-      padding: var(--spacing-2) var(--spacing-4) var(--spacing-2);
-    }
-
     :host([compact]) .divider {
       height: 16px;
     }
@@ -408,8 +453,10 @@ export class OlSearchFilterBar extends LitElement {
     this._availableNow = localStorage.getItem(STORAGE_KEY_AVAILABLE) === 'true';
     this._activeSubjects = [];
     this._activeLanguage = localStorage.getItem(STORAGE_KEY_LANGUAGE) || '';
+    this._ebookType = localStorage.getItem(STORAGE_KEY_EBOOK_TYPE) || 'full';
     this._showMoreFilters = false;
     this._languageOpen = false;
+    this.modalFilterCount = 0;
     this._boundCloseDropdown = this._closeDropdownOnOutsideClick.bind(this);
     this._boundCloseOnScroll = this._closeDropdownOnScroll.bind(this);
   }
@@ -453,6 +500,12 @@ export class OlSearchFilterBar extends LitElement {
   _toggleAvailableNow() {
     this._availableNow = !this._availableNow;
     localStorage.setItem(STORAGE_KEY_AVAILABLE, String(this._availableNow));
+    this._dispatchChange();
+  }
+
+  _setEbookType(type) {
+    this._ebookType = type;
+    localStorage.setItem(STORAGE_KEY_EBOOK_TYPE, type);
     this._dispatchChange();
   }
 
@@ -501,6 +554,7 @@ export class OlSearchFilterBar extends LitElement {
           composed: true,
           detail: {
             format: this._activeFormat,
+            ebookType: this._ebookType,
             availableNow: this._availableNow,
             subjects: [...this._activeSubjects],
             language: this._activeLanguage,
@@ -515,9 +569,11 @@ export class OlSearchFilterBar extends LitElement {
   _clearAll() {
     this._activeFormat = 'all';
     this._availableNow = false;
+    this._ebookType = 'full';
     localStorage.removeItem(STORAGE_KEY_FORMAT);
     localStorage.removeItem(STORAGE_KEY_AVAILABLE);
     localStorage.removeItem(STORAGE_KEY_LANGUAGE);
+    localStorage.removeItem(STORAGE_KEY_EBOOK_TYPE);
     this._activeSubjects = [];
     this._activeLanguage = '';
     this._showMoreFilters = false;
@@ -538,6 +594,7 @@ export class OlSearchFilterBar extends LitElement {
       new CustomEvent('ol-filter-bar-change', {
         detail: {
           format: this._activeFormat,
+          ebookType: this._ebookType,
           availableNow: this._availableNow,
           subjects: [...this._activeSubjects],
           language: this._activeLanguage,
@@ -616,6 +673,21 @@ export class OlSearchFilterBar extends LitElement {
     `;
   }
 
+  _renderEbookTypeSegment() {
+    return html`
+      <div class="segment-group" role="radiogroup" aria-label="eBook type">
+        ${EBOOK_TYPE_OPTIONS.map(opt => html`
+          <button
+            class="segment-btn ${this._ebookType === opt.id ? 'active' : ''}"
+            role="radio"
+            aria-checked=${this._ebookType === opt.id}
+            @click=${() => this._setEbookType(opt.id)}
+          >${opt.label}</button>
+        `)}
+      </div>
+    `;
+  }
+
   _renderSubjectChips() {
     return SUBJECT_OPTIONS.map(subject => html`
       <button
@@ -637,11 +709,12 @@ export class OlSearchFilterBar extends LitElement {
         ${this._renderLanguageDropdown()}
       </div>
 
-      <!-- More filters row (mobile only) -->
-      ${this.compact ? nothing : html`
-        <div class="more-row">
+      <!-- Sub row: ebook type (when eBooks selected) + more filters (mobile) -->
+      ${!this.compact ? html`
+        <div class="sub-row">
+          ${this._activeFormat === 'read' ? this._renderEbookTypeSegment() : nothing}
           <button
-            class="more-btn"
+            class="more-btn ${this.modalFilterCount > 0 ? 'has-filters' : ''}"
             aria-expanded=${this._showMoreFilters}
             @click=${this._toggleMoreFilters}
           >
@@ -652,9 +725,10 @@ export class OlSearchFilterBar extends LitElement {
               }
             </svg>
             ${this._showMoreFilters ? 'Less' : 'More filters'}
+            ${this.modalFilterCount > 0 ? html`<span class="badge">${this.modalFilterCount}</span>` : nothing}
           </button>
         </div>
-      `}
+      ` : nothing}
 
       <!-- Secondary row: subjects (progressive disclosure) -->
       ${this._showMoreFilters ? html`

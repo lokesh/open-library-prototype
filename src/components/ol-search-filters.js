@@ -25,7 +25,7 @@ export class OlSearchFilters extends LitElement {
       font-size: var(--font-size-xl);
       font-weight: var(--font-weight-semibold);
       font-family: var(--font-family-serif);
-      padding: var(--spacing-3) 0;
+      padding: var(spacing-1) 0 var(--spacing-3) 0;
       cursor: pointer;
     }
 
@@ -372,7 +372,7 @@ export class OlSearchFilters extends LitElement {
 
         ${this._renderSection('subjects', 'Subjects', html`
           <div class="checkbox-list">
-            ${['Fiction', 'History', 'Science', 'Biography', 'Philosophy', 'Art', 'Technology', 'Politics', 'Education', 'Religion'].map(
+            ${['Fiction', 'History', 'Science', 'Biography', 'Philosophy', 'Art', 'Technology', 'Politics', 'Religion'].map(
               (s) => html`
                 <label class="checkbox-item">
                   <input
