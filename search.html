@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Search - Open Library</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,100..900&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles/index.css">
+  <script type="module" src="/src/components/index.js"></script>
+  <script type="module">
+    import searchDataService from '/src/search-data-service.js';
+
+    const CATEGORIES = [
+      { id: 'books', label: 'Books' },
+      { id: 'authors', label: 'Authors' },
+      { id: 'search-inside', label: 'Search Inside' },
+      { id: 'subjects', label: 'Subjects' },
+      { id: 'lists', label: 'Lists' },
+    ];
+
+    let currentCategory = 'books';
+    let currentQuery = '';
+    let debounceTimer = null;
+
+    async function init() {
+      await searchDataService.ensureLoaded();
+
+      const params = new URLSearchParams(window.location.search);
+      currentQuery = params.get('q') || '';
+      currentCategory = params.get('category') || 'books';
+
+      const input = document.getElementById('search-input');
+      input.value = currentQuery;
+
+      renderTabs();
+      runSearch();
+
+      // Input handler with debounce
+      input.addEventListener('input', (e) => {
+        currentQuery = e.target.value;
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => {
+          updateUrl();
+          runSearch();
+        }, 200);
+      });
+
+      // Enter key to save search
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && currentQuery.trim()) {
+          searchDataService.addPastSearch(currentQuery.trim());
+        }
+      });
+
+      // Sidebar filter changes
+      const filters = document.querySelector('ol-search-filters');
+      if (filters) {
+        filters.addEventListener('ol-filters-change', (e) => {
+          runSearch(e.detail.filters);
+        });
+        filters.addEventListener('ol-filters-clear', () => {
+          runSearch();
+        });
+      }
+
+      // Filter bar changes
+      const filterBar = document.querySelector('ol-search-filter-bar');
+      if (filterBar) {
+        filterBar.addEventListener('ol-filter-bar-change', (e) => {
+          runSearch(e.detail);
+        });
+      }
+    }
+
+    function renderTabs() {
+      const tabsContainer = document.getElementById('search-tabs');
+      tabsContainer.innerHTML = CATEGORIES.map(cat =>
+        `<button class="search-page-tab ${cat.id === currentCategory ? 'active' : ''}" data-category="${cat.id}">${cat.label}</button>`
+      ).join('');
+
+      tabsContainer.addEventListener('click', (e) => {
+        const btn = e.target.closest('.search-page-tab');
+        if (!btn) return;
+        currentCategory = btn.dataset.category;
+        tabsContainer.querySelectorAll('.search-page-tab').forEach(t => t.classList.remove('active'));
+        btn.classList.add('active');
+        updateUrl();
+        runSearch();
+      });
+    }
+
+    function runSearch(filters = null) {
+      const q = currentQuery.trim();
+      const resultsContainer = document.getElementById('search-results');
+
+      if (!q) {
+        resultsContainer.innerHTML = '<p style="color: var(--color-text-secondary); padding: var(--spacing-6) 0; text-align: center;">Enter a search term above</p>';
+        return;
+      }
+
+      let results = [];
+      switch (currentCategory) {
+        case 'books':
+          results = searchDataService.searchBooks(q);
+          if (filters) {
+            results = applyFilters(results, filters);
+          }
+          break;
+        case 'authors':
+          results = searchDataService.searchAuthors(q);
+          break;
+        default:
+          resultsContainer.innerHTML = '<p style="color: var(--color-text-secondary); padding: var(--spacing-6) 0; text-align: center;">Coming soon</p>';
+          return;
+      }
+
+      if (!results.length) {
+        resultsContainer.innerHTML = `<p style="color: var(--color-text-secondary); padding: var(--spacing-6) 0; text-align: center;">No results for "${q}"</p>`;
+        return;
+      }
+
+      if (currentCategory === 'books') {
+        resultsContainer.innerHTML = '';
+        results.forEach(book => {
+          const el = document.createElement('ol-search-result-item');
+          el.title = book.title;
+          el.author = book.author || '';
+          el.year = book.firstPublished || '';
+          el.coverUrl = book.coverUrl || '';
+          el.query = currentQuery;
+          resultsContainer.appendChild(el);
+        });
+      } else if (currentCategory === 'authors') {
+        resultsContainer.innerHTML = results.map(a =>
+          `<div style="padding: var(--spacing-3) var(--spacing-4); border-bottom: 1px solid var(--color-border-subtle);">
+            <strong>${a.name}</strong>
+            <span style="color: var(--color-text-secondary); font-size: var(--body-font-size-sm); margin-left: var(--spacing-2);">${a.bookCount} book${a.bookCount !== 1 ? 's' : ''}</span>
+          </div>`
+        ).join('');
+      }
+    }
+
+    function applyFilters(results, filters) {
+      return results.filter(book => {
+        if (filters.yearMin && book.firstPublished < parseInt(filters.yearMin)) return false;
+        if (filters.yearMax && book.firstPublished > parseInt(filters.yearMax)) return false;
+        if (filters.authors && filters.authors.length > 0) {
+          if (!filters.authors.includes(book.author)) return false;
+        }
+        return true;
+      });
+    }
+
+    function updateUrl() {
+      const params = new URLSearchParams();
+      if (currentQuery) params.set('q', currentQuery);
+      if (currentCategory !== 'books') params.set('category', currentCategory);
+      const newUrl = `${window.location.pathname}?${params.toString()}`;
+      history.replaceState(null, '', newUrl);
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  </script>
+</head>
+<body>
+
+  <ol-main-nav hide-search></ol-main-nav>
+
+  <main>
+    <a href="javascript:history.back()" class="search-back-link">&lsaquo; Back</a>
+
+    <div class="search-page-layout">
+      <!-- Filter sidebar (desktop) -->
+      <aside class="search-sidebar">
+        <ol-search-filters></ol-search-filters>
+      </aside>
+
+      <!-- Main content -->
+      <div class="search-main">
+        <!-- Mobile filter toggle -->
+        <div class="search-mobile-filter">
+          <ol-search-filters></ol-search-filters>
+        </div>
+
+        <!-- Search input -->
+        <div class="search-page-input-row">
+          <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <input type="search" id="search-input" placeholder="Search for a book, author or series..." />
+        </div>
+
+        <!-- Filter bar -->
+        <ol-search-filter-bar></ol-search-filter-bar>
+
+        <!-- Category tabs -->
+        <div class="search-page-tabs" id="search-tabs" role="tablist">
+          <!-- Rendered by JS -->
+        </div>
+
+        <!-- Results -->
+        <div class="search-page-results" id="search-results">
+          <!-- Rendered by JS -->
+        </div>
+      </div>
+    </div>
+  </main>
+
+</body>
+</html>

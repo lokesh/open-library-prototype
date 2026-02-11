@@ -104,6 +104,10 @@ Examples:
   --focus-ring-color: var(--color-border-focused);
   --focus-ring: 0 0 0 var(--focus-ring-width) rgba(59, 130, 246, 0.2);
 
+  /* === SEARCH / HIGHLIGHT === */
+  --color-highlight: #fef08a;
+  --z-index-modal: 2000;
+
   /* === SEMANTIC TYPOGRAPHY === */
   /* Headings */
   --display-color: var(--color-text-strong);
@@ -252,6 +256,9 @@ body[data-theme="dark"] {
   /* Brighter for visibility in dark mode */
   --focus-ring-color: var(--color-border-focused);
   --focus-ring: 0 0 0 var(--focus-ring-width) rgba(59, 130, 246, 0.4);
+
+  /* === SEARCH / HIGHLIGHT - DARK === */
+  --color-highlight: rgba(133, 77, 14, 0.5);
 
   /* === COMPONENT TOKENS - DARK === */
   /* Explicitly override component color tokens for clarity */

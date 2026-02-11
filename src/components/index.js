@@ -17,3 +17,8 @@ import './ol-tab-panel.js';
 import './ol-sortable-list.js';
 import './ol-sortable-item.js';
 import './ol-search.js';
+import './ol-past-search-item.js';
+import './ol-search-result-item.js';
+import './ol-search-filters.js';
+import './ol-search-filter-bar.js';
+import './ol-search-modal.js';
