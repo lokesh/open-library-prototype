@@ -106,6 +106,7 @@
         filterModal.addEventListener('ol-filter-modal-apply', (e) => {
           filterModal.open = false;
           const f = e.detail.filters;
+          filterModal.filters = f;
           filterBar.modalFilterCount = countFilters(f);
           localStorage.setItem('ol-modal-filters', JSON.stringify(f));
           runSearch(f);

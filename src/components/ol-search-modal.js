@@ -472,8 +472,10 @@ export class OlSearchModal extends LitElement {
     if (this._query.trim()) {
       searchDataService.addPastSearch(this._query.trim());
     }
-    // For prototype, navigate to book.html (books) or just close
-    this._close();
+    const params = new URLSearchParams();
+    if (this._query.trim()) params.set('q', this._query.trim());
+    if (this._activeCategory !== 'books') params.set('category', this._activeCategory);
+    window.location.href = `search.html?${params.toString()}`;
   }
 
   _seeAllResults() {
