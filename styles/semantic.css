@@ -144,6 +144,7 @@ Examples:
   /* === SEMANTIC RADIUS === */
   --radius-button: var(--radius-md);        /* buttons, tabs, pills */
   --radius-input: var(--radius-md);         /* inputs, textareas */
+  --radius-input-large: var(--radius-lg);         /* inputs, textareas */
   --radius-card: var(--radius-lg);          /* cards, panels */
   --radius-container: var(--radius-lg);     /* containers, wrappers */
   --radius-overlay: var(--radius-xl);       /* dialogs, modals */

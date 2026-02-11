@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Search - Open Library</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -134,9 +134,9 @@
         });
       } else if (currentCategory === 'authors') {
         resultsContainer.innerHTML = results.map(a =>
-          `<div style="padding: var(--spacing-3) var(--spacing-4); border-bottom: 1px solid var(--color-border-subtle);">
+          `<div style="padding: var(--spacing-3) var(--spacing-4); border-bottom: 1px solid var(--color-border-subtle); min-height: 44px; display: flex; align-items: center; gap: var(--spacing-2); flex-wrap: wrap;">
             <strong>${a.name}</strong>
-            <span style="color: var(--color-text-secondary); font-size: var(--body-font-size-sm); margin-left: var(--spacing-2);">${a.bookCount} book${a.bookCount !== 1 ? 's' : ''}</span>
+            <span style="color: var(--color-text-secondary); font-size: var(--body-font-size-sm);">${a.bookCount} book${a.bookCount !== 1 ? 's' : ''}</span>
           </div>`
         ).join('');
       }

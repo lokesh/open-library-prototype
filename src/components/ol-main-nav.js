@@ -6,12 +6,14 @@ export class OlMainNav extends LitElement {
   static properties = {
     hideSearch: { type: Boolean, attribute: 'hide-search', reflect: true },
     _searchOpen: { type: Boolean, state: true },
+    _menuOpen: { type: Boolean, state: true },
   };
 
   static styles = css`
     :host {
       display: block;
       margin-bottom: var(--spacing-section);
+      position: relative;
     }
 
     nav {
@@ -23,17 +25,90 @@ export class OlMainNav extends LitElement {
       font-size: var(--body-font-size-sm);
     }
 
+    /* ─── Hamburger Button ─── */
+
+    .hamburger {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: none;
+      border: none;
+      color: var(--color-text);
+      cursor: pointer;
+      padding: var(--spacing-inline);
+      margin-left: var(--spacing-2);
+      flex-shrink: 0;
+    }
+
+    .hamburger:focus-visible {
+      outline: var(--focus-ring-width) solid var(--focus-ring-color);
+      outline-offset: 2px;
+      border-radius: var(--radius-1);
+    }
+
+    .hamburger svg {
+      width: 22px;
+      height: 22px;
+    }
+
+    @media (min-width: 768px) {
+      .hamburger {
+        display: none;
+      }
+    }
+
+    /* ─── Nav Links ─── */
+
     ul {
       list-style: none;
-      display: flex;
+      display: none;
       flex-wrap: nowrap;
       flex: 1;
       margin: 0;
-      gap: var(--spacing-inline);
-      padding: 0 20px;
+      gap: 0;
+      padding: 0;
       overflow-x: auto;
       -webkit-overflow-scrolling: touch;
       scrollbar-width: thin;
+    }
+
+    :host([menu-open]) ul {
+      display: flex;
+      flex-direction: column;
+      position: absolute;
+      top: 100%;
+      left: var(--spacing-2);
+      right: auto;
+      min-width: 160px;
+      width: max-content;
+      background-color: var(--color-bg-elevated);
+      border: var(--border-width-control) solid var(--color-border);
+      border-radius: var(--radius-button);
+      padding: var(--spacing-inline);
+      z-index: var(--z-index-dropdown, 100);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      opacity: 1;
+      transition: opacity 200ms ease;
+    }
+
+    @media (min-width: 768px) {
+      ul {
+        display: flex;
+        gap: var(--spacing-inline);
+        padding: 0 20px;
+      }
+
+      :host([menu-open]) ul {
+        position: static;
+        flex-direction: row;
+        background: none;
+        border: none;
+        border-radius: 0;
+        padding: 0 20px;
+        box-shadow: none;
+        min-width: 0;
+        width: auto;
+      }
     }
 
     /* Hide scrollbar on webkit browsers for cleaner look */
@@ -68,8 +143,51 @@ export class OlMainNav extends LitElement {
       border-bottom: var(--border-width-2) solid transparent;
     }
 
+    :host([menu-open]) a {
+      padding: var(--spacing-2) var(--spacing-3);
+      border-bottom: none;
+      border-radius: var(--radius-1);
+    }
+
+    :host([menu-open]) a:hover {
+      background-color: var(--color-bg-elevated-hovered);
+      border-bottom: none;
+    }
+
+    @media (min-width: 768px) {
+      :host([menu-open]) a {
+        padding: var(--spacing-inline) var(--spacing-inline);
+        border-bottom: var(--border-width-2) solid transparent;
+        border-radius: 0;
+      }
+
+      :host([menu-open]) a:hover {
+        background-color: transparent;
+        border-bottom: var(--border-width-2) solid var(--color-text);
+      }
+    }
+
     a:hover {
       border-bottom: var(--border-width-2) solid var(--color-text);
+    }
+
+    /* ─── Mobile menu overlay backdrop ─── */
+
+    .menu-backdrop {
+      display: none;
+    }
+
+    :host([menu-open]) .menu-backdrop {
+      display: block;
+      position: fixed;
+      inset: 0;
+      z-index: 99;
+    }
+
+    @media (min-width: 768px) {
+      :host([menu-open]) .menu-backdrop {
+        display: none;
+      }
     }
 
     /* ─── Nav Actions (search + theme toggle) ─── */
@@ -79,6 +197,7 @@ export class OlMainNav extends LitElement {
       align-items: center;
       gap: var(--spacing-2);
       flex-shrink: 0;
+      margin-left: auto;
       padding-right: 20px;
     }
 
@@ -173,6 +292,21 @@ export class OlMainNav extends LitElement {
     super();
     this.hideSearch = false;
     this._searchOpen = false;
+    this._menuOpen = false;
+  }
+
+  _toggleMenu() {
+    this._menuOpen = !this._menuOpen;
+    if (this._menuOpen) {
+      this.setAttribute('menu-open', '');
+    } else {
+      this.removeAttribute('menu-open');
+    }
+  }
+
+  _closeMenu() {
+    this._menuOpen = false;
+    this.removeAttribute('menu-open');
   }
 
   _openSearch() {
@@ -195,12 +329,30 @@ export class OlMainNav extends LitElement {
   render() {
     return html`
       <nav>
+        <button
+          class="hamburger"
+          @click=${this._toggleMenu}
+          aria-label="${this._menuOpen ? 'Close menu' : 'Open menu'}"
+          aria-expanded="${this._menuOpen}"
+        >
+          ${this._menuOpen
+            ? html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>`
+            : html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="3" y1="6" x2="21" y2="6"/>
+                <line x1="3" y1="12" x2="21" y2="12"/>
+                <line x1="3" y1="18" x2="21" y2="18"/>
+              </svg>`
+          }
+        </button>
         <ul>
-          <li><a href="index.html">Home</a></li>
-          <li><a href="book.html">Book</a></li>
-          <li><a href="signup.html">Sign Up</a></li>
-          <li><a href="components.html">Components</a></li>
-          <li><a href="forms.html">Tests</a></li>
+          <li><a href="index.html" @click=${this._closeMenu}>Home</a></li>
+          <li><a href="book.html" @click=${this._closeMenu}>Book</a></li>
+          <li><a href="signup.html" @click=${this._closeMenu}>Sign Up</a></li>
+          <li><a href="components.html" @click=${this._closeMenu}>Components</a></li>
+          <li><a href="forms.html" @click=${this._closeMenu}>Tests</a></li>
         </ul>
         <div class="nav-actions">
           <button class="search-trigger-mobile" @click=${this._openSearch} aria-label="Search">
@@ -219,6 +371,7 @@ export class OlMainNav extends LitElement {
           <ol-theme-toggle></ol-theme-toggle>
         </div>
       </nav>
+      <div class="menu-backdrop" @click=${this._closeMenu}></div>
 
       <ol-search-modal
         ?open=${this._searchOpen}

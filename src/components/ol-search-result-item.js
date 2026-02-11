@@ -25,6 +25,7 @@ export class OlSearchResultItem extends LitElement {
       padding: var(--spacing-3) var(--spacing-4);
       border-bottom: 1px solid var(--color-border-subtle);
       cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
     }
 
     .result:hover {
@@ -81,56 +82,7 @@ export class OlSearchResultItem extends LitElement {
       padding: 0 1px;
     }
 
-    .bookmark-btn {
-      display: flex;
-      align-items: center;
-      gap: var(--spacing-1);
-      flex-shrink: 0;
-      background: var(--color-bg-elevated);
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius-button);
-      color: var(--color-text);
-      font-size: var(--body-font-size-sm);
-      font-family: inherit;
-      padding: var(--spacing-2) var(--spacing-3);
-      cursor: pointer;
-      align-self: center;
-    }
-
-    .bookmark-btn:hover {
-      background: var(--color-bg-hovered);
-    }
-
-    .bookmark-btn:focus-visible {
-      outline: var(--focus-ring-width) solid var(--focus-ring-color);
-      outline-offset: 2px;
-    }
-
-    .bookmark-btn svg {
-      width: 16px;
-      height: 16px;
-    }
-
-    .bookmark-btn .chevron {
-      width: 12px;
-      height: 12px;
-      margin-left: 2px;
-    }
-
-    .bookmark-label {
-      display: none;
-    }
-
-    :host(:not([compact])) .bookmark-label {
-      display: inline;
-    }
-
-    @media (max-width: 767px) {
-      :host(:not([compact])) .bookmark-label {
-        display: none;
-      }
-    }
-  `;
+`;
 
   constructor() {
     super();
@@ -161,17 +113,6 @@ export class OlSearchResultItem extends LitElement {
     }
   }
 
-  _handleBookmark(e) {
-    e.stopPropagation();
-    this.dispatchEvent(
-      new CustomEvent('ol-result-bookmark', {
-        detail: { title: this.title, author: this.author },
-        bubbles: true,
-        composed: true,
-      })
-    );
-  }
-
   _renderHighlighted(text) {
     const segments = searchDataService.highlightMatch(text, this.query);
     return segments.map((seg) =>
@@ -189,20 +130,10 @@ export class OlSearchResultItem extends LitElement {
           <div class="title">${this._renderHighlighted(this.title)}</div>
           <div class="author">By ${this._renderHighlighted(this.author)}</div>
           <div class="meta">
-            ${this.year ? html`<span>${this.year}</span>` : nothing}
-            ${this.readers ? html`<span>&bull; ${this.readers} Readers</span>` : nothing}
+            ${this.readers ? html`<span>${this.readers} Readers</span>` : nothing}
             ${this.rating ? html`<span>&bull; ${this.rating} <span class="star">&#9733;</span></span>` : nothing}
           </div>
         </div>
-        <button class="bookmark-btn" @click=${this._handleBookmark} aria-label="Save ${this.title}">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
-          </svg>
-          <span class="bookmark-label">Want to Read</span>
-          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="6 9 12 15 18 9"/>
-          </svg>
-        </button>
       </div>
     `;
   }

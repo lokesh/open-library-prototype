@@ -13,7 +13,11 @@ body {
   max-width: 1200px;
   margin: 0 auto;
   padding: var(--spacing-6);
+  padding-left: max(var(--spacing-6), env(safe-area-inset-left));
+  padding-right: max(var(--spacing-6), env(safe-area-inset-right));
+  padding-bottom: max(var(--spacing-6), env(safe-area-inset-bottom));
   background-color: var(--color-bg);
+  overflow-x: hidden;
 }
 
 a {
@@ -259,6 +263,9 @@ input:focus {
 @media (max-width: 768px) {
   body {
     padding: var(--spacing-3);
+    padding-left: max(var(--spacing-3), env(safe-area-inset-left));
+    padding-right: max(var(--spacing-3), env(safe-area-inset-right));
+    padding-bottom: max(var(--spacing-3), env(safe-area-inset-bottom));
   }
   .trending-covers {
     grid-template-columns: repeat(4, 1fr);
@@ -758,7 +765,7 @@ input:focus {
   padding: var(--spacing-3) var(--spacing-4);
   background: var(--color-bg-elevated);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-overlay);
+  border-radius: var(--radius-input-large);
   margin-bottom: var(--spacing-4);
 }
 
@@ -808,9 +815,15 @@ input:focus {
   font-size: var(--body-font-size-sm);
   font-family: inherit;
   font-weight: var(--font-weight-medium);
-  padding: var(--spacing-2) var(--spacing-3);
+  padding: var(--spacing-3) var(--spacing-3);
   cursor: pointer;
   white-space: nowrap;
+}
+
+@media (min-width: 768px) {
+  .search-page-tab {
+    padding: var(--spacing-2) var(--spacing-3);
+  }
 }
 
 .search-page-tab:hover {

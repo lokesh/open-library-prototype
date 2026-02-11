@@ -92,8 +92,8 @@ export class OlSearchFilters extends LitElement {
     }
 
     .section {
-      border-bottom: 1px solid var(--color-border-subtle);
-      padding: var(--spacing-3) 0;
+      border-bottom: var(--border-control);
+      padding: var(--spacing-2) 0;
     }
 
     .section-header {
@@ -107,7 +107,8 @@ export class OlSearchFilters extends LitElement {
       font-size: var(--body-font-size);
       font-weight: var(--font-weight-semibold);
       font-family: inherit;
-      padding: var(--spacing-2) 0;
+      color: var(--color-text-secondary);
+      padding: var(--spacing-1) 0;
       cursor: pointer;
     }
 
@@ -144,7 +145,7 @@ export class OlSearchFilters extends LitElement {
       border-radius: var(--radius-input);
       background: var(--input-color-bg);
       color: var(--input-color-text);
-      font-size: var(--body-font-size-sm);
+      font-size: var(--body-font-size);
       font-family: inherit;
     }
 
@@ -160,7 +161,7 @@ export class OlSearchFilters extends LitElement {
     }
 
     .go-btn {
-      padding: var(--spacing-1) var(--spacing-2);
+      padding: 6px 10px;
       background: var(--color-bg-primary);
       color: var(--color-text-on-primary);
       border: none;
@@ -182,7 +183,7 @@ export class OlSearchFilters extends LitElement {
     .checkbox-list {
       display: flex;
       flex-direction: column;
-      gap: var(--spacing-2);
+      gap: var(--spacing-1);
       max-height: 200px;
       overflow-y: auto;
     }
@@ -329,7 +330,8 @@ export class OlSearchFilters extends LitElement {
           aria-label="Maximum"
           @change=${(e) => this._handleRangeChange(maxField, e.target.value)}
         />
-        <button class="go-btn" @click=${this._dispatchChange}>go</button>
+        <button class="go-btn" @click=${this._dispatchChange}>Go</button>
+
       </div>
     `;
   }
@@ -337,31 +339,13 @@ export class OlSearchFilters extends LitElement {
   render() {
     return html`
       <button class="filter-toggle" @click=${this._togglePanel} aria-expanded=${this.expanded}>
-        Filter
+        Filters
         <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="6 9 12 15 18 9"/>
         </svg>
       </button>
 
       <div class="filter-body">
-        <button class="clear-btn" @click=${this._handleClear} aria-label="Clear all filters">Clear</button>
-
-        ${this._renderSection('language', 'Language', html`
-          <div class="checkbox-list">
-            ${['English', 'Spanish', 'French', 'German', 'Chinese', 'Japanese', 'Arabic', 'Portuguese', 'Russian', 'Hindi'].map(
-              (lang) => html`
-                <label class="checkbox-item">
-                  <input
-                    type="checkbox"
-                    .checked=${this._filters.languages.includes(lang)}
-                    @change=${(e) => this._handleCheckboxToggle('languages', lang, e.target.checked)}
-                  />
-                  ${lang}
-                </label>
-              `
-            )}
-          </div>
-        `)}
 
         ${this._renderSection('author', 'Author', html`
           <div class="checkbox-list">
