@@ -134,6 +134,11 @@ export class OlMainNav extends LitElement {
       flex-shrink: 0;
     }
 
+    .theme-toggle-item {
+      display: flex;
+      align-items: center;
+    }
+
     a {
       display: block;
       color: var(--color-text);
@@ -209,7 +214,7 @@ export class OlMainNav extends LitElement {
       gap: var(--spacing-2);
       background: var(--color-bg-elevated);
       border: 1px solid var(--color-border);
-      border-radius: var(--radius-full);
+      border-radius: var(--radius-input-large);
       color: var(--color-text-secondary);
       font-size: var(--body-font-size-sm);
       font-family: inherit;
@@ -278,6 +283,39 @@ export class OlMainNav extends LitElement {
     .search-trigger-mobile svg {
       width: 20px;
       height: 20px;
+    }
+
+    /* ─── Barcode Scan Button ─── */
+
+    .barcode-trigger {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: none;
+      border: 1px solid var(--input-border);
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      padding: 0;
+      border-radius: var(--radius-input-large);
+      flex-shrink: 0;
+      align-self: stretch;
+      height: 36px;
+      width: 36px;
+    }
+
+    .barcode-trigger:hover {
+      border-color: var(--color-border-focused);
+      color: var(--color-text);
+    }
+
+    .barcode-trigger:focus-visible {
+      outline: var(--focus-ring-width) solid var(--focus-ring-color);
+      outline-offset: 2px;
+    }
+
+    .barcode-trigger svg {
+      width: 18px;
+      height: 18px;
     }
 
     /* ─── Hide search when attribute set ─── */
@@ -353,6 +391,7 @@ export class OlMainNav extends LitElement {
           <li><a href="signup.html" @click=${this._closeMenu}>Sign Up</a></li>
           <li><a href="components.html" @click=${this._closeMenu}>Components</a></li>
           <li><a href="forms.html" @click=${this._closeMenu}>Tests</a></li>
+          <li class="theme-toggle-item"><ol-theme-toggle></ol-theme-toggle></li>
         </ul>
         <div class="nav-actions">
           <button class="search-trigger-mobile" @click=${this._openSearch} aria-label="Search">
@@ -368,7 +407,17 @@ export class OlMainNav extends LitElement {
             </svg>
             <span class="search-trigger-text">Search</span>
           </button>
-          <ol-theme-toggle></ol-theme-toggle>
+          <button class="barcode-trigger" aria-label="Scan barcode">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 7V5a2 2 0 0 1 2-2h2"/>
+              <path d="M17 3h2a2 2 0 0 1 2 2v2"/>
+              <path d="M21 17v2a2 2 0 0 1-2 2h-2"/>
+              <path d="M7 21H5a2 2 0 0 1-2-2v-2"/>
+              <path d="M8 7v10"/>
+              <path d="M12 7v10"/>
+              <path d="M17 7v10"/>
+            </svg>
+          </button>
         </div>
       </nav>
       <div class="menu-backdrop" @click=${this._closeMenu}></div>

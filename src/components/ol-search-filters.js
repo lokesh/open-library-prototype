@@ -104,12 +104,24 @@ export class OlSearchFilters extends LitElement {
       background: none;
       border: none;
       color: var(--color-text-strong);
-      font-size: var(--body-font-size);
+      font-size: var(--body-font-size-sm);
       font-weight: var(--font-weight-semibold);
       font-family: inherit;
-      color: var(--color-text-secondary);
       padding: var(--spacing-1) 0;
       cursor: pointer;
+    }
+
+    .section-header-label {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-2);
+    }
+
+    .section-header-label svg {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+      color: var(--color-text-secondary);
     }
 
     .section-header:focus-visible {
@@ -212,18 +224,14 @@ export class OlSearchFilters extends LitElement {
       subjects: [],
       publishers: [],
       people: [],
-      places: [],
-      times: [],
     };
     this._expandedSections = {
-      language: true,
-      author: true,
+      language: false,
+      author: false,
       subjects: false,
-      year: true,
+      year: false,
       publisher: false,
       people: false,
-      places: false,
-      times: false,
     };
     this._authors = [];
   }
@@ -277,8 +285,6 @@ export class OlSearchFilters extends LitElement {
       subjects: [],
       publishers: [],
       people: [],
-      places: [],
-      times: [],
     };
     this.dispatchEvent(
       new CustomEvent('ol-filters-clear', {
@@ -288,7 +294,7 @@ export class OlSearchFilters extends LitElement {
     );
   }
 
-  _renderSection(name, label, content) {
+  _renderSection(name, label, content, icon = null) {
     const isOpen = this._expandedSections[name];
     return html`
       <div class="section">
@@ -298,7 +304,7 @@ export class OlSearchFilters extends LitElement {
           aria-expanded=${isOpen}
           aria-controls="section-${name}"
         >
-          ${label}
+          <span class="section-header-label">${icon} ${label}</span>
           <svg class="section-chevron ${isOpen ? 'open' : ''}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="6 9 12 15 18 9"/>
           </svg>
@@ -362,7 +368,7 @@ export class OlSearchFilters extends LitElement {
               `
             )}
           </div>
-        `)}
+        `, html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`)}
 
         ${this._renderSection('subjects', 'Subjects', html`
           <div class="checkbox-list">
@@ -379,10 +385,11 @@ export class OlSearchFilters extends LitElement {
               `
             )}
           </div>
-        `)}
+        `, html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 2 7l10 5 10-5-10-5Z"/><path d="m2 17 10 5 10-5"/><path d="m2 12 10 5 10-5"/></svg>`)}
 
         ${this._renderSection('year', 'First Published',
-          this._renderRangeFilter('yearMin', 'yearMax', this._filters.yearMin, this._filters.yearMax)
+          this._renderRangeFilter('yearMin', 'yearMax', this._filters.yearMin, this._filters.yearMax),
+          html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>`
         )}
 
         ${this._renderSection('publisher', 'Publisher', html`
@@ -400,7 +407,7 @@ export class OlSearchFilters extends LitElement {
               `
             )}
           </div>
-        `)}
+        `, html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>`)}
 
         ${this._renderSection('people', 'People', html`
           <div class="checkbox-list">
@@ -417,41 +424,8 @@ export class OlSearchFilters extends LitElement {
               `
             )}
           </div>
-        `)}
+        `, html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`)}
 
-        ${this._renderSection('places', 'Places', html`
-          <div class="checkbox-list">
-            ${['England', 'France', 'United States', 'India', 'China', 'Egypt'].map(
-              (place) => html`
-                <label class="checkbox-item">
-                  <input
-                    type="checkbox"
-                    .checked=${this._filters.places.includes(place)}
-                    @change=${(e) => this._handleCheckboxToggle('places', place, e.target.checked)}
-                  />
-                  ${place}
-                </label>
-              `
-            )}
-          </div>
-        `)}
-
-        ${this._renderSection('times', 'Times', html`
-          <div class="checkbox-list">
-            ${['Ancient', 'Medieval', '18th century', '19th century', '20th century', '21st century'].map(
-              (time) => html`
-                <label class="checkbox-item">
-                  <input
-                    type="checkbox"
-                    .checked=${this._filters.times.includes(time)}
-                    @change=${(e) => this._handleCheckboxToggle('times', time, e.target.checked)}
-                  />
-                  ${time}
-                </label>
-              `
-            )}
-          </div>
-        `)}
       </div>
     `;
   }

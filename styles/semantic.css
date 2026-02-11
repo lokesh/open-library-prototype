@@ -105,7 +105,7 @@ Examples:
   --focus-ring: 0 0 0 var(--focus-ring-width) rgba(59, 130, 246, 0.2);
 
   /* === SEARCH / HIGHLIGHT === */
-  --color-highlight: #fef08a;
+  --color-highlight: #fff6b1;
   --z-index-modal: 2000;
 
   /* === SEMANTIC TYPOGRAPHY === */
@@ -135,7 +135,7 @@ Examples:
 
   /* TODO: clarify if these spacing tokens are for use in components or
   in layouts. e.g. Is spacing-section internal padding or an external margin? */
-  --spacing-section: var(--spacing-8);
+  --spacing-section: var(--spacing-4);
   --spacing-field: var(--spacing-6);
   --spacing-component: var(--spacing-6);
   --spacing-element: var(--spacing-4);
@@ -159,6 +159,12 @@ Examples:
   --border-divider: var(--border-width-divider) solid var(--color-border);
   --border-card: var(--border-width-1) solid var(--color-border);
   --border-control: var(--border-width-control) solid var(--color-border);
+}
+
+@media (min-width: 768px) {
+  :root {
+    --spacing-section: var(--spacing-8);
+  }
 }
 
 /* ========================================
@@ -200,6 +206,11 @@ Examples:
   --input-min-height: var(--control-height-md);
   --input-disabled-surface: var(--color-bg-elevated);
   --input-disabled-opacity: var(--opacity-disabled);
+
+  /* === CHIP COMPONENTS === */
+  --chip-font-size: var(--font-size-xs);
+  --chip-border: 1px solid var(--color-border);
+  --chip-radius: var(--radius-full);
 
   /* === HEADING COMPONENTS === */
   --heading-display-1-size: var(--font-size-4xl);

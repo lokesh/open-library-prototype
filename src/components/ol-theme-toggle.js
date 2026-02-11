@@ -31,13 +31,7 @@ export class OlThemeToggle extends LitElement {
       transform: scale(0.98);
     }
 
-    .icon {
-      width: 16px;
-      height: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+
   `;
 
   constructor() {
@@ -61,7 +55,6 @@ export class OlThemeToggle extends LitElement {
     const isDark = this.theme === 'dark';
     return html`
       <button @click="${this.toggleTheme}" aria-label="Toggle theme">
-        <span class="icon">${isDark ? '☀️' : '🌙'}</span>
         <span>${isDark ? 'Light' : 'Dark'} Mode</span>
       </button>
     `;

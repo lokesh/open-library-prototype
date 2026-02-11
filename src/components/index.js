@@ -22,3 +22,4 @@ import './ol-search-result-item.js';
 import './ol-search-filters.js';
 import './ol-search-filter-bar.js';
 import './ol-search-modal.js';
+import './ol-filter-modal.js';

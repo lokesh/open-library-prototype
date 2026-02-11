@@ -1,4 +1,4 @@
-import { LitElement, html, css, nothing } from 'lit';
+import { LitElement, html, css, svg, nothing } from 'lit';
 
 const STORAGE_KEY_FORMAT = 'ol-filter-format';
 const STORAGE_KEY_AVAILABLE = 'ol-filter-available-now';
@@ -57,6 +57,18 @@ export class OlSearchFilterBar extends LitElement {
       scrollbar-width: none;
     }
 
+    @media (max-width: 767px) {
+      .filter-bar {
+        width: 100vw;
+        box-sizing: border-box;
+      }
+
+      :host([compact]) .filter-bar {
+        padding-left: var(--spacing-6);
+        padding-right: var(--spacing-6);
+      }
+    }
+
     .filter-bar::-webkit-scrollbar {
       display: none;
     }
@@ -74,7 +86,7 @@ export class OlSearchFilterBar extends LitElement {
 
     .segment-group {
       display: inline-flex;
-      border-radius: var(--radius-full);
+      border-radius: var(--radius-button);
       border: 1px solid var(--color-border);
       overflow: hidden;
       flex-shrink: 0;
@@ -187,7 +199,7 @@ export class OlSearchFilterBar extends LitElement {
       align-items: center;
       gap: var(--spacing-1);
       padding: var(--spacing-1) var(--spacing-2) var(--spacing-1) var(--spacing-3);
-      border-radius: var(--radius-full);
+      border-radius: var(--radius-button);
       border: 1px solid var(--color-border);
       background: transparent;
       font-size: var(--body-font-size-sm);
@@ -294,22 +306,22 @@ export class OlSearchFilterBar extends LitElement {
       align-items: center;
       gap: var(--spacing-1);
       padding: var(--spacing-1) var(--spacing-3);
-      border-radius: var(--radius-full);
-      border: 1px dashed var(--color-border);
+      border-radius: var(--radius-button);
+      border: 1px solid var(--color-border);
       background: transparent;
       font-size: var(--body-font-size-sm);
       font-family: inherit;
+      font-weight: var(--font-weight-medium);
       color: var(--color-text-secondary);
       cursor: pointer;
       white-space: nowrap;
-      transition: background 120ms ease, color 120ms ease;
+      transition: background 120ms ease, color 120ms ease, border-color 120ms ease;
       flex-shrink: 0;
     }
 
     .more-btn:hover {
       background: var(--color-bg-hovered);
       color: var(--color-text);
-      border-style: solid;
     }
 
     .more-btn:focus-visible {
@@ -320,6 +332,19 @@ export class OlSearchFilterBar extends LitElement {
     .more-btn svg {
       width: 14px;
       height: 14px;
+    }
+
+    /* ─── More filters row (mobile only) ─── */
+
+    .more-row {
+      display: block;
+      padding-bottom: var(--spacing-1);
+    }
+
+    @media (min-width: 768px) {
+      .more-row {
+        display: none;
+      }
     }
 
     /* ─── Secondary row (expanded filters) ─── */
@@ -368,7 +393,7 @@ export class OlSearchFilterBar extends LitElement {
     /* ─── Compact mode (modal) ─── */
 
     :host([compact]) .filter-bar {
-      padding: var(--spacing-1) var(--spacing-4) var(--spacing-2);
+      padding: var(--spacing-2) var(--spacing-4) var(--spacing-2);
     }
 
     :host([compact]) .divider {
@@ -469,6 +494,21 @@ export class OlSearchFilterBar extends LitElement {
   }
 
   _toggleMoreFilters() {
+    if (window.innerWidth < 768) {
+      this.dispatchEvent(
+        new CustomEvent('ol-filter-bar-more', {
+          bubbles: true,
+          composed: true,
+          detail: {
+            format: this._activeFormat,
+            availableNow: this._availableNow,
+            subjects: [...this._activeSubjects],
+            language: this._activeLanguage,
+          },
+        })
+      );
+      return;
+    }
     this._showMoreFilters = !this._showMoreFilters;
   }
 
@@ -587,8 +627,6 @@ export class OlSearchFilterBar extends LitElement {
   }
 
   render() {
-    const hasFilters = this._hasActiveFilters();
-
     return html`
       <!-- Primary row: format + availability + language + more -->
       <div class="filter-bar">
@@ -596,10 +634,12 @@ export class OlSearchFilterBar extends LitElement {
 
         <span class="divider"></span>
 
-        ${this._renderAvailabilityChip()}
         ${this._renderLanguageDropdown()}
+      </div>
 
-        ${this.compact ? nothing : html`
+      <!-- More filters row (mobile only) -->
+      ${this.compact ? nothing : html`
+        <div class="more-row">
           <button
             class="more-btn"
             aria-expanded=${this._showMoreFilters}
@@ -607,18 +647,14 @@ export class OlSearchFilterBar extends LitElement {
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               ${this._showMoreFilters
-                ? html`<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>`
-                : html`<line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/>`
+                ? svg`<line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>`
+                : svg`<path d="M3 6h18"></path><path d="M7 12h10"></path><path d="M10 18h4"></path>`
               }
             </svg>
             ${this._showMoreFilters ? 'Less' : 'More filters'}
           </button>
-        `}
-
-        ${hasFilters && !this.compact ? html`
-          <button class="clear-link" @click=${this._clearAll}>Clear all</button>
-        ` : nothing}
-      </div>
+        </div>
+      `}
 
       <!-- Secondary row: subjects (progressive disclosure) -->
       ${this._showMoreFilters ? html`

@@ -32,7 +32,9 @@
       currentCategory = params.get('category') || 'books';
 
       const input = document.getElementById('search-input');
+      const clearBtn = document.getElementById('search-clear-btn');
       input.value = currentQuery;
+      clearBtn.hidden = !currentQuery;
 
       renderTabs();
       runSearch();
@@ -40,11 +42,22 @@
       // Input handler with debounce
       input.addEventListener('input', (e) => {
         currentQuery = e.target.value;
+        clearBtn.hidden = !currentQuery;
         clearTimeout(debounceTimer);
         debounceTimer = setTimeout(() => {
           updateUrl();
           runSearch();
         }, 200);
+      });
+
+      // Clear button
+      clearBtn.addEventListener('click', () => {
+        input.value = '';
+        currentQuery = '';
+        clearBtn.hidden = true;
+        input.focus();
+        updateUrl();
+        runSearch();
       });
 
       // Enter key to save search
@@ -70,6 +83,21 @@
       if (filterBar) {
         filterBar.addEventListener('ol-filter-bar-change', (e) => {
           runSearch(e.detail);
+        });
+      }
+
+      // Filter modal
+      const filterModal = document.getElementById('filter-modal');
+      if (filterBar && filterModal) {
+        filterBar.addEventListener('ol-filter-bar-more', () => {
+          filterModal.open = true;
+        });
+        filterModal.addEventListener('ol-filter-modal-apply', (e) => {
+          filterModal.open = false;
+          runSearch(e.detail.filters);
+        });
+        filterModal.addEventListener('ol-filter-modal-close', () => {
+          filterModal.open = false;
         });
       }
     }
@@ -195,10 +223,16 @@
             <line x1="21" y1="21" x2="16.65" y2="16.65"/>
           </svg>
           <input type="search" id="search-input" placeholder="Search for a book, author or series..." />
+          <button class="search-clear-btn" id="search-clear-btn" aria-label="Clear search" hidden>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
+            </svg>
+          </button>
         </div>
 
         <!-- Filter bar -->
         <ol-search-filter-bar></ol-search-filter-bar>
+        <ol-filter-modal id="filter-modal"></ol-filter-modal>
 
         <!-- Category tabs -->
         <div class="search-page-tabs" id="search-tabs" role="tablist">

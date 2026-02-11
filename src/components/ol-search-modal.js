@@ -102,6 +102,11 @@ export class OlSearchModal extends LitElement {
       padding: var(--input-padding-y) 0;
     }
 
+    .search-input::-webkit-search-cancel-button {
+      -webkit-appearance: none;
+      display: none;
+    }
+
     .search-input::placeholder {
       color: var(--input-color-placeholder);
     }
