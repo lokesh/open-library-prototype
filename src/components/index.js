@@ -23,3 +23,7 @@ import './ol-search-filters.js';
 import './ol-search-filter-bar.js';
 import './ol-search-modal.js';
 import './ol-filter-modal.js';
+import './ol-book-cover.js';
+import './ol-expandable-text.js';
+import './ol-reading-stats.js';
+import './ol-book-edition-card.js';

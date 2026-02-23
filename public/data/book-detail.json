@@ -1,0 +1,147 @@
+{
+  "title": "The Goldfinch",
+  "author": "Donna Tartt",
+  "authorUrl": "#",
+  "coverUrl": "https://covers.openlibrary.org/b/id/7884297-L.jpg",
+  "rating": 4.1,
+  "ratingCount": 2847,
+  "readingStats": {
+    "wantToRead": 1004,
+    "currentlyReading": 49,
+    "haveRead": 139
+  },
+  "description": [
+    "The author of the classic bestsellers The Secret History and The Little Friend returns with a brilliant, highly anticipated new novel. A young boy in New York City, Theo Decker, miraculously survives an accident that takes the life of his mother. Alone and abandoned by his father, Theo is taken in by a friend's family and struggles to make sense of his new life.",
+    "In the years that follow, he becomes entranced by one of the few things that reminds him of his mother: a small, mysteriously captivating painting that ultimately draws Theo into the art underworld. Composed with the skills of a master, The Goldfinch is a haunted odyssey through present-day America, and a drama of almost unbearable acuity and power. It is a story of loss and obsession, survival and self-invention, and the enormous power of art.",
+    "Theo's loss is compounded by the absence of his father, and he is tormented by a longing for his mother. He grows up, from a troubled adolescent in a wealthy Park Avenue household to a dissolute young man in the American West, carrying with him the one thing that gives him hope: the painting."
+  ],
+  "subjects": [
+    "Fiction",
+    "Coming of age",
+    "Art theft",
+    "Loss",
+    "New York City",
+    "Literary fiction",
+    "Pulitzer Prize",
+    "Survival",
+    "American fiction",
+    "Psychological fiction",
+    "Family",
+    "Grief"
+  ],
+  "details": {
+    "publishDate": "October 22, 2013",
+    "publisher": "Little, Brown and Company",
+    "language": "English",
+    "pages": 771,
+    "isbn10": "0316055433",
+    "isbn13": "978-0316055437",
+    "openLibraryId": "OL25433921M",
+    "goodreadsId": "17333223",
+    "lcClassification": "PS3570.A657 G65 2013"
+  },
+  "editions": [
+    {
+      "title": "The Goldfinch",
+      "coverUrl": "https://covers.openlibrary.org/b/id/7884297-M.jpg",
+      "year": "2013",
+      "language": "English",
+      "format": "Hardcover",
+      "isbn": "978-0316055437",
+      "publisher": "Little, Brown and Company",
+      "availability": "borrow"
+    },
+    {
+      "title": "The Goldfinch",
+      "coverUrl": "https://covers.openlibrary.org/b/id/8234089-M.jpg",
+      "year": "2014",
+      "language": "English",
+      "format": "Paperback",
+      "isbn": "978-0316055444",
+      "publisher": "Back Bay Books",
+      "availability": "read"
+    },
+    {
+      "title": "The Goldfinch",
+      "coverUrl": "https://covers.openlibrary.org/b/id/8090515-M.jpg",
+      "year": "2014",
+      "language": "English",
+      "format": "eBook",
+      "isbn": "978-0316239875",
+      "publisher": "Little, Brown and Company",
+      "availability": "borrow"
+    },
+    {
+      "title": "Der Distelfink",
+      "coverUrl": "https://covers.openlibrary.org/b/id/7654321-M.jpg",
+      "year": "2014",
+      "language": "German",
+      "format": "Hardcover",
+      "isbn": "978-3442312115",
+      "publisher": "Goldmann Verlag",
+      "availability": "unavailable"
+    },
+    {
+      "title": "Le Chardonneret",
+      "coverUrl": "https://covers.openlibrary.org/b/id/7654322-M.jpg",
+      "year": "2014",
+      "language": "French",
+      "format": "Paperback",
+      "isbn": "978-2259221702",
+      "publisher": "Plon",
+      "availability": "unavailable"
+    }
+  ],
+  "reviews": [
+    {
+      "author": "BookLover42",
+      "date": "March 15, 2024",
+      "rating": 5,
+      "body": "An absolute masterpiece. Tartt weaves an intricate story that kept me captivated for every one of its 771 pages. The character development is extraordinary, and the way she brings the art world to life is nothing short of magical. This is one of those rare books that stays with you long after you've finished reading."
+    },
+    {
+      "author": "CriticalReader",
+      "date": "January 8, 2024",
+      "rating": 3,
+      "body": "While the prose is undeniably beautiful and the first half is gripping, the novel loses its way in the middle section set in Las Vegas. The pacing becomes uneven, and some plot points feel unnecessarily drawn out. Still, the ending brings it all together in a satisfying way."
+    },
+    {
+      "author": "LiteraryExplorer",
+      "date": "November 22, 2023",
+      "rating": 4,
+      "body": "Tartt has a gift for creating atmosphere and tension. The Goldfinch reads like a modern Dickens novel—sprawling, ambitious, and deeply humane. The relationship between Theo and Boris is one of the most compelling friendships in recent fiction. Highly recommended for patient readers who enjoy literary fiction."
+    }
+  ],
+  "relatedBooks": [
+    {
+      "title": "The Secret History",
+      "author": "Donna Tartt",
+      "coverUrl": "https://covers.openlibrary.org/b/id/8231990-M.jpg"
+    },
+    {
+      "title": "The Little Friend",
+      "author": "Donna Tartt",
+      "coverUrl": "https://covers.openlibrary.org/b/id/6635291-M.jpg"
+    },
+    {
+      "title": "A Little Life",
+      "author": "Hanya Yanagihara",
+      "coverUrl": "https://covers.openlibrary.org/b/id/8091016-M.jpg"
+    },
+    {
+      "title": "The Night Circus",
+      "author": "Erin Morgenstern",
+      "coverUrl": "https://covers.openlibrary.org/b/id/8479576-M.jpg"
+    },
+    {
+      "title": "All the Light We Cannot See",
+      "author": "Anthony Doerr",
+      "coverUrl": "https://covers.openlibrary.org/b/id/8108092-M.jpg"
+    },
+    {
+      "title": "The Luminaries",
+      "author": "Eleanor Catton",
+      "coverUrl": "https://covers.openlibrary.org/b/id/7355218-M.jpg"
+    }
+  ]
+}

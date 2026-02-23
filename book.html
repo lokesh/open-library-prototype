@@ -9,6 +9,142 @@
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,100..900&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/styles/index.css">
   <script type="module" src="/src/components/index.js"></script>
+  <script type="module">
+    async function loadBookDetail() {
+      try {
+        const response = await fetch('./data/book-detail.json');
+        const book = await response.json();
+
+        // Title and author
+        document.getElementById('book-title').textContent = book.title;
+        document.getElementById('book-author-link').textContent = book.author;
+        document.getElementById('book-author-link').href = book.authorUrl;
+
+        // Cover
+        const cover = document.getElementById('book-cover');
+        cover.src = book.coverUrl;
+        cover.alt = `${book.title} cover`;
+
+        // Rating in header
+        const headerRating = document.getElementById('header-rating');
+        headerRating.value = book.rating;
+        document.getElementById('rating-text').textContent =
+          `${book.rating} (${book.ratingCount.toLocaleString()} ratings)`;
+
+        // Reading stats
+        const stats = document.getElementById('reading-stats');
+        stats.setAttribute('want-to-read', book.readingStats.wantToRead);
+        stats.setAttribute('currently-reading', book.readingStats.currentlyReading);
+        stats.setAttribute('have-read', book.readingStats.haveRead);
+
+        // Description
+        const descContainer = document.getElementById('description-content');
+        descContainer.innerHTML = book.description.map(p => `<p>${p}</p>`).join('');
+
+        // Subject tags
+        const tagList = document.getElementById('subject-tags');
+        tagList.innerHTML = book.subjects.map(s =>
+          `<a href="#" class="chip">${s}</a>`
+        ).join('');
+
+        // Meta cards
+        const d = book.details;
+        const metaCards = document.getElementById('meta-cards');
+        const metaItems = [
+          { label: 'Publish Date', value: d.publishDate },
+          { label: 'Publisher', value: d.publisher, link: '#' },
+          { label: 'Language', value: d.language, link: '#' },
+          { label: 'Pages', value: d.pages }
+        ];
+        metaCards.innerHTML = metaItems.map(item => `
+          <div class="book-detail-meta-card">
+            <span class="book-detail-meta-card-label">${item.label}</span>
+            <span class="book-detail-meta-card-value">${
+              item.link ? `<a href="${item.link}">${item.value}</a>` : item.value
+            }</span>
+          </div>
+        `).join('');
+
+        // Edition preview (first 4 editions on Overview tab)
+        const editionPreview = document.getElementById('edition-preview');
+        editionPreview.innerHTML = book.editions.slice(0, 4).map(e => `
+          <ol-book-edition-card
+            title="${e.title}"
+            cover-url="${e.coverUrl}"
+            year="${e.year}"
+            language="${e.language}"
+            format="${e.format}"
+            isbn="${e.isbn}"
+            publisher="${e.publisher}"
+            availability="${e.availability}"
+          ></ol-book-edition-card>
+        `).join('');
+
+        // All editions (Editions tab)
+        const editionsList = document.getElementById('editions-list');
+        editionsList.innerHTML = book.editions.map(e => `
+          <ol-book-edition-card
+            title="${e.title}"
+            cover-url="${e.coverUrl}"
+            year="${e.year}"
+            language="${e.language}"
+            format="${e.format}"
+            isbn="${e.isbn}"
+            publisher="${e.publisher}"
+            availability="${e.availability}"
+          ></ol-book-edition-card>
+        `).join('');
+
+        // Details metadata
+        const metadata = document.getElementById('book-metadata');
+        metadata.innerHTML = `
+          <dt>Publish Date</dt><dd>${d.publishDate}</dd>
+          <dt>Publisher</dt><dd>${d.publisher}</dd>
+          <dt>Language</dt><dd>${d.language}</dd>
+          <dt>Pages</dt><dd>${d.pages}</dd>
+          <dt>ISBN-10</dt><dd>${d.isbn10}</dd>
+          <dt>ISBN-13</dt><dd>${d.isbn13}</dd>
+          <dt>Open Library</dt><dd>${d.openLibraryId}</dd>
+          <dt>Goodreads</dt><dd>${d.goodreadsId}</dd>
+          <dt>LC Classification</dt><dd>${d.lcClassification}</dd>
+        `;
+
+        // Reviews
+        const reviewsContainer = document.getElementById('reviews-list');
+        reviewsContainer.innerHTML = book.reviews.map(r => `
+          <div class="book-detail-review">
+            <div class="book-detail-review-header">
+              <div>
+                <span class="book-detail-review-author">${r.author}</span>
+                <span class="book-detail-review-date"> · ${r.date}</span>
+              </div>
+              <ol-star-rating value="${r.rating}" size="small" color="yellow" readonly></ol-star-rating>
+            </div>
+            <p class="book-detail-review-body">${r.body}</p>
+          </div>
+        `).join('');
+
+        // Related books
+        const relatedGrid = document.getElementById('related-books');
+        relatedGrid.innerHTML = book.relatedBooks.map(rb => `
+          <a href="#" class="book-detail-related-book">
+            <ol-book-cover size="full" src="${rb.coverUrl}" alt="${rb.title} cover"></ol-book-cover>
+            <span class="book-detail-related-title">${rb.title}</span>
+            <span class="book-detail-related-author">${rb.author}</span>
+          </a>
+        `).join('');
+
+      } catch (error) {
+        console.error('Error loading book details:', error);
+      }
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', loadBookDetail);
+    } else {
+      loadBookDetail();
+    }
+  </script>
 </head>
 <body>
 
@@ -17,32 +153,105 @@
   <main>
     <div class="book-detail">
       <aside class="book-detail-sidebar">
-        <img 
-          src="https://covers.openlibrary.org/b/id/7884297-L.jpg" 
-          alt="The Goldfinch book cover" 
-          class="book-detail-cover"
-        >
+        <ol-book-cover id="book-cover" size="full"></ol-book-cover>
+
+        <ol-dropdown-button variant="primary" full-width>
+          Want to Read
+          <div slot="dropdown">
+            <button class="dropdown-menu-item">Currently Reading</button>
+            <button class="dropdown-menu-item">Already Read</button>
+          </div>
+        </ol-dropdown-button>
+
+        <div class="book-detail-your-rating">
+          <span class="book-detail-label">Rate this book</span>
+          <ol-star-rating color="yellow"></ol-star-rating>
+        </div>
+
         <div class="book-detail-actions">
-          <ol-button variant="primary" full-width>Want to Read</ol-button>
-          <ol-button variant="secondary" full-width>Currently Reading</ol-button>
-          <ol-button variant="secondary" full-width>Already Read</ol-button>
+          <ol-button variant="secondary" full-width>Write a Review</ol-button>
+          <ol-button variant="secondary" full-width>Add Note</ol-button>
+          <ol-button variant="secondary" full-width>Share</ol-button>
         </div>
       </aside>
 
       <section class="book-detail-main">
         <header class="book-detail-header">
           <div class="book-detail-title-group">
-            <ol-heading element="h1" size="display-2">The Goldfinch</ol-heading>
-            <p class="book-detail-author">by <a href="#">Donna Tartt</a></p>
+            <ol-heading element="h1" size="display-2" id="book-title">The Goldfinch</ol-heading>
+            <p class="book-detail-author">by <a href="#" id="book-author-link">Donna Tartt</a></p>
+            <div class="book-detail-rating-row">
+              <ol-star-rating id="header-rating" value="4" size="small" color="yellow" readonly></ol-star-rating>
+              <span class="book-detail-rating-text" id="rating-text">4.1 (2,847 ratings)</span>
+            </div>
+            <ol-reading-stats id="reading-stats" want-to-read="1004" currently-reading="49" have-read="139"></ol-reading-stats>
           </div>
           <ol-button variant="secondary" onclick="window.location.href='edit-book.html'">Edit</ol-button>
         </header>
 
-        <div class="book-detail-description">
-          <ol-heading element="h2" size="title-3">Description</ol-heading>
-          <p>The author of the classic bestsellers The Secret History and The Little Friend returns with a brilliant, highly anticipated new novel. A young boy in New York City, Theo Decker, miraculously survives an accident that takes the life of his mother. Alone and abandoned by his father, Theo is taken in by a friend's family and struggles to make sense of his new life.</p>
-          <p>In the years that follow, he becomes entranced by one of the few things that reminds him of his mother: a small, mysteriously captivating painting that ultimately draws Theo into the art underworld. Composed with the skills of a master, The Goldfinch is a haunted odyssey through present-day America, and a drama of almost unbearable acuity and power. It is a story of loss and obsession, survival and self-invention, and the enormous power of art.</p>
-        </div>
+        <ol-tab-group active="overview">
+          <ol-tab panel="overview">Overview</ol-tab>
+          <ol-tab panel="editions">Editions</ol-tab>
+          <ol-tab panel="details">Details</ol-tab>
+          <ol-tab panel="reviews">Reviews</ol-tab>
+          <ol-tab panel="related">Related</ol-tab>
+
+          <ol-tab-panel name="overview">
+            <ol-expandable-text max-lines="5">
+              <div id="description-content">
+                <p>Loading...</p>
+              </div>
+            </ol-expandable-text>
+
+            <div class="book-detail-meta-cards" id="meta-cards" style="margin-top: var(--spacing-section);">
+              <!-- Populated by JS -->
+            </div>
+
+            <div style="margin-top: var(--spacing-section);">
+              <ol-heading element="h3" size="title-4">Subjects</ol-heading>
+              <div class="book-detail-tag-list" id="subject-tags">
+                <!-- Populated by JS -->
+              </div>
+            </div>
+
+            <div style="margin-top: var(--spacing-section);">
+              <div class="book-detail-editions-header">
+                <ol-heading element="h3" size="title-4">Editions</ol-heading>
+              </div>
+              <div class="book-detail-editions-grid" id="edition-preview">
+                <!-- Populated by JS -->
+              </div>
+            </div>
+          </ol-tab-panel>
+
+          <ol-tab-panel name="editions">
+            <ol-heading element="h3" size="title-3">All Editions</ol-heading>
+            <div class="book-detail-editions-list" id="editions-list">
+              <!-- Populated by JS -->
+            </div>
+          </ol-tab-panel>
+
+          <ol-tab-panel name="details">
+            <ol-heading element="h3" size="title-3">Publication Details</ol-heading>
+            <dl class="book-detail-metadata" id="book-metadata">
+              <!-- Populated by JS -->
+            </dl>
+          </ol-tab-panel>
+
+          <ol-tab-panel name="reviews">
+            <ol-heading element="h3" size="title-3">Community Reviews</ol-heading>
+            <div id="reviews-list">
+              <!-- Populated by JS -->
+            </div>
+          </ol-tab-panel>
+
+          <ol-tab-panel name="related">
+            <ol-heading element="h3" size="title-3">Related Books</ol-heading>
+            <div class="book-detail-related-grid" id="related-books">
+              <!-- Populated by JS -->
+            </div>
+          </ol-tab-panel>
+        </ol-tab-group>
       </section>
     </div>
   </main>
