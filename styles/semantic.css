@@ -228,6 +228,7 @@ Examples:
    Component tokens automatically adapt via role token changes
    ======================================== */
 
+html:has(body[data-theme="dark"]),
 body[data-theme="dark"] {
   /* === BACKGROUND SYSTEM - DARK === */
   --color-bg: var(--color-neutral-900);

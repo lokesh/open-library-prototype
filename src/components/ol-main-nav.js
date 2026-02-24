@@ -68,9 +68,6 @@ export class OlMainNav extends LitElement {
       margin: 0;
       gap: 0;
       padding: 0;
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-      scrollbar-width: thin;
     }
 
     :host([menu-open]) ul {

@@ -59,7 +59,7 @@ export class OlRoleToggle extends LitElement {
       font-size: 12px;
       font-family: var(--body-font-family);
       padding: 4px 8px;
-      border-radius: var(--radius-1);
+      border-radius: var(--radius-md);
       white-space: nowrap;
       pointer-events: none;
       opacity: 0;
