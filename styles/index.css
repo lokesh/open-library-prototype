@@ -582,7 +582,7 @@ input:focus {
   }
 
   .book-detail-sidebar {
-    max-width: 200px;
+    max-width: none;
   }
 
   .book-detail-header {

@@ -113,6 +113,12 @@ export class OlButton extends LitElement {
     button.loading {
       position: relative;
     }
+
+    @media (max-width: 768px) {
+      :host {
+        display: block;
+      }
+    }
   `;
 
   constructor() {
