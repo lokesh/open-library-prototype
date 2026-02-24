@@ -1,5 +1,6 @@
 import { LitElement, html, css } from 'lit';
 import './ol-theme-toggle.js';
+import './ol-role-toggle.js';
 import './ol-search-modal.js';
 
 export class OlMainNav extends LitElement {
@@ -392,6 +393,7 @@ export class OlMainNav extends LitElement {
           <li><a href="components.html" @click=${this._closeMenu}>Components</a></li>
           <li><a href="forms.html" @click=${this._closeMenu}>Tests</a></li>
           <li class="theme-toggle-item"><ol-theme-toggle></ol-theme-toggle></li>
+          <li class="theme-toggle-item"><ol-role-toggle></ol-role-toggle></li>
         </ul>
         <div class="nav-actions">
           <button class="search-trigger-mobile" @click=${this._openSearch} aria-label="Search">

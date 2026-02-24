@@ -333,6 +333,7 @@ input:focus {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-element);
+  min-width: 0;
 }
 
 .book-detail-header {

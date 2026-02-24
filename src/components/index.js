@@ -27,3 +27,5 @@ import './ol-book-cover.js';
 import './ol-expandable-text.js';
 import './ol-reading-stats.js';
 import './ol-book-edition-card.js';
+import './ol-role-toggle.js';
+import './ol-language-card.js';

@@ -49,21 +49,23 @@
 
         // Meta cards
         const d = book.details;
+        const languages = Array.isArray(d.languages) ? d.languages : (d.language ? [d.language] : []);
         const metaCards = document.getElementById('meta-cards');
-        const metaItems = [
+        const otherMetaItems = [
           { label: 'Publish Date', value: d.publishDate },
           { label: 'Publisher', value: d.publisher, link: '#' },
-          { label: 'Language', value: d.language, link: '#' },
           { label: 'Pages', value: d.pages }
         ];
-        metaCards.innerHTML = metaItems.map(item => `
-          <div class="book-detail-meta-card">
-            <span class="book-detail-meta-card-label">${item.label}</span>
-            <span class="book-detail-meta-card-value">${
-              item.link ? `<a href="${item.link}">${item.value}</a>` : item.value
-            }</span>
-          </div>
-        `).join('');
+        metaCards.innerHTML =
+          otherMetaItems.map(item => `
+            <div class="book-detail-meta-card">
+              <span class="book-detail-meta-card-label">${item.label}</span>
+              <span class="book-detail-meta-card-value">${
+                item.link ? `<a href="${item.link}">${item.value}</a>` : item.value
+              }</span>
+            </div>
+          `).join('') +
+          `<ol-language-card languages='${JSON.stringify(languages)}'></ol-language-card>`;
 
         // Edition preview (first 4 editions on Overview tab)
         const editionPreview = document.getElementById('edition-preview');
@@ -100,7 +102,7 @@
         metadata.innerHTML = `
           <dt>Publish Date</dt><dd>${d.publishDate}</dd>
           <dt>Publisher</dt><dd>${d.publisher}</dd>
-          <dt>Language</dt><dd>${d.language}</dd>
+          <dt>Language</dt><dd>${languages.join(', ')}</dd>
           <dt>Pages</dt><dd>${d.pages}</dd>
           <dt>ISBN-10</dt><dd>${d.isbn10}</dd>
           <dt>ISBN-13</dt><dd>${d.isbn13}</dd>

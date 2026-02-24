@@ -48,6 +48,7 @@ export class OlTabGroup extends LitElement {
   static styles = css`
     :host {
       display: block;
+      min-width: 0;
     }
 
     .tab-group {

@@ -26,6 +26,7 @@ export class OlTab extends LitElement {
   static styles = css`
     :host {
       display: inline-block;
+      flex-shrink: 0;
     }
 
     .tab {
