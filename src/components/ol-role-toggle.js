@@ -40,6 +40,16 @@ export class OlRoleToggle extends LitElement {
       height: 20px;
     }
 
+    .label {
+      font-size: var(--body-font-size-sm);
+      font-family: var(--body-font-family);
+      font-weight: var(--font-weight-semibold);
+    }
+
+    button {
+      gap: var(--spacing-2);
+    }
+
     :host([active]) button {
       color: var(--color-bg-primary);
     }
@@ -123,6 +133,7 @@ export class OlRoleToggle extends LitElement {
       <div class="toggle-wrapper">
         <button @click="${this._toggle}" aria-label="${tooltipText}">
           ${isLibrarian ? this._renderShieldIcon() : this._renderBookIcon()}
+          <span class="label">${isLibrarian ? 'Librarian Mode' : 'Reader Mode'}</span>
         </button>
         <span class="tooltip">${tooltipText}</span>
       </div>

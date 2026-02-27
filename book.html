@@ -65,7 +65,7 @@
               }</span>
             </div>
           `).join('') +
-          `<ol-language-card languages='${JSON.stringify(languages)}'></ol-language-card>`;
+          `<ol-language-card languages='${JSON.stringify(languages)}' book-title="${book.title}" book-author="${book.author}" publish-date="${d.publishDate}"></ol-language-card>`;
 
         // Edition preview (first 4 editions on Overview tab)
         const editionPreview = document.getElementById('edition-preview');

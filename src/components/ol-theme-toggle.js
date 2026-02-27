@@ -39,6 +39,24 @@ export class OlThemeToggle extends LitElement {
       height: 20px;
     }
 
+    .label {
+      display: none;
+      font-size: var(--body-font-size-sm);
+      font-family: var(--body-font-family);
+      font-weight: var(--font-weight-semibold);
+    }
+
+    @media (max-width: 767px) {
+      .label {
+        display: inline;
+      }
+
+      button {
+        gap: var(--spacing-2);
+        justify-content: flex-start;
+      }
+    }
+
     .toggle-wrapper:hover .tooltip {
       opacity: 1;
       visibility: visible;
@@ -100,6 +118,7 @@ export class OlThemeToggle extends LitElement {
       <div class="toggle-wrapper">
         <button @click="${this.toggleTheme}" aria-label="${tooltipText}">
           ${isDark ? this._renderSunIcon() : this._renderMoonIcon()}
+          <span class="label">${isDark ? 'Light Mode' : 'Dark Mode'}</span>
         </button>
         <span class="tooltip">${tooltipText}</span>
       </div>

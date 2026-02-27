@@ -35,7 +35,7 @@ export class OlTabPanel extends LitElement {
     }
 
     .panel {
-      padding: var(--spacing-4);
+      padding: var(--spacing-4) 0;
     }
   `;
 

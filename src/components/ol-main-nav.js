@@ -389,8 +389,8 @@ export class OlMainNav extends LitElement {
           <li><a href="signup.html" @click=${this._closeMenu}>Sign Up</a></li>
           <li><a href="components.html" @click=${this._closeMenu}>Components</a></li>
           <li><a href="forms.html" @click=${this._closeMenu}>Tests</a></li>
-          <li class="theme-toggle-item"><ol-theme-toggle></ol-theme-toggle></li>
           <li class="theme-toggle-item"><ol-role-toggle></ol-role-toggle></li>
+          <li class="theme-toggle-item"><ol-theme-toggle></ol-theme-toggle></li>
         </ul>
         <div class="nav-actions">
           <button class="search-trigger-mobile" @click=${this._openSearch} aria-label="Search">
