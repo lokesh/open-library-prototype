@@ -1,6 +1,6 @@
 import { LitElement, html, css, svg } from 'lit';
 
-const STEP_LABELS = ['Service', 'Upload', 'Preview', 'Match', 'Confirm', 'Done'];
+const STEP_LABELS = ['Choose', 'Upload', 'Preview', 'Match', 'Confirm', 'Done'];
 
 export class OlImportWizard extends LitElement {
   static properties = {
