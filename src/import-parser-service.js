@@ -176,6 +176,7 @@ export async function parseImportFile(file, source) {
   const shelfCounts = {};
   let withRatings = 0;
   let withReviews = 0;
+  let withDates = 0;
 
   for (let i = 1; i < rows.length; i++) {
     const fields = parseRow(rows[i], provider.separator);
@@ -211,6 +212,7 @@ export async function parseImportFile(file, source) {
     shelfCounts[shelf] = (shelfCounts[shelf] || 0) + 1;
     if (rating > 0) withRatings++;
     if (review) withReviews++;
+    if (get('dateRead')) withDates++;
   }
 
   return {
@@ -220,6 +222,7 @@ export async function parseImportFile(file, source) {
       shelves: shelfCounts,
       withRatings,
       withReviews,
+      withDates,
     },
     errors,
   };

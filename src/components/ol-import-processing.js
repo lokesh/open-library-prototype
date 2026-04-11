@@ -126,22 +126,6 @@ export class OlImportProcessing extends LitElement {
       margin-top: var(--spacing-1);
     }
 
-    /* Spinner animation for the processing state */
-    .spinner {
-      display: inline-block;
-      width: 24px;
-      height: 24px;
-      border: 3px solid var(--color-border);
-      border-top-color: var(--color-brand-primary);
-      border-radius: var(--radius-full);
-      animation: spin 0.8s linear infinite;
-      margin-bottom: var(--spacing-4);
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
     /* Cancel */
     .cancel-link {
       margin-top: var(--spacing-6);
@@ -186,11 +170,26 @@ export class OlImportProcessing extends LitElement {
     super.connectedCallback();
     // Small delay to allow the UI to render before starting
     this._startTimeout = setTimeout(() => this._startProcessing(), 300);
+    // Warn on accidental navigation (tab close / refresh) while matching is
+    // still running — otherwise the user loses all import progress silently.
+    this._beforeUnloadHandler = (e) => {
+      if (!this._done && !this._cancelled) {
+        e.preventDefault();
+        // Modern browsers ignore the custom string but still show a dialog.
+        e.returnValue = '';
+        return '';
+      }
+    };
+    window.addEventListener('beforeunload', this._beforeUnloadHandler);
   }
 
   disconnectedCallback() {
     super.disconnectedCallback();
     this._cleanup();
+    if (this._beforeUnloadHandler) {
+      window.removeEventListener('beforeunload', this._beforeUnloadHandler);
+      this._beforeUnloadHandler = null;
+    }
   }
 
   _cleanup() {
@@ -247,18 +246,34 @@ export class OlImportProcessing extends LitElement {
         });
         this._counters = { ...this._counters, matched: this._counters.matched + 1 };
       } else if (searchResults.length > 0) {
-        // Partial match — flag for review
-        this._results.needsReview.push({
-          source: enriched,
-          candidates: searchResults.slice(0, 3).map((r) => ({
-            ...r,
-            confidence: 40 + Math.floor(Math.random() * 40),
-          })),
-        });
-        this._counters = { ...this._counters, needsReview: this._counters.needsReview + 1 };
+        // Partial match — score confidence for each candidate, then auto-match
+        // the top result if it's ≥45%. The prototype deliberately favors fewer
+        // confirmation prompts over perfect accuracy; anything below that goes
+        // to the Needs Review tab.
+        const candidates = searchResults.slice(0, 3).map((r) => ({
+          ...r,
+          confidence: this._scoreCandidate(book, r),
+        }));
+        // Keep candidates sorted best-first so downstream UI can trust order.
+        candidates.sort((a, b) => b.confidence - a.confidence);
+        const top = candidates[0];
+        if (top.confidence >= 45) {
+          this._results.matched.push({
+            source: enriched,
+            match: top,
+            confidence: top.confidence,
+          });
+          this._counters = { ...this._counters, matched: this._counters.matched + 1 };
+        } else {
+          this._results.needsReview.push({
+            source: enriched,
+            candidates,
+          });
+          this._counters = { ...this._counters, needsReview: this._counters.needsReview + 1 };
+        }
       } else {
-        // Simulate: 30% chance of fake "needs review" with synthetic candidate
-        if (Math.random() < 0.3) {
+        // Simulate: 10% chance of fake "needs review" with synthetic candidate
+        if (Math.random() < 0.1) {
           this._results.needsReview.push({
             source: enriched,
             candidates: [
@@ -298,29 +313,88 @@ export class OlImportProcessing extends LitElement {
     this.dispatchEvent(new CustomEvent('ol-import-back', { bubbles: true, composed: true }));
   }
 
+  /**
+   * Score a candidate match against the source book. Returns an integer
+   * 0–100. ≥90 means the caller should auto-match without user review.
+   *
+   * Scoring blends two things:
+   *   - recall: how much of the source title is present in the candidate
+   *     (high recall + matching author = almost certainly the same book,
+   *     e.g. "Gatsby" → "Gatsby: A Novel")
+   *   - precision: how much of the candidate title is source-explained
+   *     (low precision suggests a different book in the same series,
+   *     e.g. "Dune" → "Dune Messiah")
+   *
+   * Stopwords are removed so "The Great Gatsby" doesn't get diluted by
+   * the article. Exact title match short-circuits to 100.
+   */
+  _scoreCandidate(source, candidate) {
+    const STOPWORDS = new Set(['a', 'an', 'the', 'of', 'and', 'or', 'in', 'on', 'at', 'to', 'for']);
+    const tokenize = (s) => (s || '')
+      .toLowerCase()
+      .replace(/[^\w\s]/g, ' ')
+      .split(/\s+/)
+      .filter((t) => t && !STOPWORDS.has(t));
+
+    const sourceTokens = new Set(tokenize(source.title));
+    const candidateTokens = new Set(tokenize(candidate.title));
+
+    // Exact title match (ignoring case/punct) wins immediately.
+    if (
+      sourceTokens.size > 0 &&
+      sourceTokens.size === candidateTokens.size &&
+      [...sourceTokens].every((t) => candidateTokens.has(t))
+    ) {
+      return 100;
+    }
+
+    if (sourceTokens.size === 0 || candidateTokens.size === 0) return 50;
+
+    let shared = 0;
+    for (const t of sourceTokens) if (candidateTokens.has(t)) shared++;
+
+    const recall = shared / sourceTokens.size;       // how much of src is in cand
+    const precision = shared / candidateTokens.size; // how much of cand is src
+
+    const sourceAuthor = (source.author || '').toLowerCase().trim();
+    const candidateAuthor = (candidate.author || '').toLowerCase().trim();
+    const authorMatches = sourceAuthor && candidateAuthor &&
+      (sourceAuthor === candidateAuthor ||
+       sourceAuthor.includes(candidateAuthor) ||
+       candidateAuthor.includes(sourceAuthor));
+
+    // Title portion: 60 pts for recall, 25 pts for precision.
+    // Best case (identical) = 85 title + 15 author = 100.
+    // Subtitle case (full recall, partial precision) with author ≈ 90+.
+    // Series mismatch (full recall on 1-token source, partial precision) ≈ 80 with author.
+    let score = Math.round(recall * 60 + precision * 25);
+    if (authorMatches) score += 15;
+    return Math.min(100, Math.max(0, score));
+  }
+
   render() {
     const total = this.parsedBooks?.length || 0;
     const processed = this._counters.matched + this._counters.needsReview + this._counters.notFound;
+    const current = Math.min(processed + 1, total);
 
     return html`
       <div class="processing-container">
-        <div class="spinner"></div>
         <h2>Matching Your Books</h2>
-        <p class="subtitle">Finding your books in the Open Library catalog...</p>
+        <p class="subtitle">Finding your books in the Open Library catalog. Don't close this tab.</p>
 
         <div class="progress-wrapper">
           <div class="progress-bar-bg">
             <div class="progress-bar-fill" style="width: ${this._progress}%"></div>
           </div>
           <div class="progress-text">
-            <span>${processed} of ${total} books</span>
+            <span>${processed.toLocaleString()} of ${total.toLocaleString()} books</span>
             <span>${this._progress}%</span>
           </div>
         </div>
 
         ${this._currentBook ? html`
           <div class="current-book">
-            <div class="current-book-label">Now matching:</div>
+            <div class="current-book-label">Matching ${current} of ${total}</div>
             <div class="current-book-title">${this._currentBook}</div>
           </div>
         ` : html`<div class="current-book"></div>`}

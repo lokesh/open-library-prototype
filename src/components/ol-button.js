@@ -9,6 +9,7 @@ import { LitElement, html, css } from 'lit';
  * @prop {string} size - Button size: 'small', 'medium', 'large' (default: 'medium')
  * @prop {string} type - Button type: 'button', 'submit', 'reset' (default: 'button')
  * @prop {boolean} loading - Loading state, shows "Loading..." text and disables button (default: false)
+ * @prop {boolean} disabled - Disabled state, prevents interaction (default: false)
  * @prop {boolean} fullWidth - Makes button take full width of container (default: false)
  *
  * @slot - Button text content
@@ -25,6 +26,7 @@ export class OlButton extends LitElement {
     size: { type: String, reflect: true },
     type: { type: String, reflect: true },
     loading: { type: Boolean, reflect: true },
+    disabled: { type: Boolean, reflect: true },
     fullWidth: { type: Boolean, reflect: true, attribute: 'full-width' }
   };
 
@@ -127,6 +129,7 @@ export class OlButton extends LitElement {
     this.size = 'medium';
     this.type = 'button';
     this.loading = false;
+    this.disabled = false;
     this.fullWidth = false;
   }
 
@@ -135,7 +138,14 @@ export class OlButton extends LitElement {
    * Since Shadow DOM buttons can't directly submit forms in the light DOM,
    * we need to manually find and submit the form when type="submit"
    */
-  _handleClick() {
+  _handleClick(e) {
+    if (this.disabled || this.loading) {
+      // Stop the click from bubbling up to listeners on the host, so a
+      // disabled button never fires its handler.
+      e.stopImmediatePropagation();
+      e.preventDefault();
+      return;
+    }
     if (this.type === 'submit' && !this.loading) {
       // Find the closest form element in the light DOM
       const form = this.closest('form');
@@ -165,7 +175,7 @@ export class OlButton extends LitElement {
       <button
         type="button"
         class=${classes}
-        ?disabled=${this.loading}
+        ?disabled=${this.loading || this.disabled}
         aria-busy=${this.loading ? 'true' : 'false'}
         @click=${this._handleClick}
       >

@@ -8,11 +8,14 @@ export class OlImportWizard extends LitElement {
     _source: { state: true },
     _parsedBooks: { state: true },
     _stats: { state: true },
+    _fileName: { state: true },
+    _parseErrors: { state: true },
     _shelfMapping: { state: true },
     _importOptions: { state: true },
     _results: { state: true },
     _finalBooks: { state: true },
     _importBatchId: { state: true },
+    _primaryState: { state: true },
   };
 
   static styles = css`
@@ -47,7 +50,7 @@ export class OlImportWizard extends LitElement {
       display: flex;
       align-items: flex-start;
       justify-content: center;
-      margin-bottom: var(--spacing-2);
+      margin-bottom: var(--spacing-8);
       gap: 0;
     }
 
@@ -124,38 +127,93 @@ export class OlImportWizard extends LitElement {
       color: var(--color-brand-primary);
     }
 
-    /* Step content area */
+    /* Step content area. Bottom padding reserves space for the fixed footer
+       bar so the last section is never occluded. Lives here (not on :host)
+       because the global reset * { padding: 0 } outcompetes :host rules. */
     .step-content {
       min-height: 300px;
+      padding-bottom: calc(var(--spacing-8) + 72px);
     }
 
-    /* Back button */
-    .back-button {
+    /* Fixed footer action bar — back on the left, contextual summary next to
+       it, primary action on the right. Each step component tells the wizard
+       what the primary button should look like via an ol-import-primary-state
+       event; the wizard relays clicks down via an ol-import-primary-invoke
+       event on the active step element. This keeps per-step state (shelf
+       mapping, matched count) inside the step while the chrome stays here. */
+    .wizard-footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--color-bg);
+      border-top: 1px solid var(--color-border);
+      padding: var(--spacing-3) var(--spacing-4);
+      z-index: 10;
+    }
+
+    .wizard-footer-inner {
+      max-width: 900px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-4);
+      min-height: 40px;
+    }
+
+    .footer-left {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-4);
+      flex: 1;
+      min-width: 0;
+    }
+
+    .footer-right {
+      flex-shrink: 0;
+    }
+
+    /* Back button uses ol-button variant="secondary". We only need to
+       style the icon alignment inside its slot. */
+    .back-icon {
       display: inline-flex;
       align-items: center;
       gap: var(--spacing-2);
-      background: none;
-      border: none;
-      color: var(--color-text-secondary);
-      cursor: pointer;
-      padding: var(--spacing-2) 0;
-      font-family: var(--body-font-family);
-      font-size: var(--font-size-sm);
-      margin-bottom: var(--spacing-4);
     }
 
-    .back-button:hover {
-      color: var(--color-text-strong);
-    }
-
-    .back-button svg {
+    .back-icon svg {
       width: 16px;
       height: 16px;
+    }
+
+    /* ol-button flips its :host to display:block at ≤768px. Keep both
+       footer buttons inline so they don't stretch and wreck the row. */
+    .footer-left ol-button,
+    .footer-right ol-button {
+      display: inline-block;
+    }
+
+    .footer-summary {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      min-width: 0;
+    }
+
+    .footer-summary strong {
+      color: var(--color-text-strong);
+      font-weight: var(--font-weight-semibold);
     }
 
     @media (max-width: 600px) {
       :host {
         padding: var(--spacing-4) var(--spacing-3);
+      }
+
+      .step-content {
+        padding-bottom: calc(var(--spacing-6) + 72px);
       }
 
       .connector {
@@ -164,6 +222,16 @@ export class OlImportWizard extends LitElement {
 
       h1 {
         font-size: var(--font-size-2xl);
+      }
+
+      .wizard-footer {
+        padding: var(--spacing-3);
+      }
+
+      /* On narrow screens drop the summary sentence — back + primary is
+         the essential pair. */
+      .footer-summary {
+        display: none;
       }
     }
   `;
@@ -174,11 +242,14 @@ export class OlImportWizard extends LitElement {
     this._source = '';
     this._parsedBooks = [];
     this._stats = {};
+    this._fileName = '';
+    this._parseErrors = [];
     this._shelfMapping = {};
     this._importOptions = { ratings: true, reviews: true, dates: true, duplicates: 'skip' };
     this._results = { matched: [], needsReview: [], notFound: [] };
     this._finalBooks = [];
     this._importBatchId = '';
+    this._primaryState = { visible: false, label: '', disabled: false, summary: '' };
   }
 
   connectedCallback() {
@@ -187,6 +258,7 @@ export class OlImportWizard extends LitElement {
     this.addEventListener('ol-import-back', this._handleBack);
     this.addEventListener('ol-import-undo', this._handleUndo);
     this.addEventListener('ol-import-restart', this._handleRestart);
+    this.addEventListener('ol-import-primary-state', this._handlePrimaryState);
   }
 
   disconnectedCallback() {
@@ -195,7 +267,37 @@ export class OlImportWizard extends LitElement {
     this.removeEventListener('ol-import-back', this._handleBack);
     this.removeEventListener('ol-import-undo', this._handleUndo);
     this.removeEventListener('ol-import-restart', this._handleRestart);
+    this.removeEventListener('ol-import-primary-state', this._handlePrimaryState);
   }
+
+  willUpdate(changed) {
+    // When the step changes, clear the primary-state snapshot. The new step's
+    // updated() callback will re-announce its primary button state after mount.
+    // Without this reset, a step that doesn't announce (like upload) would
+    // briefly inherit the previous step's button.
+    if (changed.has('_step')) {
+      this._primaryState = { visible: false, label: '', disabled: false, summary: '' };
+    }
+  }
+
+  _handlePrimaryState = (e) => {
+    e.stopPropagation();
+    this._primaryState = { ...e.detail };
+  };
+
+  _handlePrimaryClick = () => {
+    // Belt-and-suspenders: ol-button already swallows clicks when disabled,
+    // but this guards against a bare-host click (e.g. synthetic dispatch).
+    if (this._primaryState.disabled) return;
+    // Relay the click to the active step component so it can run its own
+    // continue/finish handler with access to its internal state.
+    const stepEl = this.renderRoot.querySelector('.step-content > *');
+    stepEl?.dispatchEvent(new CustomEvent('ol-import-primary-invoke'));
+  };
+
+  _handleBackClick = () => {
+    this.dispatchEvent(new CustomEvent('ol-import-back', { bubbles: true, composed: true }));
+  };
 
   _handleStepComplete = (e) => {
     e.stopPropagation();
@@ -208,6 +310,8 @@ export class OlImportWizard extends LitElement {
       case 1:
         this._parsedBooks = data.books;
         this._stats = data.stats;
+        this._fileName = data.fileName || '';
+        this._parseErrors = data.parseErrors || [];
         break;
       case 2:
         this._shelfMapping = data.shelfMapping;
@@ -252,6 +356,8 @@ export class OlImportWizard extends LitElement {
     this._source = '';
     this._parsedBooks = [];
     this._stats = {};
+    this._fileName = '';
+    this._parseErrors = [];
     this._shelfMapping = {};
     this._importOptions = { ratings: true, reviews: true, dates: true, duplicates: 'skip' };
     this._results = { matched: [], needsReview: [], notFound: [] };
@@ -301,16 +407,43 @@ export class OlImportWizard extends LitElement {
     `;
   }
 
-  _renderBackButton() {
+  _renderFooter() {
+    // Hide the bar entirely on:
+    //   - Step 0 (source picker) — selecting a card advances, no back target
+    //   - Step 3 (processing) — auto-running, cancel lives inline
+    //   - Step 5+ (done) — wizard is finished
     if (this._step === 0 || this._step === 3 || this._step >= 5) return '';
 
+    const showBack = true; // back is always valid on the remaining steps
+    const { visible, label, disabled, summary } = this._primaryState;
+
     return html`
-      <button class="back-button" @click=${() => this.dispatchEvent(new CustomEvent('ol-import-back', { bubbles: true, composed: true }))}>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M19 12H5M12 19l-7-7 7-7"/>
-        </svg>
-        Back
-      </button>
+      <div class="wizard-footer">
+        <div class="wizard-footer-inner">
+          <div class="footer-left">
+            ${showBack ? html`
+              <ol-button variant="secondary" @click=${this._handleBackClick}>
+                <span class="back-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                  </svg>
+                  Back
+                </span>
+              </ol-button>
+            ` : ''}
+            ${summary ? html`<span class="footer-summary">${summary}</span>` : ''}
+          </div>
+          <div class="footer-right">
+            ${visible ? html`
+              <ol-button
+                variant="primary"
+                ?disabled=${disabled}
+                @click=${this._handlePrimaryClick}
+              >${label}</ol-button>
+            ` : ''}
+          </div>
+        </div>
+      </div>
     `;
   }
 
@@ -321,7 +454,13 @@ export class OlImportWizard extends LitElement {
       case 1:
         return html`<ol-import-upload .source=${this._source}></ol-import-upload>`;
       case 2:
-        return html`<ol-import-preview .source=${this._source} .parsedBooks=${this._parsedBooks} .stats=${this._stats}></ol-import-preview>`;
+        return html`<ol-import-preview
+          .source=${this._source}
+          .parsedBooks=${this._parsedBooks}
+          .stats=${this._stats}
+          .fileName=${this._fileName}
+          .parseErrors=${this._parseErrors}
+        ></ol-import-preview>`;
       case 3:
         return html`<ol-import-processing .parsedBooks=${this._parsedBooks} .shelfMapping=${this._shelfMapping} .importOptions=${this._importOptions}></ol-import-processing>`;
       case 4:
@@ -339,9 +478,9 @@ export class OlImportWizard extends LitElement {
       </div>
       ${this._renderStepIndicator()}
       <div class="step-content">
-        ${this._renderBackButton()}
         ${this._renderStep()}
       </div>
+      ${this._renderFooter()}
     `;
   }
 }

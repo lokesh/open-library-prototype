@@ -282,38 +282,82 @@ export class OlImportResults extends LitElement {
       background: var(--color-red-50);
     }
 
-    /* Review item: source vs match comparison */
-    .comparison {
-      display: grid;
-      grid-template-columns: 1fr auto 1fr;
-      gap: var(--spacing-3);
+    /* Review candidate list */
+    .candidates {
       margin-top: var(--spacing-3);
       padding-top: var(--spacing-3);
       border-top: 1px solid var(--color-border-subtle);
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-2);
     }
 
-    .comparison-side {
-      min-width: 0;
-    }
-
-    .comparison-label {
+    .candidates-label {
       font-size: var(--font-size-xs);
       color: var(--color-text-secondary);
       font-weight: var(--font-weight-semibold);
-      margin-bottom: var(--spacing-2);
       text-transform: uppercase;
       letter-spacing: var(--letter-spacing-wide);
+      margin-bottom: var(--spacing-1);
     }
 
-    .comparison-arrow {
+    .candidate-row {
       display: flex;
       align-items: center;
-      color: var(--color-text-secondary);
+      gap: var(--spacing-3);
+      padding: var(--spacing-2) var(--spacing-3);
+      border: 1px solid var(--color-border-subtle);
+      border-radius: var(--radius-md);
+      background: var(--color-bg);
+      cursor: pointer;
+      transition: border-color 0.1s ease, background 0.1s ease;
     }
 
-    .comparison-arrow svg {
-      width: 20px;
-      height: 20px;
+    .candidate-row:hover {
+      border-color: var(--color-brand-primary);
+      background: var(--color-blue-50);
+    }
+
+    .candidate-row.best {
+      border-color: var(--color-brand-primary);
+      background: var(--color-bg-elevated);
+    }
+
+    .candidate-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .candidate-title {
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-strong);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .candidate-author {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-secondary);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .candidate-meta {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-2);
+      flex-shrink: 0;
+    }
+
+    .best-badge {
+      font-size: 10px;
+      font-weight: var(--font-weight-bold);
+      color: var(--color-brand-primary);
+      text-transform: uppercase;
+      letter-spacing: var(--letter-spacing-wide);
     }
 
     .confidence {
@@ -336,6 +380,32 @@ export class OlImportResults extends LitElement {
     .confidence.low {
       background: var(--color-red-50);
       color: var(--color-error);
+    }
+
+    /* "None of these? Search…" fallback — lives inside .candidates so it
+       reads as the end of the same decision, not a separate action. */
+    .search-fallback {
+      align-self: flex-start;
+      background: none;
+      border: none;
+      color: var(--color-link);
+      cursor: pointer;
+      font-family: var(--body-font-family);
+      font-size: var(--font-size-sm);
+      padding: var(--spacing-1) 0;
+      margin-top: var(--spacing-1);
+    }
+
+    .search-fallback:hover {
+      color: var(--color-link-hovered);
+      text-decoration: underline;
+    }
+
+    /* Source summary shown above the candidate list */
+    .source-summary {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-secondary);
+      margin-top: var(--spacing-1);
     }
 
     /* Inline search */
@@ -413,13 +483,6 @@ export class OlImportResults extends LitElement {
       font-size: var(--font-size-sm);
     }
 
-    /* Final actions */
-    .final-actions {
-      margin-top: var(--spacing-8);
-      display: flex;
-      justify-content: flex-end;
-    }
-
     @media (max-width: 600px) {
       .tabs {
         overflow-x: auto;
@@ -434,13 +497,9 @@ export class OlImportResults extends LitElement {
         justify-content: flex-end;
       }
 
-      .comparison {
-        grid-template-columns: 1fr;
-      }
-
-      .comparison-arrow {
-        justify-content: center;
-        transform: rotate(90deg);
+      .candidate-title,
+      .candidate-author {
+        white-space: normal;
       }
     }
   `;
@@ -456,6 +515,47 @@ export class OlImportResults extends LitElement {
     this._searchingIndex = -1;
     this._searchQuery = '';
     this._searchResults = [];
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+    // Wizard footer bar relays Finish Import clicks via this event.
+    this.addEventListener('ol-import-primary-invoke', this._finish);
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    this.removeEventListener('ol-import-primary-invoke', this._finish);
+  }
+
+  updated(changed) {
+    // Re-announce primary-state whenever matched/review/notFound counts change
+    // (accept, skip, remove, bulk actions all adjust these lists).
+    if (
+      changed.has('results') ||
+      changed.has('_matched') ||
+      changed.has('_needsReview') ||
+      changed.has('_notFound')
+    ) {
+      this._dispatchPrimaryState();
+    }
+  }
+
+  _dispatchPrimaryState() {
+    const matched = this._matched.length;
+    const total = matched + this._needsReview.length + this._notFound.length;
+    this.dispatchEvent(new CustomEvent('ol-import-primary-state', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        visible: true,
+        label: 'Finish Import',
+        disabled: matched === 0,
+        summary: total > 0
+          ? `${matched.toLocaleString()} of ${total.toLocaleString()} books ready`
+          : '',
+      },
+    }));
   }
 
   willUpdate(changed) {
@@ -494,15 +594,20 @@ export class OlImportResults extends LitElement {
 
   // ── Review tab actions ──
   _acceptMatch(index) {
-    const item = this._needsReview[index];
-    if (item.candidates?.[0]) {
-      this._matched = [...this._matched, {
-        source: item.source,
-        match: item.candidates[0],
-        confidence: item.candidates[0].confidence,
-      }];
-    }
-    this._needsReview = this._needsReview.filter((_, i) => i !== index);
+    // Back-compat: accept the top candidate for this review item.
+    this._acceptCandidate(index, 0);
+  }
+
+  _acceptCandidate(reviewIndex, candidateIndex) {
+    const item = this._needsReview[reviewIndex];
+    const candidate = item?.candidates?.[candidateIndex];
+    if (!candidate) return;
+    this._matched = [...this._matched, {
+      source: item.source,
+      match: candidate,
+      confidence: candidate.confidence,
+    }];
+    this._needsReview = this._needsReview.filter((_, i) => i !== reviewIndex);
     this._closeSearch();
   }
 
@@ -616,7 +721,7 @@ export class OlImportResults extends LitElement {
   }
 
   // ── Finish ──
-  _finish() {
+  _finish = () => {
     const finalBooks = this._matched.map((m) => ({
       title: m.match?.title || m.source.title,
       author: m.match?.author || m.source.author,
@@ -634,7 +739,7 @@ export class OlImportResults extends LitElement {
       composed: true,
       detail: { step: 4, data: { finalBooks } },
     }));
-  }
+  };
 
   // ── Render helpers ──
 
@@ -740,7 +845,7 @@ export class OlImportResults extends LitElement {
     return html`
       <div class="bulk-actions">
         <span>${this._needsReview.length} book${this._needsReview.length !== 1 ? 's' : ''} to review</span>
-        <button class="bulk-btn" @click=${this._acceptAllReview}>Accept All</button>
+        <button class="bulk-btn" @click=${this._acceptAllReview}>Accept All (best match)</button>
         <button class="bulk-btn" @click=${this._skipAllReview}>Skip All</button>
       </div>
       <div class="book-list">
@@ -750,32 +855,41 @@ export class OlImportResults extends LitElement {
               <div class="book-info">
                 <div class="book-title">${item.source.title}</div>
                 <div class="book-author">${item.source.author}</div>
+                <div class="source-summary">
+                  From ${item.source.mappedShelf || item.source.shelf}${item.source.isbn ? ` · ISBN ${item.source.isbn}` : ''}
+                </div>
               </div>
               <div class="book-actions">
-                <button class="action-btn primary" @click=${() => this._acceptMatch(i)}>Accept</button>
-                <button class="action-btn" @click=${() => this._openSearch(i)}>Search</button>
                 <button class="action-btn" @click=${() => this._skipReview(i)}>Skip</button>
               </div>
             </div>
             ${item.candidates?.length ? html`
-              <div class="comparison">
-                <div class="comparison-side">
-                  <div class="comparison-label">Your book</div>
-                  <div class="book-title">${item.source.title}</div>
-                  <div class="book-author">${item.source.author}</div>
-                  ${item.source.isbn ? html`<div class="book-author">ISBN: ${item.source.isbn}</div>` : ''}
-                </div>
-                <div class="comparison-arrow">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M5 12h14M12 5l7 7-7 7"/>
-                  </svg>
-                </div>
-                <div class="comparison-side">
-                  <div class="comparison-label">Best match</div>
-                  <div class="book-title">${item.candidates[0].title}</div>
-                  <div class="book-author">${item.candidates[0].author}</div>
-                  <span class="confidence ${this._confidenceClass(item.candidates[0].confidence)}">${item.candidates[0].confidence}% match</span>
-                </div>
+              <div class="candidates">
+                <div class="candidates-label">${item.candidates.length === 1 ? 'Our best guess' : 'Pick the right match'}</div>
+                ${item.candidates.slice(0, 3).map((candidate, ci) => html`
+                  <div
+                    class="candidate-row ${ci === 0 ? 'best' : ''}"
+                    role="button"
+                    tabindex="0"
+                    @click=${() => this._acceptCandidate(i, ci)}
+                    @keydown=${(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); this._acceptCandidate(i, ci); } }}
+                  >
+                    ${this._renderCover(candidate.coverUrl)}
+                    <div class="candidate-info">
+                      <div class="candidate-title">${candidate.title}</div>
+                      <div class="candidate-author">${candidate.author || 'Unknown author'}</div>
+                    </div>
+                    <div class="candidate-meta">
+                      ${ci === 0 && item.candidates.length > 1 ? html`<span class="best-badge">Best</span>` : ''}
+                      <span class="confidence ${this._confidenceClass(candidate.confidence)}">${candidate.confidence}%</span>
+                    </div>
+                  </div>
+                `)}
+                ${this._searchingIndex !== i ? html`
+                  <button class="search-fallback" @click=${() => this._openSearch(i)}>
+                    None of these? Search Open Library
+                  </button>
+                ` : ''}
               </div>
             ` : ''}
             ${this._renderInlineSearch('review', i)}
@@ -860,12 +974,6 @@ export class OlImportResults extends LitElement {
       ${this._activeTab === 'matched' ? this._renderMatchedTab() : ''}
       ${this._activeTab === 'review' ? this._renderReviewTab() : ''}
       ${this._activeTab === 'notFound' ? this._renderNotFoundTab() : ''}
-
-      <div class="final-actions">
-        <ol-button variant="primary" @click=${this._finish}>
-          Finish Import (${this._matched.length} book${this._matched.length !== 1 ? 's' : ''})
-        </ol-button>
-      </div>
     `;
   }
 }
