@@ -740,8 +740,8 @@ export class OlImportPreview extends LitElement {
       </div>
 
       <div class="section" style="margin-top: var(--spacing-8);">
-        <h3>Shelf Mapping</h3>
-        <p class="section-description">Choose how your ${providerName} shelves map to Open Library.</p>
+        <h3>Match your shelves</h3>
+        <p class="section-description">Tell us where each ${providerName} shelf should go in Open Library.</p>
         ${showCollapsed ? html`
           <div class="shelf-mapping-collapsed">
             <div class="shelf-mapping-summary-lines">
@@ -754,7 +754,7 @@ export class OlImportPreview extends LitElement {
                 </div>
               `)}
             </div>
-            <button class="edit-link" @click=${this._toggleShelfMapping}>Edit mapping</button>
+            <button class="edit-link" @click=${this._toggleShelfMapping}>Edit</button>
           </div>
         ` : html`
           <div class="shelf-mapping">
@@ -773,7 +773,7 @@ export class OlImportPreview extends LitElement {
                     ${isUnmapped ? html`
                       <span class="unmapped-badge">
                         <svg viewBox="0 0 24 24" width="12" height="12">${warnSvg}</svg>
-                        Needs mapping
+                        Pick a shelf
                       </span>
                     ` : ''}
                   </div>

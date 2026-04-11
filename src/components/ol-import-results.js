@@ -801,7 +801,7 @@ export class OlImportResults extends LitElement {
     if (this._matched.length === 0) {
       return html`<div class="empty-state">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/></svg>
-        <p>No matched books yet.</p>
+        <p>Nothing imported yet.</p>
       </div>`;
     }
 
