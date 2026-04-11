@@ -116,8 +116,8 @@ export class OlFilterModal extends LitElement {
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 36px;
-      height: 36px;
+      width: 44px;
+      height: 44px;
       background: none;
       border: none;
       border-radius: var(--radius-button);
@@ -302,6 +302,13 @@ export class OlFilterModal extends LitElement {
     .apply-btn:focus-visible {
       outline: var(--focus-ring-width) solid var(--focus-ring-color);
       outline-offset: 2px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+      }
     }
   `;
 

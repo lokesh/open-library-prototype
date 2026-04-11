@@ -322,6 +322,13 @@ export class OlMainNav extends LitElement {
     :host([hide-search]) .search-trigger-mobile {
       display: none;
     }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+      }
+    }
   `;
 
   constructor() {
@@ -385,6 +392,7 @@ export class OlMainNav extends LitElement {
         </button>
         <ul>
           <li><a href="index.html" @click=${this._closeMenu}>Home</a></li>
+          <li><a href="import.html" @click=${this._closeMenu}>Import</a></li>
           <li><a href="book.html" @click=${this._closeMenu}>Book</a></li>
           <li><a href="signup.html" @click=${this._closeMenu}>Sign Up</a></li>
           <li><a href="components.html" @click=${this._closeMenu}>Components</a></li>

@@ -217,6 +217,13 @@ export class OlSearch extends LitElement {
       color: var(--color-error);
       font-size: var(--body-font-size-sm);
     }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+      }
+    }
   `;
 
   constructor() {

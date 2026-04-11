@@ -78,8 +78,10 @@ export class OlLanguageCard extends LitElement {
       justify-content: center;
     }
 
-    .card:hover .edit-trigger {
-      opacity: 1;
+    @media (hover: hover) {
+      .card:hover .edit-trigger {
+        opacity: 1;
+      }
     }
 
     .edit-trigger:hover {
@@ -306,8 +308,8 @@ export class OlLanguageCard extends LitElement {
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 36px;
-      height: 36px;
+      width: 44px;
+      height: 44px;
       background: none;
       border: none;
       border-radius: var(--radius-button);
@@ -452,6 +454,13 @@ export class OlLanguageCard extends LitElement {
     .modal-submit-btn:focus-visible {
       outline: var(--focus-ring-width) solid var(--focus-ring-color);
       outline-offset: 2px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+      }
     }
   `;
 

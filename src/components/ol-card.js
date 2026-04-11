@@ -17,6 +17,13 @@ export class OlCard extends LitElement {
     ::slotted(p) {
       margin: 0;
     }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+      }
+    }
   `;
 
   render() {

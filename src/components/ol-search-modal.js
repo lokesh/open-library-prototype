@@ -156,6 +156,8 @@ export class OlSearchModal extends LitElement {
       .close-btn {
         border: none;
         padding: var(--spacing-2);
+        min-width: 44px;
+        min-height: 44px;
       }
     }
 
@@ -265,6 +267,13 @@ export class OlSearchModal extends LitElement {
       clip: rect(0, 0, 0, 0);
       white-space: nowrap;
       border: 0;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+      }
     }
   `;
 

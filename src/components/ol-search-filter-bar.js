@@ -367,6 +367,7 @@ export class OlSearchFilterBar extends LitElement {
       color: var(--color-bg-elevated);
       font-size: 10px;
       font-weight: var(--font-weight-semibold);
+      font-variant-numeric: tabular-nums;
       line-height: 1;
       box-shadow: 0 0 0 2px var(--color-bg);
     }
@@ -443,6 +444,13 @@ export class OlSearchFilterBar extends LitElement {
     /* ─── Compact mode (modal) ─── */
     :host([compact]) .divider {
       height: 16px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+      }
     }
   `;
 

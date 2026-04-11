@@ -27,8 +27,10 @@ export class OlRoleToggle extends LitElement {
       border-bottom: var(--border-width-2) solid transparent;
     }
 
-    button:hover {
-      border-bottom: var(--border-width-2) solid var(--color-text);
+    @media (hover: hover) {
+      button:hover {
+        border-bottom: var(--border-width-2) solid var(--color-text);
+      }
     }
 
     button:active {
@@ -54,9 +56,11 @@ export class OlRoleToggle extends LitElement {
       color: var(--color-bg-primary);
     }
 
-    .toggle-wrapper:hover .tooltip {
-      opacity: 1;
-      visibility: visible;
+    @media (hover: hover) {
+      .toggle-wrapper:hover .tooltip {
+        opacity: 1;
+        visibility: visible;
+      }
     }
 
     .tooltip {
@@ -77,6 +81,13 @@ export class OlRoleToggle extends LitElement {
       transition: opacity 150ms ease;
       border: 1px solid var(--color-border);
       z-index: 10;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+      }
     }
   `;
 

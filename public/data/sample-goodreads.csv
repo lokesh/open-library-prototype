@@ -1,0 +1,21 @@
+Book Id,Title,Author,Author l-f,Additional Authors,ISBN,ISBN13,My Rating,Average Rating,Publisher,Binding,Number of Pages,Year Published,Original Publication Year,Date Read,Date Added,Bookshelves,Bookshelves with positions,Exclusive Shelf,My Review,Spoiler,Private Notes,Read Count,Owned Copies
+1,The Great Gatsby,F. Scott Fitzgerald,"Fitzgerald, F. Scott",,="0743273567",="9780743273565",5,3.93,Scribner,Paperback,180,2004,1925,2023/06/15,2023/01/10,classics,classics (#1),read,"A masterpiece of American literature. The prose is stunning.",,,1,0
+2,To Kill a Mockingbird,Harper Lee,"Lee, Harper",,="0061120081",="9780061120084",4,4.27,Harper Perennial,Paperback,336,2006,1960,2023/03/20,2022/12/01,,to-read (#1),read,,,,,0
+3,1984,George Orwell,"Orwell, George",,="0451524934",="9780451524935",5,4.19,Signet Classic,Mass Market Paperback,328,1961,1949,2022/11/10,2022/08/15,dystopia,dystopia (#1),read,"Chillingly relevant. Everyone should read this.",,,1,1
+4,Dune,Frank Herbert,"Herbert, Frank",,="0441172717",="9780441172719",4,4.25,Ace Books,Mass Market Paperback,688,2005,1965,2023/08/01,2023/05/20,sci-fi,sci-fi (#1),read,,,,,0
+5,The Hobbit,J.R.R. Tolkien,"Tolkien, J.R.R.",,="054792822X",="9780547928227",5,4.28,Mariner Books,Paperback,366,2012,1937,2021/07/22,2020/03/10,fantasy,fantasy (#1),read,"A perfect adventure story.",,,2,1
+6,Pride and Prejudice,Jane Austen,"Austen, Jane",,="0141439513",="9780141439518",4,4.28,Penguin Classics,Paperback,480,2002,1813,2023/02/14,2022/11/30,,currently-reading (#1),currently-reading,,,,,0
+7,The Catcher in the Rye,J.D. Salinger,"Salinger, J.D.",,="0316769487",="9780316769488",3,3.80,Little Brown and Company,Paperback,277,2001,1951,,2023/09/01,,to-read (#1),to-read,,,,,0
+8,Brave New World,Aldous Huxley,"Huxley, Aldous",,="0060850523",="9780060850524",4,3.99,Harper Perennial,Paperback,288,2006,1932,,2023/09/01,dystopia,dystopia (#2),to-read,,,,,0
+9,The Road,Cormac McCarthy,"McCarthy, Cormac",,="0307387895",="9780307387899",5,3.98,Vintage,Paperback,287,2007,2006,2023/04/10,2023/01/15,,read (#1),read,"Devastating and beautiful. I couldn't put it down.",,,1,0
+10,Slaughterhouse-Five,Kurt Vonnegut,"Vonnegut, Kurt",,="0812988523",="9780812988529",4,4.09,Dial Press Trade Paperbacks,Paperback,275,2009,1969,,2023/07/20,,to-read (#1),to-read,,,,,0
+11,The Bell Jar,Sylvia Plath,"Plath, Sylvia",,="0060837020",="9780060837020",3,4.03,Harper Perennial,Paperback,288,2005,1963,,2023/06/01,,currently-reading (#1),currently-reading,,,,,0
+12,Fahrenheit 451,Ray Bradbury,"Bradbury, Ray",,="1451673310",="9781451673319",4,3.97,Simon & Schuster,Paperback,194,2012,1953,2022/09/15,2022/05/10,dystopia,dystopia (#3),read,,,,,1
+13,The Alchemist,Paulo Coelho,"Coelho, Paulo",,="0062315005",="9780062315007",3,3.90,HarperOne,Paperback,197,2014,1988,2023/01/05,2022/10/20,,read (#2),read,"Overrated but still enjoyable.",,,1,0
+14,Norwegian Wood,Haruki Murakami,"Murakami, Haruki",,="0375704027",="9780375704024",4,4.02,Vintage,Paperback,296,2000,1987,2023/05/18,2023/02/28,,read (#3),read,,,,,0
+15,One Hundred Years of Solitude,Gabriel Garcia Marquez,"Marquez, Gabriel Garcia",,="0060883286",="9780060883287",5,4.11,Harper Perennial,Paperback,417,2006,1967,,2023/08/15,,to-read (#2),to-read,,,,,0
+16,The Name of the Wind,Patrick Rothfuss,"Rothfuss, Patrick",,="0756404746",="9780756404741",5,4.55,DAW Books,Mass Market Paperback,662,2008,2007,2023/07/01,2023/03/10,fantasy,fantasy (#2),read,"One of the best fantasy novels I've ever read.",,,1,0
+17,Sapiens,Yuval Noah Harari,"Harari, Yuval Noah",,="0062316117",="9780062316110",4,4.39,Harper Perennial,Paperback,464,2015,2011,2023/09/20,2023/06/01,,read (#4),read,,,,,0
+18,The Handmaid's Tale,Margaret Atwood,"Atwood, Margaret",,="038549081X",="9780385490818",4,4.12,Anchor Books,Paperback,311,1998,1985,,2023/10/01,dystopia,dystopia (#4),to-read,,,,,0
+19,Crime and Punishment,Fyodor Dostoevsky,"Dostoevsky, Fyodor",,="0486415872",="9780486415871",4,4.23,Dover Publications,Paperback,430,2001,1866,2022/12/30,2022/06/15,classics,classics (#2),read,"Dense but rewarding. Raskolnikov is unforgettable.",,,1,0
+20,The Hitchhiker's Guide to the Galaxy,Douglas Adams,"Adams, Douglas",,="0345391802",="9780345391803",5,4.22,Del Rey,Mass Market Paperback,224,1995,1979,2023/08/25,2023/04/10,sci-fi,sci-fi (#2),read,"Laugh-out-loud funny. Pure joy.",,,1,1

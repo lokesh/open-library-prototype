@@ -80,6 +80,13 @@ export class OlTab extends LitElement {
       cursor: not-allowed;
       color: var(--color-text-secondary);
     }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+      }
+    }
   `;
 
   constructor() {

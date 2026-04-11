@@ -23,9 +23,12 @@ Pages: `index.html` (home), `search.html` (search results), `book.html` (book de
 
 ### Components (`src/components/`)
 
-All components extend `LitElement`, use Shadow DOM, and follow `ol-*` naming. Registered in `src/components/index.js` via side-effect imports. When adding a new component, add its import to `index.js`.
+All components extend `LitElement`, use Shadow DOM, and follow `ol-*` naming. Registered in `src/components/index.js` via side-effect imports. **When adding a new component, add its import to `index.js`.**
 
-Key components: `ol-button`, `ol-input` (form-associated via `ElementInternals`), `ol-field` (label+hint+error wrapper), `ol-search`/`ol-search-modal`/`ol-search-result-item`/`ol-past-search-item`/`ol-search-filters`/`ol-search-filter-bar`/`ol-filter-modal` (search system), `ol-tab-group`/`ol-tab`/`ol-tab-panel`, `ol-sortable-list`/`ol-sortable-item` (drag-and-drop), `ol-star-rating`, `ol-theme-toggle`, `ol-main-nav`.
+Component inventory is in `src/components/index.js`. Notable subsystems:
+- **Search**: `ol-search`, `ol-search-modal`, `ol-search-result-item`, `ol-past-search-item`, `ol-search-filters`, `ol-search-filter-bar`, `ol-filter-modal`
+- **Forms**: `ol-input` (form-associated via `ElementInternals`), `ol-field` (label+hint+error wrapper), `ol-dropdown-button`
+- **Layout/Navigation**: `ol-tab-group`/`ol-tab`/`ol-tab-panel`, `ol-sortable-list`/`ol-sortable-item` (drag-and-drop), `ol-main-nav`
 
 ### Data layer
 
@@ -47,11 +50,12 @@ Token categories: `--color-*` (bg, text, border), `--spacing-*` (1-8 scale), `--
 Detailed rules in `.cursor/rules/component-standards.mdc` and `.cursor/rules/styling-conventions.mdc`. Key points:
 
 - **Naming**: `ol-` prefix, kebab-case tags, PascalCase classes (`OlButton`)
+- **API design**: Start narrow — easy to add features, hard to remove them
 - **Properties**: Use `static properties` with `reflect: true` for styling hooks. Initialize defaults in `constructor()`.
 - **Events**: Kebab-case custom event names (e.g., `ol-search-select`, `ol-sort`). Always set `bubbles: true, composed: true`.
 - **Styling**: Use `static styles` with Lit's `css` tag. Style via `:host` and `:host([attribute])`. Mobile-first responsive design.
 - **Accessibility**: ARIA attributes required. Keyboard nav for interactive widgets (Tab, Enter, Space, Escape, Arrow keys, Home/End). Visible focus indicators.
-- **Lifecycle**: Clean up listeners/timers in `disconnectedCallback()`. No side effects in `constructor()` (SSR-friendly).
+- **Lifecycle**: Clean up listeners/timers in `disconnectedCallback()`. No side effects in `constructor()` — use `connectedCallback()` for side effects (SSR-friendly).
 - **Private methods**: Prefix with underscore (`_handleClick`)
 - **SVG in templates**: When interpolating SVG child elements (`<path>`, `<line>`, etc.) via `${...}`, use Lit's `svg` tagged template, not `html`. The `html` parser creates elements in the HTML namespace which won't render as SVG.
 

@@ -189,6 +189,13 @@ export class OlDropdownButton extends LitElement {
     :host([open]) .chevron {
       transform: rotate(180deg);
     }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+      }
+    }
   `;
 
   constructor() {
