@@ -382,95 +382,87 @@ export class OlImportPreview extends LitElement {
       transform: rotate(180deg);
     }
 
+    /* The panel stacks two tables — field toggles + duplicate handling —
+       that mirror the shelf-mapping table look (bordered, header row, rows
+       with elevated bg + subtle dividers). Keeps the preview page visually
+       coherent instead of introducing a second distinct panel style. */
     .fine-tune-panel {
       margin-top: var(--spacing-3);
-      padding: var(--spacing-5);
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-4);
+    }
+
+    .fine-tune-table {
       border: 1px solid var(--color-border);
       border-radius: var(--radius-card);
-      background: var(--color-bg-elevated);
-      display: flex;
-      flex-direction: column;
-      gap: var(--spacing-6);
+      overflow: hidden;
     }
 
-    .fine-tune-section-title {
-      font-size: var(--font-size-sm);
+    .fine-tune-table-header {
+      background: var(--color-bg);
+      padding: var(--spacing-3) var(--spacing-4);
+      border-bottom: 1px solid var(--color-border-subtle);
       font-weight: var(--font-weight-semibold);
-      color: var(--color-text-strong);
+      font-size: var(--font-size-xs);
+      color: var(--color-text-secondary);
       text-transform: uppercase;
       letter-spacing: var(--letter-spacing-wide);
-      margin: 0 0 var(--spacing-3);
     }
 
-    .field-toggles {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .field-toggle-row {
+    label.fine-tune-row {
       display: flex;
       align-items: center;
-      justify-content: space-between;
       gap: var(--spacing-3);
-      padding: var(--spacing-3) 0;
+      padding: var(--spacing-3) var(--spacing-4);
       border-bottom: 1px solid var(--color-border-subtle);
+      background: var(--color-bg-elevated);
+      cursor: pointer;
     }
 
-    .field-toggle-row:last-child {
+    label.fine-tune-row:last-child {
       border-bottom: none;
     }
 
-    .field-toggle-label {
+    label.fine-tune-row:hover {
+      background: var(--color-bg-elevated-hovered, var(--color-bg-elevated));
+    }
+
+    .fine-tune-row-label {
       display: flex;
       flex-direction: column;
       gap: 2px;
       min-width: 0;
+      flex: 1;
     }
 
-    .field-toggle-title {
+    .fine-tune-row-title {
       font-size: var(--font-size-md);
-      font-weight: var(--font-weight-medium);
+      font-weight: var(--font-weight-semibold);
       color: var(--color-text-strong);
     }
 
-    .field-toggle-count {
+    .fine-tune-row-meta {
       font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-secondary);
+      letter-spacing: var(--letter-spacing-wide);
+      text-transform: uppercase;
+    }
+
+    .fine-tune-row-hint {
+      font-size: var(--font-size-sm);
       color: var(--color-text-secondary);
     }
 
-    .field-toggle-row input[type="checkbox"] {
+    .fine-tune-row input[type="checkbox"],
+    .fine-tune-row input[type="radio"] {
       width: 18px;
       height: 18px;
       accent-color: var(--color-brand-primary);
       cursor: pointer;
       flex-shrink: 0;
-    }
-
-    /* Duplicate handling */
-    .radio-group {
-      display: flex;
-      flex-direction: column;
-      gap: var(--spacing-2);
-    }
-
-    .radio-group label {
-      font-size: var(--font-size-sm);
-      color: var(--color-text);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: var(--spacing-2);
-    }
-
-    .radio-group input[type="radio"] {
-      accent-color: var(--color-brand-primary);
-      cursor: pointer;
-    }
-
-    .radio-hint {
-      font-size: var(--font-size-xs);
-      color: var(--color-text-secondary);
-      margin: 0 0 var(--spacing-2) calc(18px + var(--spacing-2));
+      margin: 0;
     }
 
     @media (max-width: 640px) {
@@ -689,7 +681,7 @@ export class OlImportPreview extends LitElement {
 
       ${this.parseErrors?.length ? html`
         <details class="parse-errors">
-          <summary>${this.parseErrors.length} row${this.parseErrors.length !== 1 ? 's' : ''} skipped during parsing</summary>
+          <summary>${this.parseErrors.length} row${this.parseErrors.length !== 1 ? 's' : ''} couldn't be read</summary>
           <ul>
             ${this.parseErrors.map((e) => html`<li>Row ${e.row}: ${e.message}</li>`)}
           </ul>
@@ -703,45 +695,45 @@ export class OlImportPreview extends LitElement {
           aria-controls="fine-tune-panel"
           @click=${this._toggleCustomize}
         >
-          Fine-tune import
+          More options
           <svg viewBox="0 0 24 24">${chevronSvg}</svg>
         </button>
         ${this._customizeExpanded ? html`
           <div class="fine-tune-panel" id="fine-tune-panel">
             ${toggleCards.length > 0 ? html`
-              <div>
-                <h4 class="fine-tune-section-title">Include in import</h4>
-                <div class="field-toggles">
-                  ${toggleCards.map((card) => html`
-                    <label class="field-toggle-row">
-                      <div class="field-toggle-label">
-                        <span class="field-toggle-title">${card.title}</span>
-                        <span class="field-toggle-count">${card.count.toLocaleString()} in file</span>
-                      </div>
-                      <input
-                        type="checkbox"
-                        .checked=${this._importOptions[card.key]}
-                        @change=${(e) => this._updateOption(card.key, e)}
-                      >
-                    </label>
-                  `)}
-                </div>
+              <div class="fine-tune-table">
+                <div class="fine-tune-table-header">Include in import</div>
+                ${toggleCards.map((card) => html`
+                  <label class="fine-tune-row">
+                    <div class="fine-tune-row-label">
+                      <span class="fine-tune-row-title">${card.title}</span>
+                      <span class="fine-tune-row-meta">${card.count.toLocaleString()} in file</span>
+                    </div>
+                    <input
+                      type="checkbox"
+                      .checked=${this._importOptions[card.key]}
+                      @change=${(e) => this._updateOption(card.key, e)}
+                    >
+                  </label>
+                `)}
               </div>
             ` : ''}
-            <div>
-              <h4 class="fine-tune-section-title">Duplicate handling</h4>
-              <div class="radio-group">
-                <label>
-                  <input type="radio" name="duplicates" value="skip" .checked=${this._importOptions.duplicates === 'skip'} @change=${this._updateDuplicates}>
-                  Skip duplicates
-                </label>
-                <p class="radio-hint">Keep your existing Open Library data unchanged.</p>
-                <label>
-                  <input type="radio" name="duplicates" value="replace" .checked=${this._importOptions.duplicates === 'replace'} @change=${this._updateDuplicates}>
-                  Replace with imported data
-                </label>
-                <p class="radio-hint">Overwrite existing entries with data from ${providerName}.</p>
-              </div>
+            <div class="fine-tune-table">
+              <div class="fine-tune-table-header">If a book is already in your library</div>
+              <label class="fine-tune-row">
+                <input type="radio" name="duplicates" value="skip" .checked=${this._importOptions.duplicates === 'skip'} @change=${this._updateDuplicates}>
+                <div class="fine-tune-row-label">
+                  <span class="fine-tune-row-title">Keep what's already there</span>
+                  <span class="fine-tune-row-hint">Leave your existing Open Library entry unchanged.</span>
+                </div>
+              </label>
+              <label class="fine-tune-row">
+                <input type="radio" name="duplicates" value="replace" .checked=${this._importOptions.duplicates === 'replace'} @change=${this._updateDuplicates}>
+                <div class="fine-tune-row-label">
+                  <span class="fine-tune-row-title">Replace with the imported version</span>
+                  <span class="fine-tune-row-hint">Overwrite existing entries with data from ${providerName}.</span>
+                </div>
+              </label>
             </div>
           </div>
         ` : ''}
