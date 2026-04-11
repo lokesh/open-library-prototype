@@ -652,8 +652,6 @@ export class OlImportPreview extends LitElement {
     const toggleCards = allToggleCards.filter((c) => c.count > 0);
 
     return html`
-      <h2>Preview</h2>
-
       <div class="summary-card">
         ${this.fileName ? html`
           <div class="summary-header">
@@ -695,7 +693,7 @@ export class OlImportPreview extends LitElement {
           aria-controls="fine-tune-panel"
           @click=${this._toggleCustomize}
         >
-          More options
+          Customize import
           <svg viewBox="0 0 24 24">${chevronSvg}</svg>
         </button>
         ${this._customizeExpanded ? html`
