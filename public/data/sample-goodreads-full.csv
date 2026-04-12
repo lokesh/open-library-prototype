@@ -1,0 +1,40 @@
+Book Id,Title,Author,Author l-f,Additional Authors,ISBN,ISBN13,My Rating,Average Rating,Publisher,Binding,Number of Pages,Year Published,Original Publication Year,Date Read,Date Added,Bookshelves,Bookshelves with positions,Exclusive Shelf,My Review,Spoiler,Private Notes,Read Count,Owned Copies
+1,The Great Gatsby,F. Scott Fitzgerald,"Fitzgerald, F. Scott",,="0743273567",="9780743273565",5,3.93,Scribner,Paperback,180,2004,1925,2023/06/15,2023/01/10,classics,classics (#1),read,"A masterpiece of American literature. The prose is stunning.",,,1,0
+2,To Kill a Mockingbird,Harper Lee,"Lee, Harper",,="0061120081",="9780061120084",5,4.27,Harper Perennial,Paperback,336,2006,1960,2023/03/20,2022/12/01,classics,classics (#2),read,"Atticus Finch is one of the greatest characters in fiction.",,,1,0
+3,1984,George Orwell,"Orwell, George",,="0451524934",="9780451524935",5,4.19,Signet Classic,Mass Market Paperback,328,1961,1949,2022/11/10,2022/08/15,dystopia,dystopia (#1),read,"Chillingly relevant. Everyone should read this.",,,1,1
+4,Dune,Frank Herbert,"Herbert, Frank",,="0441172717",="9780441172719",4,4.25,Ace Books,Mass Market Paperback,688,2005,1965,2023/08/01,2023/05/20,sci-fi,sci-fi (#1),read,,,,1,0
+5,The Hobbit,J.R.R. Tolkien,"Tolkien, J.R.R.",,="054792822X",="9780547928227",5,4.28,Mariner Books,Paperback,366,2012,1937,2021/07/22,2020/03/10,fantasy,fantasy (#1),read,"A perfect adventure story.",,,2,1
+6,Crime and Punishment,Fyodor Dostoevsky,"Dostoevsky, Fyodor",,="0486415872",="9780486415871",4,4.23,Dover Publications,Paperback,430,2001,1866,2022/12/30,2022/06/15,classics,classics (#3),read,"Dense but rewarding. Raskolnikov is unforgettable.",,,1,0
+7,The Road,Cormac McCarthy,"McCarthy, Cormac",,="0307387895",="9780307387899",5,3.98,Vintage,Paperback,287,2007,2006,2023/04/10,2023/01/15,,read (#1),read,"Devastating and beautiful.",,,1,0
+8,Norwegian Wood,Haruki Murakami,"Murakami, Haruki",,="0375704027",="9780375704024",4,4.02,Vintage,Paperback,296,2000,1987,2023/05/18,2023/02/28,,read (#2),read,,,,1,0
+9,The Name of the Wind,Patrick Rothfuss,"Rothfuss, Patrick",,="0756404746",="9780756404741",5,4.55,DAW Books,Mass Market Paperback,662,2008,2007,2023/07/01,2023/03/10,fantasy,fantasy (#2),read,"One of the best fantasy novels I've ever read.",,,1,0
+10,Sapiens,Yuval Noah Harari,"Harari, Yuval Noah",,="0062316117",="9780062316110",4,4.39,Harper Perennial,Paperback,464,2015,2011,2023/09/20,2023/06/01,,read (#3),read,,,,1,0
+11,The Hitchhiker's Guide to the Galaxy,Douglas Adams,"Adams, Douglas",,="0345391802",="9780345391803",5,4.22,Del Rey,Mass Market Paperback,224,1995,1979,2023/08/25,2023/04/10,sci-fi,sci-fi (#2),read,"Laugh-out-loud funny. Pure joy.",,,1,1
+12,Fahrenheit 451,Ray Bradbury,"Bradbury, Ray",,="1451673310",="9781451673319",4,3.97,Simon & Schuster,Paperback,194,2012,1953,2022/09/15,2022/05/10,dystopia,dystopia (#2),read,,,,1,1
+13,The Alchemist,Paulo Coelho,"Coelho, Paulo",,="0062315005",="9780062315007",3,3.90,HarperOne,Paperback,197,2014,1988,2023/01/05,2022/10/20,,read (#4),read,"Overrated but still enjoyable.",,,1,0
+14,Slaughterhouse-Five,Kurt Vonnegut,"Vonnegut, Kurt",,="0812988523",="9780812988529",4,4.09,Dial Press Trade Paperbacks,Paperback,275,2009,1969,2023/10/15,2023/05/01,sci-fi,sci-fi (#3),read,,,,1,0
+15,Beloved,Toni Morrison,"Morrison, Toni",,="1400033411",="9781400033416",4,3.92,Vintage,Paperback,324,2004,1987,2023/11/20,2023/08/01,classics,classics (#4),read,"Haunting. Morrison's prose is unlike anything else.",,,1,0
+16,The Left Hand of Darkness,Ursula K. Le Guin,"Le Guin, Ursula K.",,="0441478123",="9780441478125",5,4.07,Ace Books,Paperback,304,2000,1969,2024/01/10,2023/10/15,sci-fi,sci-fi (#4),read,"Groundbreaking and deeply humane.",,,1,0
+17,Pride and Prejudice,Jane Austen,"Austen, Jane",,="0141439513",="9780141439518",4,4.28,Penguin Classics,Paperback,480,2002,1813,2024/02/14,2023/11/30,classics,classics (#5),read,,,,1,0
+18,Neuromancer,William Gibson,"Gibson, William",,="0441569595",="9780441569595",3,3.89,Ace Books,Paperback,271,2000,1984,2024/03/05,2024/01/10,sci-fi,sci-fi (#5),read,"Visionary but the writing style didn't click with me.",,,1,0
+19,The Bell Jar,Sylvia Plath,"Plath, Sylvia",,="0060837020",="9780060837020",3,4.03,Harper Perennial,Paperback,288,2005,1963,,2024/04/01,,currently-reading,,,,0,0
+20,Piranesi,Susanna Clarke,"Clarke, Susanna",,="1635575990",="9781635575996",0,4.19,Bloomsbury Publishing,Hardcover,272,2020,2020,,2024/04/10,,currently-reading,,,,0,0
+21,The Overstory,Richard Powers,"Powers, Richard",,="0393356687",="9780393356687",0,4.05,W.W. Norton,Paperback,502,2019,2018,,2024/03/15,,currently-reading,,,,0,0
+22,Brave New World,Aldous Huxley,"Huxley, Aldous",,="0060850523",="9780060850524",0,3.99,Harper Perennial,Paperback,288,2006,1932,,2024/04/15,dystopia,dystopia (#3),to-read,,,,0,0
+23,The Catcher in the Rye,J.D. Salinger,"Salinger, J.D.",,="0316769487",="9780316769488",0,3.80,Little Brown and Company,Paperback,277,2001,1951,,2024/01/01,,to-read (#1),to-read,,,,0,0
+24,One Hundred Years of Solitude,Gabriel Garcia Marquez,"Marquez, Gabriel Garcia",,="0060883286",="9780060883287",0,4.11,Harper Perennial,Paperback,417,2006,1967,,2023/08/15,,to-read (#2),to-read,,,,0,0
+25,The Handmaid's Tale,Margaret Atwood,"Atwood, Margaret",,="038549081X",="9780385490818",0,4.12,Anchor Books,Paperback,311,1998,1985,,2024/02/01,dystopia,dystopia (#4),to-read,,,,0,0
+26,Klara and the Sun,Kazuo Ishiguro,"Ishiguro, Kazuo",,="059331817X",="9780593318171",0,3.82,Vintage,Paperback,320,2022,2021,,2024/03/01,sci-fi,sci-fi (#6),to-read,,,,0,0
+27,Station Eleven,Emily St. John Mandel,"Mandel, Emily St. John",,="0804172447",="9780804172448",0,4.04,Vintage,Paperback,352,2015,2014,,2024/04/01,,to-read (#3),to-read,,,,0,0
+28,The Fifth Season,N.K. Jemisin,"Jemisin, N.K.",,="0316229296",="9780316229296",0,4.31,Orbit,Paperback,512,2015,2015,,2024/04/05,fantasy,fantasy (#3),to-read,,,,0,0
+29,Parable of the Sower,Octavia E. Butler,"Butler, Octavia E.",,="1538732181",="9781538732182",0,4.18,Grand Central Publishing,Paperback,345,2019,1993,,2024/04/10,,to-read (#4),to-read,,,,0,0
+30,Project Hail Mary,Andy Weir,"Weir, Andy",,="0593135202",="9780593135204",5,4.52,Ballantine Books,Hardcover,496,2021,2021,2024/01/15,2023/12/01,,favorites (#1),favorites,"Couldn't stop reading. Ryland Grace is brilliant.",,,1,0
+31,The House in the Cerulean Sea,TJ Klune,"Klune, TJ",,="1250217288",="9781250217288",5,4.39,Tor Books,Hardcover,400,2020,2020,2023/12/20,2023/09/01,,favorites (#2),favorites,"Pure warmth. Made me cry happy tears.",,,1,0
+32,Circe,Madeline Miller,"Miller, Madeline",,="0316556343",="9780316556347",5,4.27,Back Bay Books,Paperback,400,2019,2018,2024/02/28,2023/11/15,fantasy,fantasy (#4),favorites,"A gorgeous feminist retelling.",,,1,0
+33,Anxious People,Fredrik Backman,"Backman, Fredrik",,="1501160842",="9781501160844",4,3.82,Atria Books,Paperback,352,2021,2019,2023/11/01,2023/07/20,,favorites (#3),favorites,,,,1,0
+34,The Goldfinch,Donna Tartt,"Tartt, Donna",,="0316055433",="9780316055437",2,3.89,Little Brown and Company,Paperback,771,2013,2013,,2022/08/10,,dnf (#1),dnf,"Couldn't get past page 300. Too meandering.",,,0,0
+35,Atlas Shrugged,Ayn Rand,"Rand, Ayn",,="0451191145",="9780451191144",1,3.69,Signet,Mass Market Paperback,1168,1996,1957,,2022/04/15,,dnf (#2),dnf,,,,0,0
+36,Infinite Jest,David Foster Wallace,"Wallace, David Foster",,="0316066524",="9780316066525",2,4.00,Back Bay Books,Paperback,1079,2006,1996,,2023/03/01,,dnf (#3),dnf,"I tried. Three times. I just can't.",,,0,0
+37,The Midnight Library,Matt Haig,"Haig, Matt",,="0525559477",="9780525559474",3,3.77,Viking,Hardcover,288,2020,2020,2023/03/10,2023/01/20,,guilty-pleasures (#1),guilty-pleasures,,,,1,0
+38,Beach Read,Emily Henry,"Henry, Emily",,="1984806734",="9781984806734",3,3.72,Berkley,Paperback,368,2020,2020,2023/06/15,2023/05/01,,guilty-pleasures (#2),guilty-pleasures,"Exactly what I needed on vacation.",,,1,0
+39,It Ends with Us,Colleen Hoover,"Hoover, Colleen",,="1501110365",="9781501110368",2,4.03,Atria Books,Paperback,384,2016,2016,2023/08/20,2023/07/01,,guilty-pleasures (#3),guilty-pleasures,,,,1,0

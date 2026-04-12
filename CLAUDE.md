@@ -59,6 +59,10 @@ Detailed rules in `.cursor/rules/component-standards.mdc` and `.cursor/rules/sty
 - **Private methods**: Prefix with underscore (`_handleClick`)
 - **SVG in templates**: When interpolating SVG child elements (`<path>`, `<line>`, etc.) via `${...}`, use Lit's `svg` tagged template, not `html`. The `html` parser creates elements in the HTML namespace which won't render as SVG.
 
+## Workflow
+
+- Do not test in the browser unless explicitly asked.
+
 ## Production
 
 - Base path is `/open-library-prototype/` in production, `/` in dev (set in `vite.config.js` based on `command`)

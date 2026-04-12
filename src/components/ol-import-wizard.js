@@ -131,8 +131,14 @@ export class OlImportWizard extends LitElement {
        bar so the last section is never occluded. Lives here (not on :host)
        because the global reset * { padding: 0 } outcompetes :host rules. */
     .step-content {
+      max-width: 560px;
+      margin: 0 auto;
       min-height: 300px;
       padding-bottom: calc(var(--spacing-8) + 72px);
+    }
+
+    .step-content.wide {
+      max-width: 760px;
     }
 
     /* Fixed footer action bar — back on the left, contextual summary next to
@@ -171,6 +177,9 @@ export class OlImportWizard extends LitElement {
 
     .footer-right {
       flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-4);
     }
 
     /* Back button uses ol-button variant="secondary". We only need to
@@ -431,9 +440,9 @@ export class OlImportWizard extends LitElement {
                 </span>
               </ol-button>
             ` : ''}
-            ${summary ? html`<span class="footer-summary">${summary}</span>` : ''}
           </div>
           <div class="footer-right">
+            ${summary ? html`<span class="footer-summary">${summary}</span>` : ''}
             ${visible ? html`
               <ol-button
                 variant="primary"
@@ -477,7 +486,7 @@ export class OlImportWizard extends LitElement {
         <p class="subtitle">Bring your books from another platform into Open Library.</p>
       </div>
       ${this._renderStepIndicator()}
-      <div class="step-content">
+      <div class="step-content ${this._step === 1 ? 'wide' : ''}">
         ${this._renderStep()}
       </div>
       ${this._renderFooter()}

@@ -2,9 +2,10 @@ import { LitElement, html, css, svg } from 'lit';
 import { getProviderName } from '../import-parser-service.js';
 
 const OL_SHELVES = [
-  { value: 'Already Read', label: 'Already Read' },
-  { value: 'Currently Reading', label: 'Currently Reading' },
-  { value: 'Want to Read', label: 'Want to Read' },
+  { value: 'Already Read', label: 'Add to Already Read' },
+  { value: 'Currently Reading', label: 'Add to Currently Reading' },
+  { value: 'Want to Read', label: 'Add to Want to Read' },
+  { value: 'New List', label: 'Create new list' },
   { value: 'skip', label: 'Don\'t import' },
 ];
 
@@ -41,6 +42,7 @@ export class OlImportPreview extends LitElement {
     _shelfMappingExpanded: { state: true },
     _importOptions: { state: true },
     _customizeExpanded: { state: true },
+    _readingLogPrivacy: { state: true },
   };
 
   static styles = css`
@@ -82,7 +84,7 @@ export class OlImportPreview extends LitElement {
       border-radius: var(--radius-card);
       background: var(--color-bg-elevated);
       overflow: hidden;
-      margin-bottom: var(--spacing-4);
+      margin-bottom: var(--spacing-2);
     }
 
     .summary-header {
@@ -152,8 +154,7 @@ export class OlImportPreview extends LitElement {
     }
 
     .summary-stat-value {
-      font-family: var(--heading-font-family);
-      font-size: var(--font-size-2xl);
+      font-size: var(--font-size-lg);
       font-weight: var(--font-weight-bold);
       color: var(--color-text-strong);
       line-height: 1;
@@ -193,7 +194,7 @@ export class OlImportPreview extends LitElement {
     .shelf-row {
       display: grid;
       grid-template-columns: 1fr auto 1fr;
-      align-items: center;
+      align-items: start;
       gap: var(--spacing-3);
       padding: var(--spacing-3) var(--spacing-4);
       border-bottom: 1px solid var(--color-border-subtle);
@@ -221,7 +222,7 @@ export class OlImportPreview extends LitElement {
     }
 
     .shelf-name {
-      font-size: var(--font-size-md);
+      font-size: var(--font-size-sm);
       font-weight: var(--font-weight-semibold);
       color: var(--color-text-strong);
       overflow: hidden;
@@ -248,14 +249,21 @@ export class OlImportPreview extends LitElement {
       vertical-align: middle;
     }
 
+    .shelf-target {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
     select {
       font-family: var(--body-font-family);
-      font-size: var(--font-size-sm);
+      font-size: var(--font-size-md);
+      font-weight: var(--font-weight-semibold);
       padding: var(--spacing-1) var(--spacing-2);
       border: 1px solid var(--color-border);
       border-radius: var(--radius-md);
       background: var(--color-bg-elevated);
-      color: var(--color-text);
+      color: var(--color-text-strong);
       cursor: pointer;
       width: 100%;
     }
@@ -329,9 +337,8 @@ export class OlImportPreview extends LitElement {
       color: var(--color-link-hovered);
     }
 
-    /* Unmapped shelf row flag */
     .shelf-row.unmapped {
-      background: #fef3c7;
+      background: var(--color-bg-elevated);
     }
 
     .unmapped-badge {
@@ -340,10 +347,63 @@ export class OlImportPreview extends LitElement {
       gap: 4px;
       font-size: var(--font-size-xs);
       font-weight: var(--font-weight-semibold);
-      color: #92400e;
+      color: var(--color-link);
       text-transform: uppercase;
       letter-spacing: var(--letter-spacing-wide);
       margin-top: 2px;
+    }
+
+
+    .shelf-section-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: var(--spacing-3);
+    }
+
+    .shelf-section-label {
+      font-weight: var(--font-weight-semibold);
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+      text-transform: uppercase;
+      letter-spacing: var(--letter-spacing-wide);
+    }
+
+    .privacy-toggle {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-2);
+      cursor: pointer;
+      font-size: var(--font-size-sm);
+      color: var(--color-link);
+      background: none;
+      border: none;
+      font-family: var(--body-font-family);
+      padding: 0;
+    }
+
+    .privacy-toggle svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .privacy-toggle:hover {
+      color: var(--color-link-hovered);
+    }
+
+    .privacy-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-secondary);
+      margin-top: 2px;
+    }
+
+    .privacy-badge svg {
+      width: 12px;
+      height: 12px;
     }
 
     /* Progressive-disclosure "Fine-tune import" panel. Holds the per-field
@@ -351,7 +411,7 @@ export class OlImportPreview extends LitElement {
        default because good defaults (import everything, skip duplicates)
        cover the happy path. */
     .fine-tune {
-      margin-top: var(--spacing-4);
+      margin-top: var(--spacing-2);
     }
 
     .fine-tune-toggle {
@@ -513,6 +573,7 @@ export class OlImportPreview extends LitElement {
     this._shelfMappingExpanded = false;
     this._importOptions = { ratings: true, reviews: true, dates: true, duplicates: 'skip' };
     this._customizeExpanded = false;
+    this._readingLogPrivacy = 'public';
   }
 
   connectedCallback() {
@@ -601,6 +662,10 @@ export class OlImportPreview extends LitElement {
     this._importOptions = { ...this._importOptions, duplicates: e.target.value };
   }
 
+  _togglePrivacy() {
+    this._readingLogPrivacy = this._readingLogPrivacy === 'public' ? 'private' : 'public';
+  }
+
   _continue = () => {
     this.dispatchEvent(new CustomEvent('ol-import-step-complete', {
       bubbles: true,
@@ -610,6 +675,7 @@ export class OlImportPreview extends LitElement {
         data: {
           shelfMapping: this._shelfMapping,
           importOptions: this._importOptions,
+          readingLogPrivacy: this._readingLogPrivacy,
         },
       },
     }));
@@ -622,10 +688,16 @@ export class OlImportPreview extends LitElement {
     const total = this.stats?.total || 0;
 
     const warnSvg = svg`<path d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>`;
+    const globeSvg = svg`<circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><ellipse cx="12" cy="12" rx="4" ry="10" fill="none" stroke="currentColor" stroke-width="2"/><line x1="2" y1="12" x2="22" y2="12" stroke="currentColor" stroke-width="2"/>`;
+    const lockSvg = svg`<rect x="3" y="11" width="18" height="11" rx="2" ry="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4" fill="none" stroke="currentColor" stroke-width="2"/>`;
     const chevronSvg = svg`<path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>`;
 
+    // Split shelves into standard (confidently mapped) and custom (unmapped).
+    const standardEntries = shelfEntries.filter(([shelf]) => this._shelfConfidence[shelf]);
+    const customEntries = shelfEntries.filter(([shelf]) => !this._shelfConfidence[shelf]);
+
     // Shelf mapping collapses when every shelf mapped confidently.
-    const allConfident = shelfEntries.every(([shelf]) => this._shelfConfidence[shelf]);
+    const allConfident = customEntries.length === 0;
     const showCollapsed = allConfident && !this._shelfMappingExpanded && shelfEntries.length > 0;
 
     const shelfCount = Object.keys(shelves).length;
@@ -749,49 +821,137 @@ export class OlImportPreview extends LitElement {
                   <span class="shelf-summary-arrow">→</span>
                   <span class="shelf-summary-target">${this._shelfMapping[shelf]}</span>
                   <span class="shelf-summary-count">(${count})</span>
+                  ${this._shelfMapping[shelf] === 'New List' ? html`
+                    <span class="privacy-badge">
+                      <svg viewBox="0 0 24 24">${globeSvg}</svg> Public
+                    </span>
+                  ` : this._shelfMapping[shelf] !== 'skip' ? html`
+                    <span class="privacy-badge">
+                      ${this._readingLogPrivacy === 'public'
+                        ? html`<svg viewBox="0 0 24 24">${globeSvg}</svg> Public`
+                        : html`<svg viewBox="0 0 24 24">${lockSvg}</svg> Private`}
+                    </span>
+                  ` : ''}
                 </div>
               `)}
             </div>
             <button class="edit-link" @click=${this._toggleShelfMapping}>Edit</button>
           </div>
         ` : html`
-          <div class="shelf-mapping">
-            <div class="shelf-row shelf-row-header">
-              <span>${providerName} Shelf</span>
-              <span></span>
-              <span>Open Library Shelf</span>
+          ${standardEntries.length > 0 ? html`
+            <div class="shelf-section-header">
+              <span class="shelf-section-label">Reading log</span>
+              <button class="privacy-toggle" @click=${this._togglePrivacy}>
+                ${this._readingLogPrivacy === 'public'
+                  ? html`<svg viewBox="0 0 24 24">${globeSvg}</svg> Public`
+                  : html`<svg viewBox="0 0 24 24">${lockSvg}</svg> Private`}
+              </button>
             </div>
-            ${shelfEntries.map(([shelf, count]) => {
-              const isUnmapped = !this._shelfConfidence[shelf];
-              return html`
-                <div class="shelf-row ${isUnmapped ? 'unmapped' : ''}">
+            <div class="shelf-mapping" style="margin-bottom: ${customEntries.length > 0 ? 'var(--spacing-6)' : '0'};">
+              <div class="shelf-row shelf-row-header">
+                <span>${providerName} Shelf</span>
+                <span></span>
+                <span>Open Library Shelf</span>
+              </div>
+              ${standardEntries.map(([shelf, count]) => {
+                const isSkipped = this._shelfMapping[shelf] === 'skip';
+                return html`
+                <div class="shelf-row">
                   <div class="shelf-source">
                     <span class="shelf-name">${shelf}</span>
                     <span class="shelf-count">${count} book${count !== 1 ? 's' : ''}</span>
-                    ${isUnmapped ? html`
-                      <span class="unmapped-badge">
-                        <svg viewBox="0 0 24 24" width="12" height="12">${warnSvg}</svg>
-                        Pick a shelf
-                      </span>
-                    ` : ''}
                   </div>
                   <div class="shelf-arrow">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                       <path d="M5 12h14M12 5l7 7-7 7"/>
                     </svg>
                   </div>
-                  <select
-                    .value=${this._shelfMapping[shelf] || 'skip'}
-                    @change=${(e) => this._updateShelfMapping(shelf, e)}
-                  >
-                    ${OL_SHELVES.map((s) => html`
-                      <option value=${s.value} ?selected=${this._shelfMapping[shelf] === s.value}>${s.label}</option>
-                    `)}
-                  </select>
+                  <div class="shelf-target">
+                    <select
+                      .value=${this._shelfMapping[shelf] || 'skip'}
+                      @change=${(e) => this._updateShelfMapping(shelf, e)}
+                    >
+                      ${OL_SHELVES.map((s) => html`
+                        <option value=${s.value} ?selected=${this._shelfMapping[shelf] === s.value}>${s.label}</option>
+                      `)}
+                    </select>
+                    ${this._shelfMapping[shelf] === 'New List' ? html`
+                      <span class="privacy-badge">
+                        <svg viewBox="0 0 24 24">${globeSvg}</svg> Public — visible to everyone
+                      </span>
+                    ` : !isSkipped ? html`
+                      <span class="privacy-badge">
+                        ${this._readingLogPrivacy === 'public'
+                          ? html`<svg viewBox="0 0 24 24">${globeSvg}</svg> Public — visible to everyone`
+                          : html`<svg viewBox="0 0 24 24">${lockSvg}</svg> Private — only visible to you`}
+                      </span>
+                    ` : ''}
+                  </div>
                 </div>
-              `;
-            })}
-          </div>
+              `; })}
+            </div>
+          ` : ''}
+          ${customEntries.length > 0 ? html`
+            <div class="shelf-section-header">
+              <span class="shelf-section-label">Custom shelves</span>
+            </div>
+            <div class="shelf-mapping">
+              <div class="shelf-row shelf-row-header">
+                <span>${providerName} Shelf</span>
+                <span></span>
+                <span>Open Library Shelf</span>
+              </div>
+              ${customEntries.map(([shelf, count]) => {
+                const mapping = this._shelfMapping[shelf];
+                const isNewList = mapping === 'New List';
+                const isSkipped = mapping === 'skip';
+                const isReadingLog = ['Already Read', 'Currently Reading', 'Want to Read'].includes(mapping);
+                const isUnmapped = !this._shelfConfidence[shelf] && !isNewList && !isSkipped && !isReadingLog;
+                return html`
+                  <div class="shelf-row unmapped">
+                    <div class="shelf-source">
+                      <span class="shelf-name">${shelf}</span>
+                      <span class="shelf-count">${count} book${count !== 1 ? 's' : ''}</span>
+                    </div>
+                    <div class="shelf-arrow">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                      </svg>
+                    </div>
+                    <div class="shelf-target">
+                      <select
+                        .value=${mapping || 'skip'}
+                        @change=${(e) => this._updateShelfMapping(shelf, e)}
+                      >
+                        ${OL_SHELVES.map((s) => html`
+                          <option value=${s.value} ?selected=${mapping === s.value}>${s.label}</option>
+                        `)}
+                      </select>
+                      ${isUnmapped ? html`
+                        <span class="unmapped-badge">
+                          <svg viewBox="0 0 24 24" width="12" height="12">${warnSvg}</svg>
+                          Pick a shelf
+                        </span>
+                      ` : ''}
+                      ${isNewList ? html`
+                        <span class="privacy-badge">
+                          <svg viewBox="0 0 24 24">${globeSvg}</svg>
+                          Public — visible to everyone
+                        </span>
+                      ` : ''}
+                      ${isReadingLog ? html`
+                        <span class="privacy-badge">
+                          ${this._readingLogPrivacy === 'public'
+                            ? html`<svg viewBox="0 0 24 24">${globeSvg}</svg> Public — visible to everyone`
+                            : html`<svg viewBox="0 0 24 24">${lockSvg}</svg> Private — only visible to you`}
+                        </span>
+                      ` : ''}
+                    </div>
+                  </div>
+                `;
+              })}
+            </div>
+          ` : ''}
         `}
       </div>
     `;
