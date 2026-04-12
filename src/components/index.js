@@ -36,3 +36,4 @@ import './ol-import-preview.js';
 import './ol-import-processing.js';
 import './ol-import-results.js';
 import './ol-import-complete.js';
+import './ol-tooltip.js';

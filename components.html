@@ -435,6 +435,32 @@
       </div>
 
 
+      <div class="demo-section">
+        <ol-heading element="h2" size="heading-2">Tooltip</ol-heading>
+
+        <ol-demo-pane>
+          <template>
+            <div style="display: flex; gap: var(--spacing-6); align-items: center; flex-wrap: wrap; padding: var(--spacing-6) 0;">
+              <ol-tooltip text="This is a top tooltip" position="top">
+                <ol-button variant="secondary">Top</ol-button>
+              </ol-tooltip>
+              <ol-tooltip text="This is a bottom tooltip" position="bottom">
+                <ol-button variant="secondary">Bottom</ol-button>
+              </ol-tooltip>
+              <ol-tooltip text="This is a left tooltip" position="left">
+                <ol-button variant="secondary">Left</ol-button>
+              </ol-tooltip>
+              <ol-tooltip text="This is a right tooltip" position="right">
+                <ol-button variant="secondary">Right</ol-button>
+              </ol-tooltip>
+              <ol-tooltip text="Toggle privacy for Open Library's built-in shelves: Want to Read, Currently Reading, and Already Read." position="bottom">
+                <span style="cursor: help; text-decoration: underline dotted;">Longer tooltip example</span>
+              </ol-tooltip>
+            </div>
+          </template>
+        </ol-demo-pane>
+      </div>
+
     </section>
   </main>
 

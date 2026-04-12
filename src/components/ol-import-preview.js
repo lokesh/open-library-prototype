@@ -26,7 +26,9 @@ function guessShelfMapping(sourceShelf) {
   if (s === 'to-read' || s === 'to read' || s === 'want to read' || s === 'tbr') {
     return { target: 'Want to Read', confident: true };
   }
-  // Unknown shelf — default to skip and flag for user confirmation.
+  if (s === 'dnf' || s === 'did-not-finish' || s === 'did not finish' || s === 'abandoned') {
+    return { target: 'skip', confident: true };
+  }
   return { target: 'skip', confident: false };
 }
 
@@ -841,11 +843,13 @@ export class OlImportPreview extends LitElement {
           ${standardEntries.length > 0 ? html`
             <div class="shelf-section-header">
               <span class="shelf-section-label">Reading log</span>
-              <button class="privacy-toggle" @click=${this._togglePrivacy}>
-                ${this._readingLogPrivacy === 'public'
-                  ? html`<svg viewBox="0 0 24 24">${globeSvg}</svg> Public`
-                  : html`<svg viewBox="0 0 24 24">${lockSvg}</svg> Private`}
-              </button>
+              <ol-tooltip text="Toggle privacy for Open Library's built-in shelves: Want to Read, Currently Reading, and Already Read." position="bottom">
+                <button class="privacy-toggle" @click=${this._togglePrivacy}>
+                  ${this._readingLogPrivacy === 'public'
+                    ? html`<svg viewBox="0 0 24 24">${globeSvg}</svg> Public`
+                    : html`<svg viewBox="0 0 24 24">${lockSvg}</svg> Private`}
+                </button>
+              </ol-tooltip>
             </div>
             <div class="shelf-mapping" style="margin-bottom: ${customEntries.length > 0 ? 'var(--spacing-6)' : '0'};">
               <div class="shelf-row shelf-row-header">
