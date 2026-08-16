@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Reading log - Open Library</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,100..900&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles/index.css">
+  <script type="module" src="/src/components/index.js"></script>
+  <script type="module">
+    import catalogService from '/src/catalog-service.js';
+    import bookStateService, { SHELVES, SHELF_SLUG } from '/src/book-state-service.js';
+    const BY_SLUG = Object.fromEntries(Object.entries(SHELF_SLUG).map(([k, v]) => [v, k]));
+    let shelf = 'reading', view = 'list';
+    async function init() {
+      await catalogService.ensureLoaded();
+      shelf = BY_SLUG[new URLSearchParams(location.search).get('shelf')] || 'reading';
+      view = localStorage.getItem('ol-view-readinglog') || 'list';
+      const tb = document.getElementById('toolbar'); tb.view = view; tb.sorts = ['Date added', 'Title', 'Author'];
+      tb.addEventListener('ol-view-change', e => { view = e.detail.view; localStorage.setItem('ol-view-readinglog', view); render(); });
+      const peek = document.querySelector('ol-peek-panel');
+      peek.addEventListener('ol-peek-change', e => { document.getElementById('shelf').activeKey = e.detail.key || ''; });
+      render();
+      document.addEventListener('ol-book-state-change', render);
+    }
+    function render() {
+      const c = bookStateService.shelfCounts();
+      document.getElementById('nav').innerHTML = `
+        <ul><li><a href="my-books.html">My Books</a></li><li><a href="#">Loans <span>2</span></a></li><li><a href="my-books.html#lists">Lists <span>${bookStateService.lists.length}</span></a></li></ul>
+        <h4>Reading log</h4><ul>${Object.entries(SHELVES).map(([k, l]) => `<li><a href="reading-log.html?shelf=${SHELF_SLUG[k]}" aria-current="${k === shelf ? 'page' : 'false'}">${l} <span>${c[k]}</span></a></li>`).join('')}</ul>`;
+      document.title = `${SHELVES[shelf]} - Open Library`;
+      document.getElementById('title').textContent = SHELVES[shelf];
+      const keys = bookStateService.keysOnShelf(shelf);
+      const tb = document.getElementById('toolbar'); tb.count = `${keys.length} book${keys.length === 1 ? '' : 's'}`; tb.view = view;
+      const col = document.getElementById('shelf'); col.keys = keys; col.view = view; col.intent = 'manage'; col.emptyText = 'Nothing on this shelf yet. Save a book from search or a carousel and it will show up here.';
+      const peek = document.querySelector('ol-peek-panel'); peek.keys = keys; peek.intent = 'manage';
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+  </script>
+</head>
+<body>
+  <ol-main-nav></ol-main-nav>
+  <main>
+    <div class="page-cols">
+      <aside class="side-nav" id="nav"></aside>
+      <div>
+        <h1 class="page-title" id="title">Currently Reading</h1>
+        <ol-results-toolbar id="toolbar"></ol-results-toolbar>
+        <ol-book-collection id="shelf" view="list" intent="manage"></ol-book-collection>
+      </div>
+    </div>
+  </main>
+  <ol-peek-panel intent="manage"></ol-peek-panel>
+  <ol-prototype-controls></ol-prototype-controls>
+</body>
+</html>

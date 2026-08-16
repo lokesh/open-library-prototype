@@ -462,7 +462,74 @@
       </div>
 
     </section>
+
+      <!-- ============ VIEWS & VERBS ============ -->
+      <div class="demo-section" id="views-verbs">
+        <ol-heading element="h2" size="heading-2">Segmented Control</ol-heading>
+        <p style="color:var(--color-text-secondary);font-size:var(--body-font-size-sm)">The view switcher. Radio-group semantics, arrow-key navigation, optional icons.</p>
+        <ol-demo-pane>
+          <template>
+            <ol-segmented-control id="segDemo" value="list"></ol-segmented-control>
+          </template>
+        </ol-demo-pane>
+      </div>
+
+      <div class="demo-section">
+        <ol-heading element="h2" size="heading-2">Split Button</ol-heading>
+        <p style="color:var(--color-text-secondary);font-size:var(--body-font-size-sm)">Two real buttons: a main action and a caret with <code>aria-haspopup="menu"</code>. Variants: secondary (unset), selected (shelf set), primary (leads on manage surfaces), outline.</p>
+        <ol-demo-pane>
+          <template>
+            <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-start">
+              <ol-split-button variant="secondary" caret-label="More save options">Want to Read</ol-split-button>
+              <ol-split-button variant="selected" caret-label="More save options">✓ Currently Reading</ol-split-button>
+              <ol-split-button variant="primary" caret-label="More save options">✓ Reading</ol-split-button>
+              <ol-split-button variant="outline" caret-label="More options">Find in a library ↗</ol-split-button>
+              <ol-split-button variant="secondary" size="small" caret-only caret-label="Save options"></ol-split-button>
+            </div>
+          </template>
+        </ol-demo-pane>
+      </div>
+
+      <div class="demo-section">
+        <ol-heading element="h2" size="heading-2">Book Actions</ol-heading>
+        <p style="color:var(--color-text-secondary);font-size:var(--body-font-size-sm)">Access (a verb from a closed vocabulary) + state line + Save (the one disclosure). Reacts to <code>intent</code>, <code>density</code>, and the prototype settings (⚙). Rendered here across the lending states.</p>
+        <div id="actionsDemo" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:var(--spacing-4);padding:var(--spacing-4);background:var(--color-bg-elevated);border:var(--border-card);border-radius:var(--radius-card)"></div>
+      </div>
+
+      <div class="demo-section">
+        <ol-heading element="h2" size="heading-2">Book Tile &amp; Book Row</ol-heading>
+        <p style="color:var(--color-text-secondary);font-size:var(--body-font-size-sm)">One tile template for grid and carousel; one row template for list and the expanded carousel. Both call <code>ol-book-actions</code>.</p>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:var(--spacing-4);padding:var(--spacing-4);background:var(--color-bg-elevated);border:var(--border-card);border-radius:var(--radius-card)" id="tileDemo"></div>
+        <div style="margin-top:var(--spacing-4);padding:0 var(--spacing-3);background:var(--color-bg-elevated);border:var(--border-card);border-radius:var(--radius-card)" id="rowDemo"></div>
+      </div>
+
+      <div class="demo-section">
+        <ol-heading element="h2" size="heading-2">Book Collection</ol-heading>
+        <p style="color:var(--color-text-secondary);font-size:var(--body-font-size-sm)">The same keys in three views: <code>carousel</code> (with the in-place Covers / List toggle), <code>grid</code>, <code>list</code>.</p>
+        <ol-book-collection id="colDemo" view="carousel" heading="A collection" see-all-href="search.html?q=" intent="discover"></ol-book-collection>
+      </div>
+
+      <div class="demo-section">
+        <ol-heading element="h2" size="heading-2">Results Toolbar</ol-heading>
+        <ol-demo-pane>
+          <template>
+            <ol-results-toolbar count="1,204 results" view="list"></ol-results-toolbar>
+          </template>
+        </ol-demo-pane>
+      </div>
+
+      <div class="demo-section">
+        <ol-heading element="h2" size="heading-2">Book Cover placeholder</ol-heading>
+        <p style="color:var(--color-text-secondary);font-size:var(--body-font-size-sm)">When there is no image (or it fails), the cover renders the title and author on a tinted ground so tiles never go blank.</p>
+        <ol-demo-pane>
+          <template>
+            <div style="display:flex;gap:12px"><ol-book-cover size="medium" title="Small Things Like These" author="Claire Keegan"></ol-book-cover><ol-book-cover size="medium" src="https://covers.openlibrary.org/b/id/0-L.jpg" title="A Broken URL" author="Falls back"></ol-book-cover></div>
+          </template>
+        </ol-demo-pane>
+      </div>
+
   </main>
+  <ol-prototype-controls></ol-prototype-controls>
 
   <script>
     // Button Loading demo
@@ -514,6 +581,21 @@
         });
       }
     });
+  </script>
+
+  <script type="module">
+    import catalogService from '/src/catalog-service.js';
+    (async () => {
+      await catalogService.ensureLoaded();
+      const seg = document.getElementById('segDemo'); if (seg) seg.options = [{ value: 'grid', label: 'Grid', icon: 'grid' }, { value: 'list', label: 'List', icon: 'list' }];
+      const pick = state => catalogService.books.find(b => b.lendingState === state);
+      const states = ['borrowable', 'open', 'partner', 'waitlist', 'preview_only', 'checkedout', 'none'];
+      document.getElementById('actionsDemo').innerHTML = states.map(st => { const b = pick(st); return b ? `<div><div style="font-family:var(--font-family-mono);font-size:10px;color:var(--color-text-secondary);margin-bottom:6px">${st}</div><ol-book-actions book-key="${b.key}" intent="discover" density="row"></ol-book-actions></div>` : ''; }).join('');
+      const keys = catalogService.trending(8).map(b => b.key);
+      document.getElementById('tileDemo').innerHTML = keys.slice(0, 5).map(k => `<ol-book-tile book-key="${k}" intent="discover"></ol-book-tile>`).join('');
+      document.getElementById('rowDemo').innerHTML = keys.slice(0, 2).map(k => `<ol-book-row book-key="${k}" intent="discover"></ol-book-row>`).join('');
+      const col = document.getElementById('colDemo'); col.keys = catalogService.classics(12).map(b => b.key);
+    })();
   </script>
 </body>
 </html>

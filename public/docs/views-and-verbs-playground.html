@@ -1,0 +1,994 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Views & Verbs Playground</title>
+
+<style>
+  /* ============================================================
+     Prototype chrome tokens (the control panel), then a faithful
+     approximation of openlibrary.org tokens for the page mocks.
+     ============================================================ */
+  :root {
+    /* --- prototype chrome --- */
+    --pc-bg: #1E2320;
+    --pc-bg-2: #262C29;
+    --pc-ink: #E8ECE9;
+    --pc-ink-2: #A9B2AD;
+    --pc-ink-3: #7B857F;
+    --pc-rule: #38423D;
+    --pc-accent: #8FD1BA;
+    --pc-warn: #E2B85F;
+    --pc-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    --pc-sans: "Avenir Next", "Segoe UI", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+
+    /* --- Open Library (from static/css/tokens/colors.css) --- */
+    --ol-n50:  hsl(48, 38%, 97%);
+    --ol-n100: hsl(48, 32%, 94%);
+    --ol-n200: hsl(47, 27%, 86%);
+    --ol-n300: hsl(46, 20%, 76%);
+    --ol-n500: hsl(42, 11%, 42%);
+    --ol-n600: hsl(41, 12%, 34%);
+    --ol-n700: hsl(41, 13%, 27%);
+    --ol-n800: hsl(41, 14%, 21%);
+    --ol-n900: hsl(41, 16%, 12%);
+    --ol-blue: hsl(210, 82%, 40%);
+    --ol-blue-hover: hsl(211, 92%, 17%);
+    --ol-blue-600: hsl(210, 84%, 31%);
+    --ol-blue-50: hsl(210, 60%, 95%);
+    --ol-green-600: hsl(105, 36%, 26%);
+    --ol-green-50: hsl(98, 30%, 93%);
+    --ol-amber: hsl(39, 78%, 42%);
+    --ol-red: hsl(13, 55%, 42%);
+    --ol-white: #fff;
+    --ol-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
+    --ol-serif: Georgia, "Palatino Linotype", "Book Antiqua", Palatino, serif;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body { background: var(--pc-bg); color: var(--pc-ink); font-family: var(--pc-sans); font-size: 14px; line-height: 1.45; -webkit-font-smoothing: antialiased; }
+  button { font: inherit; }
+
+  /* ============================================================
+     PROTOTYPE CHROME
+     ============================================================ */
+  .pc-top { position: sticky; top: 0; z-index: 50; background: var(--pc-bg); border-bottom: 1px solid var(--pc-rule); }
+  .pc-bar { display: flex; align-items: center; gap: 14px; padding: 10px 18px; flex-wrap: wrap; }
+  .pc-title { font-weight: 700; letter-spacing: -.01em; font-size: 15px; white-space: nowrap; }
+  .pc-title small { font-family: var(--pc-mono); font-size: 10.5px; color: var(--pc-ink-3); margin-left: 8px; letter-spacing: .1em; text-transform: uppercase; }
+  .pc-pages { display: flex; gap: 2px; flex-wrap: wrap; }
+  .pc-pages button { background: transparent; border: 1px solid transparent; color: var(--pc-ink-2); padding: 5px 11px; border-radius: 4px; cursor: pointer; font-size: 13px; }
+  .pc-pages button:hover { color: var(--pc-ink); background: var(--pc-bg-2); }
+  .pc-pages button[aria-pressed="true"] { background: var(--pc-ink); color: var(--pc-bg); font-weight: 600; }
+  .pc-spacer { flex: 1; }
+  .pc-toggle-panel { background: var(--pc-bg-2); border: 1px solid var(--pc-rule); color: var(--pc-ink); border-radius: 4px; padding: 5px 11px; cursor: pointer; font-size: 13px; }
+  .pc-preset { display: flex; gap: 4px; align-items: center; font-size: 12px; color: var(--pc-ink-3); }
+  .pc-preset button { background: transparent; border: 1px solid var(--pc-rule); color: var(--pc-ink-2); border-radius: 4px; padding: 3px 9px; cursor: pointer; font-size: 12px; }
+  .pc-preset button:hover { color: var(--pc-ink); border-color: var(--pc-ink-3); }
+
+  .pc-panel { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px 22px; padding: 12px 18px 16px; border-top: 1px solid var(--pc-rule); background: var(--pc-bg-2); }
+  .pc-panel[hidden] { display: none; }
+  .pc-group label.lbl { display: block; font-family: var(--pc-mono); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--pc-ink-3); margin-bottom: 6px; }
+  .pc-seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--pc-rule); border-radius: 4px; overflow: hidden; }
+  .pc-seg button { background: transparent; border: 0; border-right: 1px solid var(--pc-rule); color: var(--pc-ink-2); padding: 4px 9px; cursor: pointer; font-size: 12px; white-space: nowrap; }
+  .pc-seg button:last-child { border-right: 0; }
+  .pc-seg button[aria-pressed="true"] { background: var(--pc-accent); color: var(--pc-bg); font-weight: 600; }
+  .pc-seg button:disabled { opacity: .35; cursor: not-allowed; }
+  .pc-note { font-size: 11.5px; color: var(--pc-ink-3); margin-top: 5px; line-height: 1.4; }
+  .pc-check { display: flex; align-items: center; gap: 7px; font-size: 12.5px; color: var(--pc-ink-2); cursor: pointer; margin-top: 4px; }
+  .pc-check input { accent-color: var(--pc-accent); }
+
+  .pc-status { padding: 6px 18px; font-family: var(--pc-mono); font-size: 11px; color: var(--pc-ink-3); border-top: 1px solid var(--pc-rule); display: flex; gap: 18px; flex-wrap: wrap; }
+  .pc-status b { color: var(--pc-accent); font-weight: 600; }
+
+  /* the browser-ish frame the page renders in */
+  .frame { max-width: 1180px; margin: 22px auto 60px; background: var(--ol-white); border-radius: 8px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,.45); }
+  .frame-bar { background: #2B302E; padding: 8px 12px; display: flex; align-items: center; gap: 8px; }
+  .frame-bar .dots span { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: #4A524E; margin-right: 5px; }
+  .frame-bar .url { flex: 1; background: #1E2320; color: var(--pc-ink-2); font-family: var(--pc-mono); font-size: 11.5px; padding: 4px 10px; border-radius: 4px; }
+
+  /* ============================================================
+     OPEN LIBRARY PAGE MOCK
+     ============================================================ */
+  .ol { font-family: var(--ol-sans); color: var(--ol-n800); font-size: 14px; line-height: 1.45; background: var(--ol-white); }
+  .ol a { color: var(--ol-blue-600); text-decoration: none; }
+  .ol a:hover { text-decoration: underline; }
+
+  .ol-header { background: linear-gradient(var(--ol-n100), var(--ol-n50)); border-bottom: 1px solid var(--ol-n200); }
+  .ol-header-in { max-width: 1060px; margin: 0 auto; padding: 8px 20px; display: flex; align-items: center; gap: 22px; }
+  .ol-logo { display: flex; align-items: center; gap: 8px; font-family: var(--ol-serif); font-size: 19px; color: var(--ol-n800); font-weight: 700; white-space: nowrap; }
+  .ol-logo .mark { width: 30px; height: 30px; border-radius: 6px; background: var(--ol-blue); position: relative; }
+  .ol-logo .mark::before { content: ""; position: absolute; left: 6px; right: 6px; top: 8px; bottom: 8px; border: 2px solid #fff; border-radius: 2px; }
+  .ol-logo small { display: block; font-family: var(--ol-sans); font-size: 9.5px; font-weight: 400; color: var(--ol-n500); letter-spacing: .02em; }
+  .ol-nav { display: flex; gap: 18px; font-size: 13.5px; color: var(--ol-n700); }
+  .ol-nav span { cursor: pointer; }
+  .ol-search { flex: 1; display: flex; max-width: 460px; }
+  .ol-search input { flex: 1; border: 1px solid var(--ol-n300); border-right: 0; border-radius: 4px 0 0 4px; padding: 6px 10px; font: inherit; font-size: 13.5px; background: #fff; }
+  .ol-search button { border: 1px solid var(--ol-n300); background: var(--ol-n100); border-radius: 0 4px 4px 0; padding: 0 12px; cursor: pointer; }
+  .ol-account { font-size: 13px; color: var(--ol-n700); white-space: nowrap; margin-left: auto; }
+  .ol-account b { color: var(--ol-blue-600); cursor: pointer; }
+
+  .ol-body { max-width: 1060px; margin: 0 auto; padding: 22px 20px 60px; }
+  .ol-h1 { font-family: var(--ol-serif); font-size: 26px; font-weight: 400; margin: 0 0 6px; color: var(--ol-n800); }
+  .ol-h2 { font-family: var(--ol-sans); font-size: 18px; font-weight: 700; margin: 26px 0 8px; color: var(--ol-n800); }
+  .ol-sub { color: var(--ol-n500); font-size: 13.5px; margin: 0 0 14px; }
+
+  /* two-col */
+  .ol-cols { display: grid; grid-template-columns: 210px minmax(0,1fr); gap: 28px; }
+  @media (max-width: 760px) { .ol-cols { grid-template-columns: 1fr; } }
+  .ol-facets h4 { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--ol-n500); margin: 16px 0 6px; }
+  .ol-facets ul { list-style: none; margin: 0; padding: 0; font-size: 13px; }
+  .ol-facets li { padding: 2px 0; color: var(--ol-blue-600); display: flex; justify-content: space-between; }
+  .ol-facets li span { color: var(--ol-n500); }
+  .ol-sidenav ul { list-style: none; margin: 0; padding: 0; font-size: 13.5px; }
+  .ol-sidenav li { padding: 6px 8px; border-radius: 4px; color: var(--ol-n700); }
+  .ol-sidenav li.on { background: var(--ol-n100); font-weight: 600; }
+  .ol-sidenav h4 { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--ol-n500); margin: 14px 0 4px; }
+
+  /* toolbar */
+  .ol-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 8px 0 10px; border-bottom: 1px solid var(--ol-n200); margin-bottom: 8px; font-size: 13px; color: var(--ol-n600); }
+  .ol-toolbar .right { display: flex; align-items: center; gap: 12px; }
+  .ol-sel { border: 1px solid var(--ol-n300); border-radius: 4px; padding: 4px 9px; background: #fff; color: var(--ol-n700); font-size: 12.5px; }
+  .ol-segc { display: inline-flex; border: 1px solid var(--ol-n300); border-radius: 5px; overflow: hidden; background: #fff; }
+  .ol-segc button { background: transparent; border: 0; border-right: 1px solid var(--ol-n200); color: var(--ol-n700); padding: 4px 10px; cursor: pointer; font-size: 12.5px; display: inline-flex; align-items: center; gap: 5px; }
+  .ol-segc button:last-child { border-right: 0; }
+  .ol-segc button[aria-pressed="true"] { background: var(--ol-n800); color: #fff; }
+  .ol-segc.small button { padding: 2px 7px; font-size: 11.5px; }
+  .ol-chk { display: inline-flex; gap: 6px; align-items: center; font-size: 12.5px; color: var(--ol-n700); cursor: pointer; }
+  .ol-chk input { accent-color: var(--ol-blue); margin: 0; }
+
+  /* --- covers --- */
+  .cov { border-radius: 3px; position: relative; flex: none; overflow: hidden; background: var(--ol-n200); box-shadow: 0 1px 2px rgba(0,0,0,.18), inset -3px 0 0 rgba(0,0,0,.14); }
+  .cov .ct { position: absolute; left: 8%; right: 8%; top: 14%; font-family: var(--ol-serif); color: rgba(255,255,255,.92); font-size: 10px; line-height: 1.15; text-align: center; font-weight: 700; text-shadow: 0 1px 1px rgba(0,0,0,.4); }
+  .cov .ca { position: absolute; left: 8%; right: 8%; bottom: 10%; font-family: var(--ol-sans); color: rgba(255,255,255,.8); font-size: 7.5px; text-align: center; letter-spacing: .04em; text-transform: uppercase; }
+  .cov.no { background: repeating-linear-gradient(45deg, var(--ol-n100), var(--ol-n100) 6px, var(--ol-n200) 6px, var(--ol-n200) 12px); }
+  .cov.no .ct { color: var(--ol-n600); text-shadow: none; }
+  .cov.no .ca { color: var(--ol-n500); }
+  .cov-badge { position: absolute; left: 5px; top: 5px; font-family: var(--ol-sans); font-size: 8.5px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; padding: 2px 5px; border-radius: 3px; background: rgba(255,255,255,.94); color: var(--ol-n800); box-shadow: 0 0 0 1px rgba(0,0,0,.08); }
+  .cov-save { position: absolute; top: 5px; right: 5px; width: 24px; height: 24px; border-radius: 50%; background: rgba(255,255,255,.95); color: var(--ol-n700); border: 0; box-shadow: 0 1px 3px rgba(0,0,0,.3), 0 0 0 1px rgba(0,0,0,.06); font-size: 15px; line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0; }
+  .cov-save.set { background: var(--ol-blue); color: #fff; }
+  .cov-save:hover { transform: scale(1.06); }
+
+  /* --- buttons (cta-btn family, approximated) --- */
+  .cta { font-family: var(--ol-sans); font-size: 13px; font-weight: 500; border-radius: 5px; padding: 6px 10px; text-align: center; line-height: 1.35; border: 1px solid transparent; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 5px; width: 100%; background: var(--ol-n300); color: #fff; text-decoration: none; }
+  .cta.fill { background: var(--ol-blue); border-color: var(--ol-blue); color: #fff; }
+  .cta.fill:hover { background: var(--ol-blue-hover); border-color: var(--ol-blue-hover); }
+  .cta.outline { background: #fff; color: var(--ol-blue-600); border-color: var(--ol-blue-600); }
+  .cta.outline:hover { background: var(--ol-blue-50); }
+  .cta.sec { background: #fff; color: var(--ol-n700); border-color: var(--ol-n300); }
+  .cta.sec:hover { background: var(--ol-n100); }
+  .cta.set { background: var(--ol-blue-50); color: var(--ol-blue-600); border-color: var(--ol-blue-600); font-weight: 600; }
+  .cta.dead { background: var(--ol-n300); color: #fff; cursor: default; }
+  .cta.today-grey { background: var(--ol-n200); color: var(--ol-n700); border-color: var(--ol-n200); }
+  .cta.today-grey:hover { background: var(--ol-n300); }
+  .cta .ext { font-size: 11px; opacity: .8; }
+  .cta.sm { font-size: 11.5px; padding: 4px 6px; }
+  .cta.xs { font-size: 11px; padding: 3px 5px; }
+  .split { display: flex; width: 100%; }
+  .split .cta:first-child { flex: 1; border-top-right-radius: 0; border-bottom-right-radius: 0; border-right-width: 0; }
+  .split .caret { width: 28px; flex: none; border-top-left-radius: 0; border-bottom-left-radius: 0; padding-left: 0; padding-right: 0; font-size: 14px !important; line-height: 1; }
+  .split .caret.sm { width: 24px; }
+  .cta.caret { font-size: 0 !important; }
+  .cta.caret::before { content: ""; display: inline-block; width: 6px; height: 6px; border-right: 1.6px solid currentColor; border-bottom: 1.6px solid currentColor; transform: translateY(-2px) rotate(45deg); }
+  .kebab { width: 32px; height: 32px; border-radius: 5px; border: 1px solid var(--ol-n300); background: #fff; color: var(--ol-n700); font-size: 16px; line-height: 1; cursor: pointer; flex: none; }
+  .state { font-size: 11.5px; color: var(--ol-n500); line-height: 1.35; text-align: center; }
+  .state.left { text-align: left; }
+  .state a { color: var(--ol-blue-600); }
+  .actions { display: flex; flex-direction: column; gap: 6px; }
+  .actions.h { flex-direction: row; align-items: flex-start; }
+  .actions.h > * { flex: 1; }
+  .actions.h .kebab { flex: none; }
+  .actions.today .cta { font-size: 13px; }
+
+  /* --- list row (searchResultItem) --- */
+  .rows { list-style: none; margin: 0; padding: 0; }
+  .row { display: flex; gap: 14px; padding: 14px 4px; border-bottom: 1px solid var(--ol-n200); }
+  .row .cov { width: 62px; height: 92px; }
+  .row .meta { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+  .row .t { font-family: var(--ol-serif); font-size: 17px; color: var(--ol-blue-600); line-height: 1.2; }
+  .row .a { font-size: 13px; color: var(--ol-n700); }
+  .row .a b { font-weight: 400; color: var(--ol-blue-600); }
+  .row .k { font-size: 12px; color: var(--ol-n500); }
+  .row .k a { color: var(--ol-blue-600); }
+  .row .stars { color: var(--ol-amber); font-size: 12px; letter-spacing: 1px; }
+  .row .stars small { color: var(--ol-n500); letter-spacing: 0; margin-left: 4px; }
+  .row .desc { font-size: 13px; color: var(--ol-n700); line-height: 1.45; margin-top: 4px; max-width: 62ch; }
+  .row .desc .more { color: var(--ol-blue-600); cursor: pointer; }
+  .row .desc.fallback { color: var(--ol-n500); font-style: italic; }
+  .row .teaser { font-size: 13px; color: var(--ol-n600); line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 60ch; margin-top: 2px; }
+  .row.peekable { cursor: pointer; border-radius: 4px; }
+  .row.peekable:hover { background: var(--ol-n50); }
+  .row.peeked { background: var(--ol-blue-50); box-shadow: inset 3px 0 0 var(--ol-blue); }
+  .row .peek-hint { font-size: 11.5px; color: var(--ol-n500); margin-top: 3px; }
+
+  /* --- peek panel --- */
+  .peek { position: fixed; z-index: 45; width: 380px; background: #fff; border-left: 1px solid var(--ol-n200); box-shadow: -8px 0 28px rgba(0,0,0,.12); overflow-y: auto; font-family: var(--ol-sans); color: var(--ol-n800); display: flex; flex-direction: column; }
+  .peek-h { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border-bottom: 1px solid var(--ol-n200); font-size: 12px; color: var(--ol-n500); position: sticky; top: 0; background: #fff; }
+  .peek-h .nav button, .peek-h .x { background: #fff; border: 1px solid var(--ol-n300); border-radius: 4px; color: var(--ol-n700); padding: 3px 9px; cursor: pointer; font-size: 12px; }
+  .peek-h .nav { display: flex; gap: 6px; }
+  .peek-b { padding: 16px 18px 24px; }
+  .peek-top { display: flex; gap: 14px; }
+  .peek-top .cov { width: 96px; height: 144px; }
+  .peek-top .cov .ct { font-size: 12px; }
+  .peek-t { font-family: var(--ol-serif); font-size: 20px; line-height: 1.2; color: var(--ol-n800); margin: 0 0 3px; }
+  .peek-a { font-size: 13.5px; margin-bottom: 4px; }
+  .peek-stars { color: var(--ol-amber); font-size: 13px; letter-spacing: 1px; }
+  .peek-stars small { color: var(--ol-n500); letter-spacing: 0; margin-left: 5px; }
+  .peek-k { font-size: 12px; color: var(--ol-n500); margin-top: 4px; }
+  .peek-acts { margin: 14px 0 6px; }
+  .peek-desc { font-size: 13.5px; line-height: 1.55; color: var(--ol-n700); margin: 14px 0 10px; }
+  .peek-desc.fallback { color: var(--ol-n500); font-style: italic; }
+  .peek .subj { margin: 6px 0 12px; }
+  .peek dl { display: grid; grid-template-columns: 110px 1fr; gap: 3px 10px; font-size: 12.5px; margin: 8px 0 14px; }
+  .peek dt { color: var(--ol-n500); } .peek dd { margin: 0; }
+  .peek-open { display: block; text-align: center; font-size: 13px; padding: 8px; border: 1px solid var(--ol-n300); border-radius: 5px; color: var(--ol-blue-600); }
+  .peek-kbd { font-size: 11px; color: var(--ol-n500); text-align: center; margin-top: 10px; }
+  .peek-kbd kbd { font-family: var(--ol-sans); border: 1px solid var(--ol-n300); border-radius: 3px; padding: 0 4px; font-size: 10.5px; }
+  body.has-peek .ol { padding-right: 380px; }
+  @media (max-width: 900px) { body.has-peek .ol { padding-right: 0; } .peek { left: 0 !important; right: 0 !important; width: auto; top: auto !important; bottom: 0; max-height: 70vh; border-left: 0; border-top: 1px solid var(--ol-n200); border-radius: 10px 10px 0 0; } }
+
+  .row .acts { width: 168px; flex: none; }
+  .row .acts.wide { width: 250px; }
+  .row.desc-on .cov { width: 80px; height: 118px; }
+  .row.dense { padding: 7px 4px; align-items: center; }
+  .row.dense .cov { width: 30px; height: 44px; }
+  .row.dense .t { font-size: 14px; }
+  .row.dense .acts { width: auto; }
+  .row .inline-rate { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--ol-n500); margin-top: 3px; }
+  .row .inline-rate .stars-in { color: var(--ol-n300); letter-spacing: 2px; font-size: 15px; cursor: pointer; }
+  .row .inline-rate .stars-in b { color: var(--ol-amber); font-weight: 400; }
+  .row .checkin { font-size: 12px; color: var(--ol-n500); }
+  .row .checkin a { margin-left: 4px; }
+
+  /* --- grid tiles --- */
+  .tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(124px, 1fr)); gap: 18px 14px; padding: 6px 0; }
+  .tile { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+  .tile .cov { width: 100%; aspect-ratio: 2 / 3; height: auto; }
+  .tile .t { font-family: var(--ol-serif); font-size: 12.5px; color: var(--ol-blue-600); line-height: 1.2; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+  .tile .a { font-size: 11px; color: var(--ol-n500); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tile .strip { display: flex; gap: 4px; }
+  .tile .strip .cta { flex: 1; }
+  .tile .strip .cta.caret { flex: none; width: 26px; padding-left: 0; padding-right: 0; font-size: 14px !important; line-height: 1; }
+
+  /* --- carousel --- */
+  .carousel { margin: 22px 0 8px; }
+  .car-h { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
+  .car-h h3 { margin: 0; font-size: 17px; font-weight: 700; color: var(--ol-n800); }
+  .car-h h3 a { color: var(--ol-n800); }
+  .car-h .car-ctl { display: flex; gap: 10px; align-items: center; font-size: 12.5px; }
+  .car-track-wrap { position: relative; background: var(--ol-n100); border-top: 1px solid var(--ol-n200); border-bottom: 1px solid var(--ol-n200); padding: 14px 44px 14px 12px; }
+  .car-track { display: flex; gap: 14px; overflow-x: auto; scrollbar-width: none; scroll-snap-type: x mandatory; }
+  .car-track::-webkit-scrollbar { display: none; }
+  .car-track .tile { width: 118px; flex: none; scroll-snap-align: start; }
+  .car-track .tile .cov { box-shadow: 0 2px 6px rgba(0,0,0,.2), inset -3px 0 0 rgba(0,0,0,.14); }
+  .car-arrow { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--ol-n300); background: #fff; color: var(--ol-n700); cursor: pointer; font-size: 15px; box-shadow: 0 1px 3px rgba(0,0,0,.15); }
+  .car-expanded { border: 1px solid var(--ol-n200); border-radius: 4px; padding: 0 12px; }
+  .car-expanded .rows .row:last-child { border-bottom: 0; }
+  .car-more { text-align: center; padding: 10px; font-size: 13px; color: var(--ol-blue-600); border-top: 1px solid var(--ol-n200); }
+  .car-more span { cursor: pointer; margin: 0 8px; }
+
+  /* --- book page --- */
+  .book-cols { display: grid; grid-template-columns: 210px minmax(0,1fr) 220px; gap: 28px; }
+  @media (max-width: 860px) { .book-cols { grid-template-columns: 1fr; } }
+  .book-cover-col .cov { width: 100%; aspect-ratio: 2/3; height: auto; margin-bottom: 12px; }
+  .book-cover-col .actions { margin-bottom: 8px; }
+  .book-main h1 { font-family: var(--ol-serif); font-size: 28px; font-weight: 400; margin: 0 0 2px; }
+  .book-main .by { font-size: 15px; margin-bottom: 8px; }
+  .book-main .stars { color: var(--ol-amber); font-size: 14px; letter-spacing: 1px; margin-bottom: 12px; }
+  .book-main .stars small { color: var(--ol-n500); letter-spacing: 0; margin-left: 6px; }
+  .book-main p { font-size: 14px; line-height: 1.55; max-width: 66ch; color: var(--ol-n700); }
+  .book-main .kv { display: grid; grid-template-columns: 120px 1fr; gap: 3px 12px; font-size: 13px; margin: 14px 0; }
+  .book-main .kv dt { color: var(--ol-n500); } .book-main .kv dd { margin: 0; }
+  .book-side .box { border: 1px solid var(--ol-n200); border-radius: 4px; padding: 12px; font-size: 13px; margin-bottom: 12px; }
+  .book-side .box h4 { margin: 0 0 6px; font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--ol-n500); }
+  .book-side .box a { display: block; padding: 2px 0; }
+  .subj { display: flex; gap: 6px; flex-wrap: wrap; margin: 6px 0 14px; }
+  .subj span { font-size: 12px; padding: 3px 9px; border-radius: 12px; background: var(--ol-green-50); color: var(--ol-green-600); }
+
+  /* --- author page --- */
+  .author-head { display: flex; gap: 20px; align-items: flex-start; margin-bottom: 8px; }
+  .author-photo { width: 110px; height: 140px; border-radius: 4px; background: linear-gradient(160deg, var(--ol-n300), var(--ol-n500)); flex: none; }
+  .author-bio { font-size: 14px; color: var(--ol-n700); max-width: 66ch; }
+
+  /* --- home hero --- */
+  .home-hero { background: var(--ol-n100); border-radius: 6px; padding: 24px 26px; margin-bottom: 8px; display: flex; gap: 20px; align-items: center; }
+  .home-hero h2 { font-family: var(--ol-serif); font-size: 26px; font-weight: 400; margin: 0 0 4px; }
+  .home-hero p { margin: 0; color: var(--ol-n600); font-size: 14px; }
+
+  /* --- popover menu (ol-menu-popover approximation) --- */
+  .menu-pop { position: absolute; z-index: 40; background: #fff; border: 1px solid var(--ol-n300); border-radius: 6px; box-shadow: 0 6px 24px rgba(0,0,0,.18); min-width: 220px; max-width: 260px; padding: 6px 0; font-family: var(--ol-sans); font-size: 13px; color: var(--ol-n800); }
+  .menu-pop .mg { padding: 8px 12px 3px; font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--ol-n500); border-top: 1px solid var(--ol-n200); margin-top: 4px; }
+  .menu-pop .mg:first-child { border-top: 0; margin-top: 0; }
+  .menu-pop .mi { display: flex; align-items: center; gap: 8px; padding: 6px 12px; cursor: pointer; background: none; border: 0; width: 100%; text-align: left; font: inherit; color: inherit; }
+  .menu-pop .mi:hover { background: var(--ol-n100); }
+  .menu-pop .mi.on { color: var(--ol-blue-600); font-weight: 600; }
+  .menu-pop .mi .chk { width: 14px; display: inline-block; text-align: center; color: var(--ol-blue-600); }
+  .menu-pop .mi .ext { margin-left: auto; color: var(--ol-n500); font-size: 11px; }
+  .menu-pop .mi.dim { color: var(--ol-n500); }
+  .menu-pop .stars-in { padding: 4px 12px 6px; color: var(--ol-n300); letter-spacing: 3px; font-size: 18px; cursor: pointer; }
+  .menu-pop .stars-in b { color: var(--ol-amber); font-weight: 400; }
+  .menu-pop .signin { padding: 8px 12px; font-size: 12px; color: var(--ol-n600); background: var(--ol-n50); border-top: 1px solid var(--ol-n200); }
+  .menu-pop .signin a { font-weight: 600; }
+
+  .toast { position: fixed; left: 50%; bottom: 26px; transform: translateX(-50%); z-index: 60; background: var(--ol-n800); color: #fff; padding: 10px 16px; border-radius: 6px; font-size: 13px; font-family: var(--ol-sans); box-shadow: 0 6px 20px rgba(0,0,0,.35); opacity: 0; transition: opacity .2s; pointer-events: none; }
+  .toast.show { opacity: 1; }
+
+  .today-note { background: var(--ol-n50); border: 1px dashed var(--ol-n300); padding: 8px 12px; font-size: 12.5px; color: var(--ol-n600); border-radius: 4px; margin: 0 0 12px; }
+
+  :focus-visible { outline: 2px solid var(--ol-blue); outline-offset: 2px; }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head><body>
+
+<div class="pc-top">
+  <div class="pc-bar">
+    <div class="pc-title">Views &amp; Verbs <small>playground</small></div>
+    <div class="pc-pages" id="pages" role="tablist"></div>
+    <div class="pc-spacer"></div>
+    <div class="pc-preset">
+      presets
+      <button data-preset="today">Today</button>
+      <button data-preset="rec">Recommended</button>
+    </div>
+    <button class="pc-toggle-panel" id="panelToggle" aria-expanded="true">Hide controls</button>
+  </div>
+  <div class="pc-panel" id="panel"></div>
+  <div class="pc-status" id="status"></div>
+</div>
+
+<div class="frame">
+  <div class="frame-bar"><span class="dots"><span></span><span></span><span></span></span><span class="url" id="url">openlibrary.org</span></div>
+  <div class="ol" id="ol"></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ============================================================
+     DATA
+     ============================================================ */
+  const BOOKS = [
+    { key:'OL1', fs:'Muad\'Dib\'s jihad had swept across the known universe, and the Emperor Paul Atreides could see no way to stop it.', subjects:['Science fiction', 'Space opera', 'Political fiction'], title:'Dune Messiah', author:'Frank Herbert', year:1969, rating:4.1, ratings:432, editions:21, ebooks:6, ls:'borrowable', copies:[1,3], hue:'hsl(24,60%,38%)', hue2:'hsl(30,50%,18%)', shelf:null,
+      desc:'Twelve years after his victory over House Harkonnen, Paul Atreides rules as Emperor of the Known Universe. But the jihad he unleashed has swept across the galaxy, and a conspiracy of Bene Gesserit, Tleilaxu and Guild navigators gathers against him.' },
+    { key:'OL2', fs:'124 was spiteful. Full of a baby\'s venom.', subjects:['Fiction', 'Historical fiction', 'Slavery'], title:'Beloved', author:'Toni Morrison', year:1987, rating:4.4, ratings:1207, editions:38, ebooks:9, ls:'open', hue:'hsl(350,45%,32%)', hue2:'hsl(350,50%,14%)', shelf:'reading',
+      desc:'Sethe, an escaped slave living in post-Civil-War Ohio, is haunted by the ghost of the daughter she killed rather than see returned to slavery — until a young woman calling herself Beloved arrives at her door.' },
+    { key:'OL3', fs:'History has failed us, but no matter.', subjects:['Historical fiction', 'Korea', 'Family saga', 'Japan'], title:'Pachinko', author:'Min Jin Lee', year:2017, rating:4.3, ratings:988, editions:14, ebooks:0, ls:'none', isbn:true, hue:'hsl(200,40%,30%)', hue2:'hsl(205,45%,12%)', shelf:'want',
+      desc:'Four generations of a Korean family in Japan, from a boarding house in Busan to the pachinko parlours of Osaka, bound by love, sacrifice and the long shadow of exile.' },
+    { key:'OL4', fs:'I\'ll make my report as if I told a story, for I was taught as a child on my homeworld that Truth is a matter of the imagination.', subjects:['Science fiction', 'Gender', 'Hainish cycle'], title:'The Left Hand of Darkness', author:'Ursula K. Le Guin', year:1969, rating:4.2, ratings:766, editions:24, ebooks:5, ls:'waitlist', queue:4, hue:'hsl(215,30%,40%)', hue2:'hsl(215,35%,15%)', shelf:'want',
+      desc:'Genly Ai, an envoy from the Ekumen, arrives on the planet Gethen to persuade its nations to join an interstellar collective — and must learn to trust a people who have no fixed gender.' },
+    { key:'OL5', fs:'The island of Gont, a single mountain that lifts its peak a mile above the storm-racked Northeast Sea, is a land famous for wizards.', subjects:['Fantasy', 'Coming of age', 'Earthsea'], title:'A Wizard of Earthsea', author:'Ursula K. Le Guin', year:1968, rating:4.0, ratings:1533, editions:19, ebooks:4, ls:'borrowable', copies:[3,3], hue:'hsl(160,35%,30%)', hue2:'hsl(165,40%,12%)', shelf:null,
+      desc:'Ged, a boy with a rare gift for magic, is sent to the school of wizardry on Roke, where pride leads him to loose a nameless shadow upon the world.' },
+    { key:'OL6', fs:'There was a wall. It did not look important.', subjects:['Science fiction', 'Anarchism', 'Utopian fiction'], title:'The Dispossessed', author:'Ursula K. Le Guin', year:1974, rating:4.3, ratings:611, editions:16, ebooks:3, ls:'checkedout', hue:'hsl(40,60%,42%)', hue2:'hsl(35,55%,16%)', shelf:null,
+      desc:'Shevek, a brilliant physicist from the anarchist moon Anarres, travels to the capitalist planet Urras hoping to unite two worlds that have been separated for two centuries.' },
+    { key:'OL7', fs:'Current-borne, wave-flung, tugged hugely by the whole might of ocean, the jellyfish drifts in the tidal abyss.', subjects:['Science fiction', 'Dreams', 'Portland (Or.)'], title:'The Lathe of Heaven', author:'Ursula K. Le Guin', year:1971, rating:4.0, ratings:388, editions:12, ebooks:2, ls:'preview_only', hue:'hsl(280,25%,38%)', hue2:'hsl(280,30%,14%)', shelf:null,
+      desc:'George Orr discovers that his dreams change reality, and the psychiatrist who treats him begins to use that power to remake the world.' },
+    { key:'OL8', fs:'You will rejoice to hear that no disaster has accompanied the commencement of an enterprise which you have regarded with such evil forebodings.', subjects:['Gothic fiction', 'Horror', 'Science fiction'], title:'Frankenstein', author:'Mary Shelley', year:1818, rating:3.9, ratings:2201, editions:412, ebooks:120, ls:'partner', provider:'Standard Ebooks', hue:'hsl(120,15%,28%)', hue2:'hsl(120,20%,10%)', shelf:'read',
+      desc:'Victor Frankenstein, a young scientist, creates a sapient creature in an unorthodox experiment, and is destroyed by what he brings to life.' },
+    { key:'OL9', fs:'Hold out your hands and let me lay upon them a sheaf of freshly picked sweetgrass, loose and flowing, like newly washed hair.', subjects:['Nature', 'Indigenous peoples', 'Botany', 'Essays'], title:'Braiding Sweetgrass', author:'Robin Wall Kimmerer', year:2013, rating:4.6, ratings:540, editions:9, ebooks:0, ls:'none', isbn:true, hue:'hsl(90,35%,32%)', hue2:'hsl(95,40%,12%)', shelf:'want',
+      desc:'A botanist and member of the Citizen Potawatomi Nation braids indigenous wisdom, scientific knowledge and the teachings of plants.' },
+    { key:'OL10', fs:'First there was nothing. Then there was everything.', subjects:['Fiction', 'Trees', 'Environmentalism'], title:'The Overstory', author:'Richard Powers', year:2018, rating:4.1, ratings:702, editions:11, ebooks:1, ls:'borrowable', copies:[1,1], hue:'hsl(75,30%,30%)', hue2:'hsl(80,35%,12%)', shelf:'reading',
+      desc:'Nine strangers, each summoned in different ways by trees, are brought together to address the destruction of forests.' },
+    { key:'OL11', fs:'I lost an arm on my last trip home.', subjects:['Science fiction', 'Time travel', 'Slavery'], title:'Kindred', author:'Octavia E. Butler', year:1979, rating:4.3, ratings:820, editions:15, ebooks:3, ls:'borrowable', copies:[2,2], hue:'hsl(10,50%,35%)', hue2:'hsl(10,55%,14%)', shelf:'read',
+      desc:'Dana, a Black woman in 1976 Los Angeles, is repeatedly pulled back in time to a Maryland plantation before the Civil War.' },
+    { key:'OL12', fs:null, subjects:['Fiction', 'Japan', 'Work'], title:'Convenience Store Woman', author:'Sayaka Murata', year:2016, rating:3.8, ratings:355, editions:8, ebooks:0, ls:'none', isbn:false, hue:'hsl(190,20%,45%)', hue2:'hsl(190,25%,18%)', shelf:null,
+      desc:null },
+    { key:'OL13', fs:'Sir Walter Elliot, of Kellynch Hall, in Somersetshire, was a man who, for his own amusement, never took up any book but the Baronetage.', subjects:['Fiction', 'Romance', 'England'], title:'Persuasion', author:'Jane Austen', year:1817, rating:4.2, ratings:1620, editions:301, ebooks:88, ls:'partner', provider:'Project Gutenberg', hue:'hsl(330,25%,42%)', hue2:'hsl(330,30%,16%)', shelf:'read',
+      desc:'Anne Elliot, persuaded eight years earlier to break her engagement to a penniless naval officer, meets him again now that he has made his fortune.' },
+    { key:'OL14', fs:'It was predictable, in hindsight.', subjects:['Science fiction', 'Jesuits', 'First contact'], title:'The Sparrow', author:'Mary Doria Russell', year:1996, rating:4.1, ratings:290, editions:10, ebooks:2, ls:'borrowable', copies:[1,2], hue:'hsl(230,30%,35%)', hue2:'hsl(230,35%,12%)', shelf:'reading',
+      desc:'A Jesuit mission to a newly discovered alien world ends in catastrophe; the sole survivor returns to Earth to explain what happened.' },
+    { key:'OL15', fs:'In October there were yellow trees. Then the clocks went back the hour and the long November winds came in and blew, and stripped the trees bare.', subjects:['Fiction', 'Ireland', 'Novellas'], title:'Small Things Like These', author:'Claire Keegan', year:2021, rating:4.2, ratings:210, editions:5, ebooks:0, ls:'none', isbn:true, nocover:true, hue:'', hue2:'', shelf:'want',
+      desc:'In a small Irish town in 1985, a coal merchant makes a discovery at the local convent that forces him to confront his own past and the silence of the town.' },
+    { key:'OL16', fs:null, subjects:['Fantasy', 'Fiction', 'Labyrinths'], title:'Piranesi', author:'Susanna Clarke', year:2020, rating:4.2, ratings:640, editions:9, ebooks:0, ls:'none', isbn:true, hue:'hsl(45,20%,55%)', hue2:'hsl(40,25%,20%)', shelf:'want',
+      desc:null },
+  ];
+  const byKey = Object.fromEntries(BOOKS.map(b => [b.key, b]));
+  const pick = keys => keys.map(k => byKey[k]);
+
+  const SHELVES = { want:'Want to Read', reading:'Currently Reading', read:'Already Read', stopped:'Stopped Reading' };
+  const SHELF_SHORT = { want:'Want to Read', reading:'Reading', read:'Read', stopped:'Stopped' };
+  const LISTS = [ { id:'l1', name:'Summer 2026', has:['OL1','OL5'] }, { id:'l2', name:'Sci-fi to reread', has:['OL4','OL6'] } ];
+
+  /* ============================================================
+     STATE
+     ============================================================ */
+  const PAGES = [
+    { id:'home',       label:'Home',         url:'openlibrary.org/' },
+    { id:'search',     label:'Search',       url:'openlibrary.org/search?q=le+guin' },
+    { id:'author',     label:'Author',       url:'openlibrary.org/authors/OL7563A/Ursula_K._Le_Guin' },
+    { id:'mybooks',    label:'My Books',     url:'openlibrary.org/people/lokesh/books' },
+    { id:'readinglog', label:'Reading log',  url:'openlibrary.org/people/lokesh/books/currently-reading' },
+    { id:'list',       label:'List',         url:'openlibrary.org/people/lokesh/lists/OL1L/Summer_2026' },
+    { id:'book',       label:'Book',         url:'openlibrary.org/works/OL1W/Dune_Messiah' },
+  ];
+
+  const state = {
+    page: 'search',
+    // views
+    view: { search:'list', author:'grid', mybooks:'carousel', readinglog:'list', list:'list', home:'carousel' },
+    descMode: 'teaser',           // none | teaser | paragraph
+    peek: true,
+    peeked: null,                  // book key open in the peek panel
+    peekList: [],                  // keys of the rows the panel walks
+    density: 'standard',           // standard | dense  (L2 vs L1)
+    // action row
+    row: 'R3',                     // today | R3 | R6 | R1 | R4
+    tile: 'G3',                    // G2 | G3 | G4
+    locate: 'F1',                  // F1 | F2 | F3
+    intent: true,                  // manage surfaces lead with shelf
+    loggedIn: true,
+    expanded: {},                  // carouselId -> true
+    listOwner: true,
+  };
+
+  const CONTROLS = [
+    { key:'row', label:'Action row', options:[['today','Today'],['R3','R3 stacked'],['R6','R6 horizontal'],['R1','R1 kebab'],['R4','R4 single split']],
+      note:'R3 = Access + "Save ▾" split; R6 = same, side by side; R1 = Access + ⋮; R4 = one split holding everything.' },
+    { key:'tile', label:'Grid / carousel tile', options:[['G2','G2 access only'],['G3','G3 corner Save'],['G4','G4 strip']],
+      note:'How Save fits at tile width. G3 recommended.' },
+    { key:'locate', label:'No online copy', options:[['F1','F1 outlined'],['F2','F2 filled'],['F3','F3 empty slot']],
+      note:'What the Access slot shows when nothing is readable.' },
+    { key:'density', label:'List density', options:[['standard','L2 standard'],['dense','L1 dense']] },
+    { key:'descMode', label:'Description in List rows', options:[['none','None'],['teaser','One-line teaser'],['paragraph','D1 paragraph']],
+      note:'Teaser = first sentence from the search doc, one clamped line, no fetch. Paragraph = the old "Show descriptions" toggle, kept for comparison.' },
+    { key:'flags', label:'Flags', flags:[['peek','Peek panel: click a row to see the description beside the results'],['intent','Intent-aware: shelf leads on manage pages'],['loggedIn','Signed in'],['listOwner','List page: I own the list']] },
+  ];
+
+  const PRESETS = {
+    today: { row:'today', tile:'G2', locate:'F1', density:'standard', descMode:'none', peek:false, intent:false },
+    rec:   { row:'R3', tile:'G3', locate:'F1', density:'standard', descMode:'teaser', peek:true, intent:true },
+  };
+
+  /* ============================================================
+     ACCESS SLOT — the decision table
+     ============================================================ */
+  function access(b, s) {
+    // returns { label, style: fill|outline|dead|none, state, ext, isLocate }
+    const st = s || state;
+    switch (b.ls) {
+      case 'borrowable': return { label:'Borrow', style:'fill', state:`${b.copies[0]} of ${b.copies[1]} ${b.copies[1]===1?'copy':'copies'} available` };
+      case 'open':       return { label:'Read', style:'fill', state:'Free to read' };
+      case 'partner':    return { label:`Read on ${b.provider}`, short:'Read', style:'fill', ext:true, state:'Free · leaves Open Library' };
+      case 'waitlist':   return { label:'Join waitlist', style:'fill', state:`${b.queue} readers in line` };
+      case 'preview_only': return { label:'Preview', style:'fill', state:'Preview only · no full text' };
+      case 'checkedout':
+      case 'none': {
+        const why = b.ls === 'checkedout' ? 'All copies checked out' : 'Not available online';
+        if (st.locate === 'F3' || (b.ls === 'none' && b.isbn === false)) return { label:null, style:'none', state: why, isLocate:false };
+        return { label:'Find in a library', short:'Find', style: st.locate === 'F2' ? 'fill' : 'outline', ext:true, state: why, isLocate:true };
+      }
+    }
+  }
+  // what production shows today
+  function accessToday(b) {
+    switch (b.ls) {
+      case 'borrowable': return { label:'Borrow', style:'fill' };
+      case 'open':       return { label:'Read', style:'fill' };
+      case 'partner':    return { label:'Read', style:'fill', ext:true };
+      case 'waitlist':   return { label:'Join Waitlist', style:'fill' };
+      case 'preview_only': return { label:'Preview Only', style:'fill' };
+      case 'checkedout': return { label:'Checked Out', style:'fill' };
+      case 'none':       return { label:'Not in Library', style:'dead' };
+    }
+  }
+
+  /* ============================================================
+     RENDER HELPERS
+     ============================================================ */
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const stars = r => { const f = Math.round(r); return '★'.repeat(f) + '☆'.repeat(5 - f); };
+
+  function cover(b, extra) {
+    const style = b.nocover ? '' : `style="background:linear-gradient(160deg,${b.hue} 0%,${b.hue2} 100%)"`;
+    return `<div class="cov ${b.nocover?'no':''}" ${style}><div class="ct">${esc(b.title)}</div><div class="ca">${esc(b.author)}</div>${extra||''}</div>`;
+  }
+
+  function accessBtn(b, opts) {
+    // opts: { size, short, secondary }
+    opts = opts || {};
+    const a = access(b);
+    if (a.style === 'none') return '';
+    const label = opts.short && a.short ? a.short : a.label;
+    let cls = 'cta ' + (opts.secondary ? 'sec' : a.style);
+    if (opts.size) cls += ' ' + opts.size;
+    return `<button class="${cls}" data-act="access" data-key="${b.key}" title="${esc(a.label)}">${esc(label)}${a.ext?' <span class="ext">↗</span>':''}</button>`;
+  }
+
+  function saveLabel(b, short) {
+    if (!state.loggedIn || !b.shelf) return 'Want to Read';
+    return (short ? SHELF_SHORT : SHELVES)[b.shelf];
+  }
+  function saveSplit(b, opts) {
+    // opts: { size, short, lead (filled), caretOnly }
+    opts = opts || {};
+    const set = state.loggedIn && !!b.shelf;
+    const size = opts.size ? ' ' + opts.size : '';
+    let cls = set ? 'set' : 'sec';
+    if (opts.lead) cls = set ? 'set' : 'fill';
+    const check = set ? '✓ ' : '';
+    if (opts.caretOnly) {
+      return `<button class="cta ${cls}${size} caret" data-act="menu" data-key="${b.key}" aria-haspopup="menu" aria-label="Save options">▾</button>`;
+    }
+    return `<div class="split">
+      <button class="cta ${cls}${size}" data-act="save" data-key="${b.key}">${check}${esc(saveLabel(b, opts.short))}</button>
+      <button class="cta ${cls}${size} caret${opts.size==='sm'?' sm':''}" data-act="menu" data-key="${b.key}" aria-haspopup="menu" aria-label="More save options">▾</button>
+    </div>`;
+  }
+  const kebab = b => `<button class="kebab" data-act="menu" data-key="${b.key}" aria-haspopup="menu" aria-label="More actions">⋮</button>`;
+  const stateLine = (b, left) => { const a = access(b); return a.state ? `<div class="state ${left?'left':''}">${esc(a.state)}</div>` : ''; };
+
+  /* ---- action block for a LIST ROW ---- */
+  function rowActions(b, ctx) {
+    const manage = state.intent && ctx.intent === 'manage';
+    const dense = state.density === 'dense';
+    const size = dense ? 'sm' : '';
+    if (state.row === 'today') {
+      const a = accessToday(b);
+      const shelfLbl = !state.loggedIn ? 'Add to List' : (b.shelf ? '✓ ' + SHELVES[b.shelf] : 'Want to Read');
+      return `<div class="actions today">
+        <button class="cta ${a.style}" data-act="access" data-key="${b.key}">${esc(a.label)}${a.ext?' <span class="ext">↗</span>':''}</button>
+        <div class="split"><button class="cta today-grey" data-act="save" data-key="${b.key}">${esc(shelfLbl)}</button><button class="cta today-grey caret" data-act="menu" data-key="${b.key}">▾</button></div>
+      </div>`;
+    }
+    if (state.row === 'R1') {
+      return `<div class="actions"><div class="actions h">${accessBtn(b,{size}) || `<div class="state left" style="flex:1;padding:6px 0">${esc(access(b).state)}</div>`}${kebab(b)}</div>${access(b).label ? stateLine(b, true) : ''}</div>`;
+    }
+    if (state.row === 'R4') {
+      const a = access(b);
+      const cls = a.style === 'none' ? 'sec' : a.style;
+      const lbl = a.label || 'Save';
+      return `<div class="actions"><div class="split"><button class="cta ${cls}" data-act="access" data-key="${b.key}">${esc(lbl)}${a.ext?' <span class="ext">↗</span>':''}</button><button class="cta ${cls} caret" data-act="menu" data-key="${b.key}" data-with-access="1" aria-haspopup="menu">▾</button></div>${stateLine(b)}</div>`;
+    }
+    // R3 / R6
+    const horizontal = state.row === 'R6' && !dense;
+    let acc, save;
+    if (manage) {
+      // shelf leads: Save filled, Access secondary
+      save = saveSplit(b, { lead:true, size });
+      acc = accessBtn(b, { secondary:true, size });
+    } else {
+      acc = accessBtn(b, { size });
+      save = saveSplit(b, { size });
+    }
+    if (dense) {
+      return `<div class="actions h" style="width:${horizontal?260:230}px">${acc || `<div class="state left" style="padding:5px 0">${esc(access(b).state)}</div>`}${save}</div>`;
+    }
+    if (horizontal) {
+      return `<div class="actions"><div class="actions h">${manage ? save + (acc||'') : (acc||'') + save}</div>${stateLine(b, true)}</div>`;
+    }
+    const empty = !acc ? `<div class="state left" style="padding:4px 0">${esc(access(b).state)}</div>` : '';
+    return manage
+      ? `<div class="actions">${save}${acc}${acc ? stateLine(b) : empty}</div>`
+      : `<div class="actions">${acc}${acc ? stateLine(b) : empty}${save}</div>`;
+  }
+
+  /* ---- a LIST ROW ---- */
+  function row(b, ctx) {
+    const dense = state.density === 'dense';
+    const descOn = state.descMode === 'paragraph' && !dense && state.row !== 'today';
+    const teaserOn = state.descMode === 'teaser' && !dense && state.row !== 'today';
+    let desc = '';
+    if (descOn) {
+      if (b.desc) desc = `<div class="desc">${esc(b.desc.length > 220 ? b.desc.slice(0, 220).replace(/\s\S*$/, '') + '…' : b.desc)} <span class="more">more</span></div>`;
+      else desc = `<div class="desc fallback">No description yet — ${b.editions} editions, first published ${b.year}.</div>`;
+    } else if (teaserOn && b.fs) {
+      desc = `<div class="teaser" title="${esc(b.fs)}">${esc(b.fs)}</div>`;
+    }
+    const peekable = state.peek && state.row !== 'today';
+    const peeked = peekable && state.peeked === b.key;
+    const manage = state.intent && ctx.intent === 'manage';
+    const wide = state.row === 'R6' && !dense;
+    let extra = '';
+    if (manage && !dense && state.row !== 'today') {
+      extra = `<div class="inline-rate"><span class="stars-in"><b>${'★'.repeat(b.myRating||0)}</b>${'★'.repeat(5-(b.myRating||0))}</span>${b.myRating ? 'Your rating' : 'Rate this book'}</div>`;
+      if (b.shelf === 'reading') extra += `<div class="checkin">Started 12 Jul ·<a href="#">Mark finished</a></div>`;
+      if (b.shelf === 'read') extra += `<div class="checkin">Finished 3 Aug ·<a href="#">Edit</a></div>`;
+    }
+    return `<li class="row ${dense?'dense':''} ${descOn?'desc-on':''} ${peekable?'peekable':''} ${peeked?'peeked':''}" ${peekable?`data-peek="${b.key}" tabindex="0" aria-expanded="${peeked}"`:''}>
+      ${cover(b)}
+      <div class="meta">
+        <div class="t">${esc(b.title)}</div>
+        <div class="a">by <b>${esc(b.author)}</b></div>
+        ${dense ? '' : `<div class="stars">${stars(b.rating)}<small>${b.rating} · ${b.ratings.toLocaleString()} ratings</small></div>
+        <div class="k">First published ${b.year} · <a href="#">${b.editions} editions</a>${b.ebooks ? ` · <a href="#">${b.ebooks} ebooks</a>` : ''}</div>`}
+        ${desc}${extra}
+      </div>
+      <div class="acts ${wide?'wide':''}">${rowActions(b, ctx)}</div>
+    </li>`;
+  }
+
+  /* ---- a GRID / CAROUSEL TILE ---- */
+  function tile(b, ctx) {
+    const manage = state.intent && ctx.intent === 'manage';
+    const a = access(b);
+    const set = state.loggedIn && !!b.shelf;
+    let under, corner = '', badge = '';
+    if (state.row === 'today' && ctx.kind === 'carousel') {
+      // today's carousel: LoanStatus only; My Books shelves also show Borrow/Read
+      const t = accessToday(b);
+      under = `<button class="cta ${t.style} sm" data-act="access" data-key="${b.key}">${esc(t.label)}</button>`;
+    } else if (state.row === 'today') {
+      // today's grid layout of the results row: both stacked, hidden details
+      const t = accessToday(b);
+      const shelfLbl = !state.loggedIn ? 'Add to List' : (b.shelf ? '✓ ' + SHELF_SHORT[b.shelf] : 'Want to Read');
+      under = `<button class="cta ${t.style} sm" data-act="access" data-key="${b.key}">${esc(t.label)}</button><div class="split"><button class="cta today-grey sm" data-act="save" data-key="${b.key}">${esc(shelfLbl)}</button><button class="cta today-grey sm caret sm" data-act="menu" data-key="${b.key}">▾</button></div>`;
+    } else if (manage) {
+      // G5: shelf leads at tile width; Access goes to the corner (or menu)
+      under = saveSplit(b, { lead:true, size:'sm', short:true });
+      if (a.label && a.style !== 'none') corner = `<button class="cov-save" data-act="access" data-key="${b.key}" title="${esc(a.label)}" aria-label="${esc(a.label)}">▶</button>`;
+      if (b.shelf === 'reading') badge = `<div class="cov-badge">Started 12 Jul</div>`;
+    } else if (state.tile === 'G2') {
+      under = accessBtn(b, { size:'sm', short:true }) || `<div class="state">${esc(a.state)}</div>`;
+    } else if (state.tile === 'G4') {
+      under = `<div class="strip">${accessBtn(b, { size:'sm', short:true }) || `<div class="state" style="flex:1;padding:4px 0">${esc(a.short||'Not online')}</div>`}${saveSplit(b, { caretOnly:true, size:'sm' })}</div>`;
+    } else { // G3
+      under = accessBtn(b, { size:'sm', short:true }) || `<div class="state">${esc(a.state)}</div>`;
+      corner = `<button class="cov-save ${set?'set':''}" data-act="${set?'menu':'save'}" data-key="${b.key}" title="${set ? SHELVES[b.shelf] : 'Want to Read'}" aria-label="Save">${set?'✓':'+'}</button>`;
+    }
+    if (!badge && state.row !== 'today' && state.tile !== 'G2') {
+      if (b.ls === 'none' || b.ls === 'checkedout') badge = `<div class="cov-badge">Not online</div>`;
+      else if (b.ls === 'waitlist') badge = `<div class="cov-badge">Waitlist</div>`;
+      else if (b.ls === 'preview_only') badge = `<div class="cov-badge">Preview</div>`;
+    }
+    return `<div class="tile">${cover(b, corner + badge)}<div class="t">${esc(b.title)}</div><div class="a">${esc(b.author)}</div>${under}</div>`;
+  }
+
+  /* ---- COLLECTION: rows | tiles | carousel ---- */
+  function collection(id, books, ctx) {
+    // ctx: { intent, view, title, seeAll, allow:[...] }
+    const view = ctx.view;
+    if (view === 'list') return `<ul class="rows">${books.map(b => row(b, ctx)).join('')}</ul>`;
+    if (view === 'grid') return `<div class="tiles">${books.map(b => tile(b, ctx)).join('')}</div>`;
+    // carousel
+    const expanded = !!state.expanded[id];
+    const ctl = state.row === 'today'
+      ? `<a href="#" class="see-all">See all</a>`
+      : `<div class="ol-segc small" role="group" aria-label="Show ${esc(ctx.title)} as">
+           <button data-car="${id}" data-carview="carousel" aria-pressed="${!expanded}">⊞ Covers</button>
+           <button data-car="${id}" data-carview="list" aria-pressed="${expanded}">☰ List</button>
+         </div>`;
+    const head = `<div class="car-h"><h3><a href="#">${esc(ctx.title)}</a></h3><div class="car-ctl">${ctl}</div></div>`;
+    if (expanded) {
+      const shown = books.slice(0, 6);
+      return `<section class="carousel">${head}<div class="car-expanded"><ul class="rows">${shown.map(b => row(b, Object.assign({}, ctx, { kind:'carousel' }))).join('')}</ul>
+        <div class="car-more"><span data-more="${id}">Show ${Math.max(books.length - shown.length, 12)} more</span>·<span data-car="${id}" data-carview="carousel">Collapse</span>·<a href="#">See all →</a></div></div></section>`;
+    }
+    return `<section class="carousel">${head}<div class="car-track-wrap"><div class="car-track">${books.map(b => tile(b, Object.assign({}, ctx, { kind:'carousel' }))).join('')}</div><button class="car-arrow" aria-label="Scroll right">›</button></div></section>`;
+  }
+
+  /* ---- toolbar with the view switcher ---- */
+  function toolbar(pageId, allow, count, extraLeft) {
+    const v = state.view[pageId];
+    const seg = allow.length > 1 ? `<div class="ol-segc" role="group" aria-label="Layout">
+      ${allow.includes('grid') ? `<button data-view="${pageId}" data-v="grid" aria-pressed="${v==='grid'}">⊞ Grid</button>` : ''}
+      ${allow.includes('list') ? `<button data-view="${pageId}" data-v="list" aria-pressed="${v==='list'}">☰ List</button>` : ''}
+    </div>` : '';
+    return `<div class="ol-toolbar"><div>${extraLeft || `${count} results`}</div><div class="right"><span class="ol-sel">Sort: Relevance ▾</span>${seg}</div></div>`;
+  }
+
+  /* ============================================================
+     PAGES
+     ============================================================ */
+  function header() {
+    return `<div class="ol-header"><div class="ol-header-in">
+      <div class="ol-logo"><span class="mark"></span><span>Open Library<small>Internet Archive</small></span></div>
+      <div class="ol-nav"><span>My Books</span><span>Browse ▾</span></div>
+      <div class="ol-search"><input value="${state.page==='search'?'le guin':''}" placeholder="Search"><button>🔍</button></div>
+      <div class="ol-account">${state.loggedIn ? '<b>lokesh</b> ▾' : '<b>Log In</b> · <b>Sign Up</b>'}</div>
+    </div></div>`;
+  }
+
+  const P = {};
+
+  P.home = () => {
+    const ctx = intent => ({ intent, view:'carousel', kind:'carousel' });
+    return `<div class="ol-body">
+      <div class="home-hero"><div><h2>Welcome to Open Library</h2><p>Read, borrow, and discover more than 3M books for free.</p></div></div>
+      ${state.row==='today' ? '<p class="today-note">Today: carousels render LoanStatus only — no way to save a book from here.</p>' : ''}
+      ${collection('h-trending', pick(['OL1','OL2','OL3','OL4','OL5','OL6','OL7','OL10','OL14','OL9']), Object.assign(ctx('discover'), { title:'Trending Books' }))}
+      ${collection('h-classic', pick(['OL8','OL13','OL2','OL6','OL4','OL5','OL7','OL11']), Object.assign(ctx('discover'), { title:'Classic Books' }))}
+      ${collection('h-love', pick(['OL9','OL10','OL15','OL16','OL12','OL3','OL14','OL1']), Object.assign(ctx('discover'), { title:'Books We Love' }))}
+    </div>`;
+  };
+
+  P.search = () => {
+    const books = pick(['OL4','OL5','OL6','OL7','OL1','OL2','OL3','OL8','OL9','OL12','OL15','OL16']);
+    const v = state.view.search;
+    return `<div class="ol-body"><div class="ol-cols">
+      <aside class="ol-facets">
+        <h4>Ebook</h4><ul><li>Any <span>1,204</span></li><li>Readable now <span>418</span></li></ul>
+        <h4>Author</h4><ul><li>Ursula K. Le Guin <span>212</span></li><li>Charles Le Guin <span>3</span></li></ul>
+        <h4>Subject</h4><ul><li>Science fiction <span>640</span></li><li>Fantasy <span>301</span></li><li>Fiction <span>288</span></li></ul>
+        <h4>Language</h4><ul><li>English <span>980</span></li><li>Spanish <span>84</span></li></ul>
+      </aside>
+      <div>
+        ${toolbar('search', ['grid','list'], '1,204')}
+        ${state.row==='today' && v==='grid' ? '<p class="today-note">Today: grid is the same row markup with details, rating and check-in hidden by CSS.</p>' : ''}
+        ${collection('search', books, { intent:'discover', view:v })}
+      </div>
+    </div></div>`;
+  };
+
+  P.author = () => {
+    const books = pick(['OL4','OL5','OL6','OL7','OL1','OL2','OL3','OL10']);
+    return `<div class="ol-body">
+      <div class="author-head"><div class="author-photo"></div><div><h1 class="ol-h1">Ursula K. Le Guin</h1><p class="ol-sub">1929 – 2018</p><p class="author-bio">American author of speculative fiction, best known for the Earthsea fantasy series and the Hainish cycle. Winner of the Hugo, Nebula, Locus and World Fantasy awards, and the National Book Foundation's Medal for Distinguished Contribution to American Letters.</p></div></div>
+      <h2 class="ol-h2">212 works</h2>
+      ${toolbar('author', ['grid','list'], '212', 'Sorted by most editions')}
+      ${collection('author', books, { intent:'discover', view: state.view.author })}
+    </div>`;
+  };
+
+  P.mybooks = () => {
+    const ctx = { intent:'manage', view:'carousel', kind:'carousel' };
+    const reading = pick(['OL2','OL10','OL14']);
+    const want = pick(['OL4','OL16','OL3','OL9','OL15']);
+    const read = pick(['OL8','OL13','OL11']);
+    return `<div class="ol-body"><div class="ol-cols">
+      <aside class="ol-sidenav"><ul><li class="on">My Books</li><li>Loans</li><li>Lists</li><li>Reading stats</li></ul><h4>Reading log</h4><ul><li>Currently Reading <span style="float:right;color:var(--ol-n500)">3</span></li><li>Want to Read <span style="float:right;color:var(--ol-n500)">5</span></li><li>Already Read <span style="float:right;color:var(--ol-n500)">3</span></li></ul></aside>
+      <div>
+        <h1 class="ol-h1">My Books</h1>
+        ${state.row==='today' ? '<p class="today-note">Today: shelf carousels reuse the standard carousel, so every card says Borrow / Read and there is no way to move a book between shelves from here.</p>' : (state.intent ? '' : '<p class="today-note">Intent-aware is off: these are manage surfaces, but the tile leads with Access. Turn on the flag to see the shelf lead.</p>')}
+        ${collection('mb-reading', reading, Object.assign({}, ctx, { title:'Currently Reading' }))}
+        ${collection('mb-want', want, Object.assign({}, ctx, { title:'Want to Read' }))}
+        ${collection('mb-read', read, Object.assign({}, ctx, { title:'Already Read' }))}
+      </div>
+    </div></div>`;
+  };
+
+  P.readinglog = () => {
+    const books = pick(['OL2','OL10','OL14']);
+    return `<div class="ol-body"><div class="ol-cols">
+      <aside class="ol-sidenav"><ul><li>My Books</li><li>Loans</li><li>Lists</li></ul><h4>Reading log</h4><ul><li class="on">Currently Reading</li><li>Want to Read</li><li>Already Read</li></ul></aside>
+      <div>
+        <h1 class="ol-h1">Currently Reading</h1>
+        ${toolbar('readinglog', ['grid','list'], '3', '3 books')}
+        ${collection('readinglog', books, { intent:'manage', view: state.view.readinglog })}
+      </div>
+    </div></div>`;
+  };
+
+  P.list = () => {
+    const books = pick(['OL1','OL5','OL9','OL15','OL12']);
+    const owner = state.listOwner && state.loggedIn;
+    return `<div class="ol-body">
+      <h1 class="ol-h1">Summer 2026</h1>
+      <p class="ol-sub">A list by <a href="#">lokesh</a> · 5 works · ${owner ? 'You own this list' : 'Public'}</p>
+      ${toolbar('list', ['grid','list'], '5', owner ? 'Your list' : 'Reading someone else\'s list')}
+      ${collection('list', books, { intent: owner ? 'manage' : 'discover', view: state.view.list, listOwner: owner })}
+    </div>`;
+  };
+
+  P.book = () => {
+    const b = byKey.OL1;
+    const related = pick(['OL5','OL4','OL6','OL7','OL14','OL8','OL2']);
+    const a = access(b);
+    let acts;
+    if (state.row === 'today') {
+      const t = accessToday(b);
+      acts = `<div class="actions today"><div class="split"><button class="cta ${t.style}" data-act="access" data-key="${b.key}">${t.label}</button><button class="cta ${t.style} caret" data-act="menu" data-key="${b.key}">▾</button></div><div class="split"><button class="cta today-grey" data-act="save" data-key="${b.key}">${state.loggedIn ? 'Want to Read' : 'Add to List'}</button><button class="cta today-grey caret" data-act="menu" data-key="${b.key}">▾</button></div><button class="cta sec">Preview</button><button class="cta sec">Search inside</button></div>`;
+    } else {
+      acts = `<div class="actions">${accessBtn(b)}${stateLine(b)}${saveSplit(b)}<button class="cta sec">Preview</button><button class="cta sec">Search inside</button></div>`;
+    }
+    return `<div class="ol-body"><div class="book-cols">
+      <div class="book-cover-col">${cover(b)}${acts}<div class="state">${state.row==='today' ? '' : 'Share · Buy this book · All 21 editions in Save ▾'}</div></div>
+      <div class="book-main">
+        <h1>Dune Messiah</h1><div class="by">by <a href="#">Frank Herbert</a></div>
+        <div class="stars">${stars(b.rating)}<small>${b.rating} · 432 ratings · 2,140 want to read · 388 currently reading</small></div>
+        <p>${esc(b.desc)}</p>
+        <p>The second novel in the Dune saga, first published in 1969, it follows Paul's struggle with the prescience that has made him both a god to billions and a prisoner of the future he can see.</p>
+        <div class="subj"><span>Science fiction</span><span>Fiction</span><span>Space opera</span><span>Political fiction</span></div>
+        <dl class="kv"><dt>First published</dt><dd>1969</dd><dt>Editions</dt><dd><a href="#">21 editions</a> in 9 languages</dd><dt>Pages</dt><dd>256</dd><dt>Original language</dt><dd>English</dd></dl>
+        ${collection('bk-related', related, { intent:'discover', view:'carousel', kind:'carousel', title:'You might also like' })}
+      </div>
+      <aside class="book-side">
+        <div class="box"><h4>Buy this book</h4><a href="#">Better World Books ↗</a><a href="#">Amazon ↗</a><a href="#">Bookshop.org ↗</a></div>
+        <div class="box"><h4>Check nearby libraries</h4><a href="#">WorldCat ↗</a></div>
+        <div class="box"><h4>Lists containing this book</h4><a href="#">Summer 2026</a><a href="#">Herbert completionist</a></div>
+      </aside>
+    </div></div>`;
+  };
+
+  /* ============================================================
+     MENU (M1) — one grouped menu, built once
+     ============================================================ */
+  let openMenu = null;
+  function closeMenu() { if (openMenu) { openMenu.remove(); openMenu = null; } }
+
+  function menuHTML(b, withAccess) {
+    const a = access(b);
+    const li = (label, on, attrs, ext, dim) => `<button class="mi ${on?'on':''} ${dim?'dim':''}" ${attrs||''}><span class="chk">${on?'✓':''}</span>${label}${ext?'<span class="ext">↗</span>':''}</button>`;
+    let h = '';
+    if (withAccess && a.label) {
+      h += `<div class="mg">Read it</div>${li(a.label, false, `data-menu="access"`, a.ext)}${a.label!=='Preview' ? li('Preview', false, '') : ''}${a.label!=='Listen' ? li('Listen', false, '') : ''}`;
+    }
+    h += `<div class="mg">Shelf</div>`;
+    for (const k of Object.keys(SHELVES)) h += li(SHELVES[k], state.loggedIn && b.shelf === k, `data-menu="shelf" data-shelf="${k}" data-key="${b.key}"`);
+    if (state.loggedIn && b.shelf) h += li('Remove from shelf', false, `data-menu="shelf" data-shelf="" data-key="${b.key}"`, false, true);
+    if (state.loggedIn) {
+      h += `<div class="mg">Rate</div><div class="stars-in" data-menu="rate" data-key="${b.key}"><b>${'★'.repeat(b.myRating||0)}</b>${'★'.repeat(5-(b.myRating||0))}</div>`;
+      h += `<div class="mg">Lists</div>`;
+      for (const l of LISTS) h += li(l.name, l.has.includes(b.key), `data-menu="list" data-list="${l.id}" data-key="${b.key}"`);
+      h += li('New list…', false, '', false, true);
+    }
+    const more = [];
+    if (a.label !== 'Preview') more.push(li('Preview', false, ''));
+    more.push(li('Search inside', false, ''));
+    if (!a.isLocate) more.push(li('Find in a library', false, '', true));
+    if (b.ebooks) more.push(li('Download options', false, '', false, true));
+    h += `<div class="mg">More ways to read</div>${more.join('')}`;
+    if (state.loggedIn && b.shelf) h += `<div class="mg">Write</div>${li('Review', false, '')}${li('Notes', false, '')}${li('Check in', false, '')}`;
+    h += `<div class="mg">Elsewhere</div>${li('Share', false, '')}${li('Buy this book', false, '', true)}${li(`All ${b.editions} editions`, false, '')}`;
+    if (state.page === 'list' && state.listOwner && state.loggedIn) h += `<div class="mg">This list</div>${li('Remove from this list', false, '')}${li('Edit note', false, '')}`;
+    if (!state.loggedIn) h += `<div class="signin"><a href="#">Sign in</a> to save — you'll come right back here.</div>`;
+    return h;
+  }
+
+  function showMenu(anchor, b, withAccess) {
+    closeMenu();
+    const m = document.createElement('div');
+    m.className = 'menu-pop'; m.setAttribute('role', 'menu');
+    m.innerHTML = menuHTML(b, withAccess);
+    document.body.appendChild(m);
+    const r = anchor.getBoundingClientRect();
+    const mw = m.offsetWidth, mh = m.offsetHeight;
+    let left = r.right - mw + window.scrollX; if (left < 8) left = r.left + window.scrollX;
+    let top = r.bottom + 4 + window.scrollY;
+    if (r.bottom + mh > window.innerHeight - 8 && r.top - mh > 8) top = r.top - mh - 4 + window.scrollY;
+    m.style.left = left + 'px'; m.style.top = top + 'px';
+    openMenu = m;
+    m.addEventListener('click', e => {
+      const t = e.target.closest('[data-menu]'); if (!t) return;
+      const key = t.dataset.key, bk = key ? byKey[key] : b;
+      if (t.dataset.menu === 'shelf') { if (!state.loggedIn) return loginIntent(SHELVES[t.dataset.shelf]); bk.shelf = t.dataset.shelf || null; toast(bk.shelf ? `Added to ${SHELVES[bk.shelf]}` : 'Removed from your shelves'); closeMenu(); render(); }
+      else if (t.dataset.menu === 'list') { const l = LISTS.find(x => x.id === t.dataset.list); const i = l.has.indexOf(bk.key); if (i >= 0) l.has.splice(i, 1); else l.has.push(bk.key); toast(i >= 0 ? `Removed from ${l.name}` : `Added to ${l.name}`); closeMenu(); }
+      else if (t.dataset.menu === 'rate') { const rect = t.getBoundingClientRect(); const n = Math.min(5, Math.max(1, Math.ceil((e.clientX - rect.left - 12) / ((rect.width - 24) / 5)))); bk.myRating = n; toast(`Rated ${n} star${n>1?'s':''}`); closeMenu(); render(); }
+      else if (t.dataset.menu === 'access') { toast(`→ ${access(bk).label}`); closeMenu(); }
+    });
+  }
+
+  /* ============================================================
+     PEEK PANEL — the description beside the results, not inside them
+     ============================================================ */
+  function peekHTML(b) {
+    const list = state.peekList; const i = list.indexOf(b.key);
+    const ctx = { intent: currentIntent(), kind:'peek' };
+    const saved = state.row; if (saved === 'R6') state.row = 'R3'; // panel is narrow: stack
+    const acts = rowActions(b, ctx);
+    state.row = saved;
+    return `<div class="peek-h"><span>${i+1} of ${list.length}</span><div class="nav"><button data-peeknav="-1" ${i<=0?'disabled':''} aria-label="Previous">↑ Prev</button><button data-peeknav="1" ${i>=list.length-1?'disabled':''} aria-label="Next">↓ Next</button><button class="x" data-peekclose aria-label="Close">✕</button></div></div>
+      <div class="peek-b">
+        <div class="peek-top">${cover(b)}<div style="min-width:0"><h2 class="peek-t">${esc(b.title)}</h2><div class="peek-a">by <a href="#">${esc(b.author)}</a></div><div class="peek-stars">${stars(b.rating)}<small>${b.rating} · ${b.ratings.toLocaleString()}</small></div><div class="peek-k">First published ${b.year}<br><a href="#">${b.editions} editions</a>${b.ebooks?` · <a href="#">${b.ebooks} ebooks</a>`:''}</div></div></div>
+        <div class="peek-acts">${acts}</div>
+        ${b.desc ? `<p class="peek-desc">${esc(b.desc)}</p>` : `<p class="peek-desc fallback">No description has been added for this work yet.${b.fs?` It opens: “${esc(b.fs)}”`:''}</p>`}
+        <div class="subj">${(b.subjects||[]).map(x=>`<span>${esc(x)}</span>`).join('')}</div>
+        <dl><dt>Editions</dt><dd>${b.editions} in ${Math.max(1, Math.round(b.editions/3))} languages</dd><dt>Ebooks</dt><dd>${b.ebooks || 'None online'}</dd><dt>Availability</dt><dd>${esc(access(b).state || '')}</dd></dl>
+        <a href="#" class="peek-open">Open book page →</a>
+        <div class="peek-kbd"><kbd>↑</kbd> <kbd>↓</kbd> walk results · <kbd>Esc</kbd> close</div>
+      </div>`;
+  }
+  function currentIntent() {
+    if (state.page === 'readinglog' || state.page === 'mybooks') return 'manage';
+    if (state.page === 'list') return (state.listOwner && state.loggedIn) ? 'manage' : 'discover';
+    return 'discover';
+  }
+  let peekEl = null;
+  function renderPeek() {
+    if (peekEl) { peekEl.remove(); peekEl = null; }
+    document.body.classList.remove('has-peek');
+    if (!state.peek || !state.peeked || state.row === 'today') { state.peeked = null; return; }
+    const b = byKey[state.peeked]; if (!b) return;
+    peekEl = document.createElement('aside');
+    peekEl.className = 'peek'; peekEl.setAttribute('role', 'complementary'); peekEl.setAttribute('aria-label', 'Book details');
+    peekEl.innerHTML = peekHTML(b);
+    document.body.appendChild(peekEl);
+    document.body.classList.add('has-peek');
+    positionPeek();
+  }
+  function positionPeek() {
+    if (!peekEl) return;
+    const top = document.querySelector('.pc-top').offsetHeight;
+    const frame = document.querySelector('.frame').getBoundingClientRect();
+    peekEl.style.top = top + 'px';
+    peekEl.style.height = `calc(100vh - ${top}px)`;
+    peekEl.style.right = Math.max(0, window.innerWidth - frame.right) + 'px';
+  }
+  window.addEventListener('resize', positionPeek);
+  function openPeek(key) {
+    state.peekList = Array.from(document.querySelectorAll('.row[data-peek]')).map(el => el.dataset.peek);
+    state.peeked = key;
+    document.querySelectorAll('.row.peeked').forEach(el => { el.classList.remove('peeked'); el.setAttribute('aria-expanded','false'); });
+    const el = document.querySelector(`.row[data-peek="${key}"]`); if (el) { el.classList.add('peeked'); el.setAttribute('aria-expanded','true'); el.scrollIntoView({ block:'nearest', behavior:'smooth' }); }
+    renderPeek();
+  }
+  function closePeek() { state.peeked = null; renderPeek(); document.querySelectorAll('.row.peeked').forEach(el => { el.classList.remove('peeked'); el.setAttribute('aria-expanded','false'); }); }
+  function stepPeek(d) { const i = state.peekList.indexOf(state.peeked); const n = state.peekList[i + d]; if (n) openPeek(n); }
+
+  let toastT;
+  function toast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 1800); }
+  function loginIntent(action) { toast(`Sign in to save — we'll add it to ${action} when you're back`); }
+
+  /* ============================================================
+     RENDER
+     ============================================================ */
+  function render() {
+    closeMenu();
+    const ol = document.getElementById('ol');
+    ol.innerHTML = header() + P[state.page]();
+    document.getElementById('url').textContent = PAGES.find(p => p.id === state.page).url;
+    renderChrome();
+    // re-render the peek panel against the fresh DOM (or drop it if its row is gone)
+    if (state.peeked && document.querySelector(`.row[data-peek="${state.peeked}"]`)) openPeek(state.peeked); else closePeek();
+  }
+
+  function renderChrome() {
+    document.getElementById('pages').innerHTML = PAGES.map(p => `<button role="tab" data-page="${p.id}" aria-pressed="${p.id===state.page}">${p.label}</button>`).join('');
+    const panel = document.getElementById('panel');
+    panel.innerHTML = CONTROLS.map(c => {
+      if (c.flags) return `<div class="pc-group"><label class="lbl">${c.label}</label>${c.flags.map(([k,l]) => `<label class="pc-check"><input type="checkbox" data-flag="${k}" ${state[k]?'checked':''}> ${l}</label>`).join('')}</div>`;
+      return `<div class="pc-group"><label class="lbl">${c.label}</label><div class="pc-seg">${c.options.map(([v,l]) => `<button data-ctl="${c.key}" data-val="${v}" aria-pressed="${state[c.key]===v}" ${c.key!=='row' && state.row==='today' && c.key!=='density' ? 'disabled' : ''}>${l}</button>`).join('')}</div>${c.note?`<div class="pc-note">${c.note}</div>`:''}</div>`;
+    }).join('');
+    const pv = state.view[state.page];
+    document.getElementById('status').innerHTML =
+      `<span>page <b>${state.page}</b></span>` +
+      (pv ? `<span>view <b>${pv}${pv==='list' && state.descMode!=='none' ? ' +'+state.descMode : ''}</b></span>` : '') + `<span>peek <b>${state.peek?'on':'off'}</b></span>` +
+      `<span>row <b>${state.row}</b></span><span>tile <b>${state.row==='today'?'today':state.tile}</b></span><span>locate <b>${state.locate}</b></span><span>intent <b>${state.intent?'on':'off'}</b></span><span>session <b>${state.loggedIn?'signed in':'anonymous'}</b></span>` +
+      `<span style="margin-left:auto">click a caret or ⋮ to open the one menu · shelf changes persist across pages</span>`;
+  }
+
+  /* ============================================================
+     EVENTS
+     ============================================================ */
+  document.addEventListener('click', e => {
+    const t = e.target;
+    // chrome
+    const pg = t.closest('[data-page]'); if (pg) { state.page = pg.dataset.page; state.peeked = null; return render(); }
+    const ctl = t.closest('[data-ctl]'); if (ctl) { state[ctl.dataset.ctl] = ctl.dataset.val; return render(); }
+    const pr = t.closest('[data-preset]'); if (pr) { Object.assign(state, PRESETS[pr.dataset.preset]); return render(); }
+    if (t.id === 'panelToggle') { const p = document.getElementById('panel'); p.hidden = !p.hidden; t.textContent = p.hidden ? 'Show controls' : 'Hide controls'; t.setAttribute('aria-expanded', String(!p.hidden)); return; }
+    // page-level view switch
+    const vw = t.closest('[data-view]'); if (vw) { state.view[vw.dataset.view] = vw.dataset.v; return render(); }
+    const cv = t.closest('[data-carview]'); if (cv) { state.expanded[cv.dataset.car] = cv.dataset.carview === 'list'; return render(); }
+    const more = t.closest('[data-more]'); if (more) { toast('Would page the same query via /search.json (C2)'); return; }
+    // actions
+    const act = t.closest('[data-act]');
+    if (act) {
+      const b = byKey[act.dataset.key];
+      if (act.dataset.act === 'menu') { if (openMenu && openMenu._anchor === act) return closeMenu(); showMenu(act, b, !!act.dataset.withAccess || state.row === 'R1'); openMenu._anchor = act; return; }
+      if (act.dataset.act === 'access') { const a = state.row === 'today' ? accessToday(b) : access(b); if (a.style === 'dead') return; toast(`→ ${a.label}${a.ext ? ' (opens in a new tab)' : ''}`); return; }
+      if (act.dataset.act === 'save') {
+        if (!state.loggedIn) return loginIntent('Want to Read');
+        if (state.row === 'today' || b.shelf) { showMenu(act, b, false); openMenu._anchor = act; return; }
+        b.shelf = 'want'; toast('Added to Want to Read'); return render();
+      }
+    }
+    // peek panel controls
+    if (t.closest('[data-peekclose]')) { closePeek(); return; }
+    const pn = t.closest('[data-peeknav]'); if (pn) { stepPeek(parseInt(pn.dataset.peeknav, 10)); return; }
+    if (t.closest('.peek')) { if (t.tagName === 'A' && t.getAttribute('href') === '#') e.preventDefault(); return; }
+    // clicking a row (not one of its controls) opens the peek
+    const prow = t.closest('.row[data-peek]');
+    if (prow && !t.closest('button') && !t.closest('.stars-in')) {
+      e.preventDefault();
+      if (state.peeked === prow.dataset.peek) closePeek(); else openPeek(prow.dataset.peek);
+      return;
+    }
+    if (t.closest('.car-arrow')) { const tr = t.closest('.car-track-wrap').querySelector('.car-track'); tr.scrollBy({ left: 400, behavior: 'smooth' }); return; }
+    if (t.closest('.more')) { toast('Would expand the description in place'); return; }
+    if (t.tagName === 'A' && t.getAttribute('href') === '#') { e.preventDefault(); return; }
+    if (!t.closest('.menu-pop')) closeMenu();
+  });
+  document.addEventListener('change', e => {
+    const f = e.target.closest('[data-flag]'); if (f) { state[f.dataset.flag] = f.checked; render(); }
+  });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') { if (openMenu) closeMenu(); else if (state.peeked) closePeek(); return; }
+    const tgt = (e.target && e.target.closest) ? e.target : document.body;
+    const onRow = tgt.closest('.row[data-peek]');
+    if ((e.key === 'Enter' || e.key === ' ') && onRow && tgt === onRow) { e.preventDefault(); openPeek(onRow.dataset.peek); return; }
+    if (state.peeked && (e.key === 'ArrowDown' || e.key === 'ArrowUp') && !tgt.closest('.menu-pop') && !/^(INPUT|TEXTAREA)$/.test(tgt.tagName)) { e.preventDefault(); stepPeek(e.key === 'ArrowDown' ? 1 : -1); }
+  });
+
+  render();
+})();
+</script>
+</body></html>

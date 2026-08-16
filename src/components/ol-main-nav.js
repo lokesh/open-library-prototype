@@ -392,11 +392,13 @@ export class OlMainNav extends LitElement {
         </button>
         <ul>
           <li><a href="index.html" @click=${this._closeMenu}>Home</a></li>
+          <li><a href="search.html?q=austen" @click=${this._closeMenu}>Search</a></li>
+          <li><a href="my-books.html" @click=${this._closeMenu}>My Books</a></li>
+          <li><a href="author.html?author=suzanne-collins" @click=${this._closeMenu}>Author</a></li>
+          <li><a href="subject.html?subject=Science%20fiction" @click=${this._closeMenu}>Subject</a></li>
+          <li><a href="book.html?key=dune" @click=${this._closeMenu}>Book</a></li>
           <li><a href="import.html" @click=${this._closeMenu}>Import</a></li>
-          <li><a href="book.html" @click=${this._closeMenu}>Book</a></li>
-          <li><a href="signup.html" @click=${this._closeMenu}>Sign Up</a></li>
           <li><a href="components.html" @click=${this._closeMenu}>Components</a></li>
-          <li><a href="forms.html" @click=${this._closeMenu}>Tests</a></li>
           <li class="theme-toggle-item"><ol-role-toggle></ol-role-toggle></li>
           <li class="theme-toggle-item"><ol-theme-toggle></ol-theme-toggle></li>
         </ul>

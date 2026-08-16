@@ -37,3 +37,17 @@ import './ol-import-processing.js';
 import './ol-import-results.js';
 import './ol-import-complete.js';
 import './ol-tooltip.js';
+// Views & Verbs — books, collections and the action model
+import './ol-segmented-control.js';
+import './ol-popover.js';
+import './ol-toast.js';
+import './ol-split-button.js';
+import './ol-book-menu.js';
+import './ol-book-actions.js';
+import './ol-book-tile.js';
+import './ol-book-row.js';
+import './ol-carousel.js';
+import './ol-book-collection.js';
+import './ol-results-toolbar.js';
+import './ol-peek-panel.js';
+import './ol-prototype-controls.js';

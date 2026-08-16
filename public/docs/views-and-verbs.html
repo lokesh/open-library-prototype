@@ -1,0 +1,1750 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Views & Verbs</title>
+
+<style>
+  /* ============================================================
+     TOKENS — light base; dark redefines tokens only.
+     Palette: chalk ground with a green bias, bindery green accent,
+     catalogue-card blue for "view" marks, pencil red for challenges.
+     ============================================================ */
+  :root {
+    --paper:     #F1F2EE;
+    --surface:   #FFFFFF;
+    --surface-2: #E8EAE5;
+    --surface-3: #DCDFD9;
+    --ink:       #171B19;
+    --ink-2:     #4A524E;
+    --ink-3:     #7C8580;
+    --rule:      #D3D8D3;
+    --rule-2:    #BFC6C0;
+    --accent:    #2E5B4E;
+    --accent-2:  #3E7A69;
+    --accent-bg: #E1ECE7;
+    --blue:      #2D5A87;
+    --blue-bg:   #E2EAF2;
+    --red:       #A83C36;
+    --red-bg:    #F5E5E2;
+    --warn:      #8A6414;
+    --warn-bg:   #F4EDD8;
+    --shadow: 0 1px 2px rgba(23,27,25,.06), 0 8px 22px rgba(23,27,25,.06);
+    --sans: "Avenir Next", "Segoe UI", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+    --serif: "Charter", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper:     #121615;
+      --surface:   #1A1F1D;
+      --surface-2: #232927;
+      --surface-3: #2D3532;
+      --ink:       #E7EBE8;
+      --ink-2:     #A9B2AD;
+      --ink-3:     #7B857F;
+      --rule:      #2E3633;
+      --rule-2:    #3D4642;
+      --accent:    #7FC0AB;
+      --accent-2:  #9AD2C0;
+      --accent-bg: #1B3129;
+      --blue:      #8AB6E0;
+      --blue-bg:   #1B2C3D;
+      --red:       #E4877F;
+      --red-bg:    #3B211E;
+      --warn:      #D9B462;
+      --warn-bg:   #332A14;
+      --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 22px rgba(0,0,0,.3);
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper:     #121615;
+    --surface:   #1A1F1D;
+    --surface-2: #232927;
+    --surface-3: #2D3532;
+    --ink:       #E7EBE8;
+    --ink-2:     #A9B2AD;
+    --ink-3:     #7B857F;
+    --rule:      #2E3633;
+    --rule-2:    #3D4642;
+    --accent:    #7FC0AB;
+    --accent-2:  #9AD2C0;
+    --accent-bg: #1B3129;
+    --blue:      #8AB6E0;
+    --blue-bg:   #1B2C3D;
+    --red:       #E4877F;
+    --red-bg:    #3B211E;
+    --warn:      #D9B462;
+    --warn-bg:   #332A14;
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 22px rgba(0,0,0,.3);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--paper); color: var(--ink);
+    font-family: var(--serif); font-size: 17px; line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1260px; margin: 0 auto; padding: 0 28px 120px; display: grid; grid-template-columns: 1fr; gap: 0 52px; }
+  @media (min-width: 1120px) {
+    .wrap { grid-template-columns: 210px minmax(0,1fr); }
+    .masthead, footer.colophon { grid-column: 1 / -1; }
+  }
+
+  /* masthead */
+  .masthead { border-bottom: 2px solid var(--ink); padding: 60px 0 26px; margin-bottom: 44px; }
+  .eyebrow { font-family: var(--mono); font-size: 11.5px; letter-spacing: .15em; text-transform: uppercase; color: var(--accent); margin: 0 0 16px; }
+  h1 { font-family: var(--sans); font-size: clamp(2.5rem, 5.6vw, 4rem); line-height: 1; letter-spacing: -.035em; font-weight: 700; margin: 0 0 18px; text-wrap: balance; max-width: 16ch; }
+  .standfirst { font-size: 1.18rem; color: var(--ink-2); max-width: 60ch; margin: 0 0 26px; }
+  .masthead-meta { display: flex; flex-wrap: wrap; gap: 8px 26px; font-family: var(--mono); font-size: 12px; color: var(--ink-3); }
+  .masthead-meta b { color: var(--ink-2); font-weight: 600; }
+
+  /* toc */
+  nav.toc { display: none; }
+  @media (min-width: 1120px) {
+    nav.toc { display: block; position: sticky; top: 24px; align-self: start; max-height: calc(100vh - 48px); overflow-y: auto; padding-bottom: 40px; }
+  }
+  nav.toc h2 { font-family: var(--mono); font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); margin: 0 0 12px; font-weight: 600; }
+  nav.toc ol { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+  nav.toc a { display: block; padding: 5px 10px 5px 12px; font-family: var(--sans); font-size: 13px; line-height: 1.35; color: var(--ink-2); text-decoration: none; border-left: 2px solid var(--rule); }
+  nav.toc a:hover, nav.toc a:focus-visible { color: var(--accent); border-left-color: var(--accent); background: var(--surface-2); }
+  nav.toc .n { font-family: var(--mono); font-size: 10.5px; color: var(--ink-3); margin-right: 7px; }
+
+  main { min-width: 0; }
+  section { margin-bottom: 78px; scroll-margin-top: 20px; }
+  h2.sec { font-family: var(--sans); font-size: 1.75rem; letter-spacing: -.025em; font-weight: 700; margin: 0 0 6px; text-wrap: balance; }
+  h2.sec .n { font-family: var(--mono); font-size: .68em; font-weight: 600; color: var(--accent); margin-right: 12px; letter-spacing: 0; }
+  .sec-sub { color: var(--ink-2); max-width: 66ch; margin: 0 0 26px; font-size: 1.02rem; }
+  h3 { font-family: var(--sans); font-size: 1.12rem; font-weight: 700; letter-spacing: -.012em; margin: 38px 0 10px; }
+  h4 { font-family: var(--mono); font-size: 11.5px; letter-spacing: .13em; text-transform: uppercase; color: var(--ink-3); font-weight: 600; margin: 26px 0 10px; }
+  p { max-width: 68ch; }
+  main a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+  code { font-family: var(--mono); font-size: .82em; background: var(--surface-2); border: 1px solid var(--rule); border-radius: 3px; padding: 1px 5px; color: var(--ink-2); white-space: nowrap; }
+  ul, ol.prose { max-width: 68ch; padding-left: 20px; }
+  li { margin-bottom: 6px; }
+  strong { font-weight: 700; }
+
+  .thesis { background: var(--surface); border: 1px solid var(--rule); border-top: 3px solid var(--accent); border-radius: 2px; padding: 32px 36px; margin: 0 0 40px; box-shadow: var(--shadow); }
+  .thesis .big { font-family: var(--sans); font-size: 1.6rem; line-height: 1.22; letter-spacing: -.02em; margin: 0 0 16px; max-width: 30ch; font-weight: 700; }
+  .thesis p { margin: 0 0 12px; color: var(--ink-2); font-size: .98rem; }
+  .thesis p:last-child { margin: 0; }
+  .thesis ol { margin: 8px 0 0; padding-left: 22px; color: var(--ink-2); font-size: .97rem; }
+  .thesis ol li { margin-bottom: 8px; }
+  .thesis ol li strong { color: var(--ink); }
+
+  .callout { background: var(--surface-2); border-left: 3px solid var(--blue); padding: 16px 20px; margin: 22px 0; font-size: .95rem; color: var(--ink-2); max-width: 70ch; border-radius: 0 3px 3px 0; }
+  .callout strong { color: var(--ink); }
+  .callout.red { border-left-color: var(--red); }
+  .callout.green { border-left-color: var(--accent); }
+
+  /* tables */
+  .table-scroll { overflow-x: auto; margin: 20px 0 8px; border: 1px solid var(--rule); border-radius: 3px; background: var(--surface); }
+  table { border-collapse: collapse; width: 100%; font-family: var(--sans); font-size: 13.4px; line-height: 1.42; }
+  th, td { text-align: left; padding: 9px 13px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  thead th { font-family: var(--mono); font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); font-weight: 600; background: var(--surface-2); border-bottom: 1px solid var(--rule-2); white-space: nowrap; }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: var(--surface-2); }
+  td.key { font-weight: 600; color: var(--ink); }
+  td.mono, th.mono { font-family: var(--mono); font-size: 11.8px; color: var(--ink-2); }
+  td.ctr { text-align: center; }
+  .dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; vertical-align: middle; }
+  .dot-on { background: var(--accent); }
+  .dot-cond { background: var(--warn); }
+  .dot-off { background: var(--rule-2); }
+  .legend { display: flex; flex-wrap: wrap; gap: 6px 22px; font-family: var(--mono); font-size: 11px; color: var(--ink-3); margin: 10px 0 0; align-items: center; }
+
+  .chip { display: inline-block; font-family: var(--mono); font-size: 10.5px; letter-spacing: .07em; text-transform: uppercase; font-weight: 600; padding: 2px 7px; border-radius: 2px; white-space: nowrap; }
+  .chip-rec  { background: var(--accent-bg); color: var(--accent); }
+  .chip-view { background: var(--blue-bg); color: var(--blue); }
+  .chip-risk { background: var(--red-bg); color: var(--red); }
+  .chip-warn { background: var(--warn-bg); color: var(--warn); }
+  .chip-mute { background: var(--surface-3); color: var(--ink-2); }
+
+  /* ============================================================
+     VARIANT CARDS
+     ============================================================ */
+  .vgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); gap: 18px; margin: 24px 0 8px; }
+  .vgrid.wide { grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); }
+  .v { background: var(--surface); border: 1px solid var(--rule); border-radius: 3px; overflow: hidden; display: flex; flex-direction: column; }
+  .v.rec { border-color: var(--accent); border-width: 2px; }
+  .v-head { padding: 13px 16px 11px; border-bottom: 1px solid var(--rule); display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .v.rec .v-head { background: var(--accent-bg); }
+  .v-id { font-family: var(--mono); font-weight: 700; font-size: 11.5px; color: var(--surface); background: var(--ink); border-radius: 2px; padding: 2px 6px; line-height: 1.35; }
+  .v-name { font-family: var(--sans); font-weight: 700; font-size: .98rem; letter-spacing: -.01em; }
+  .v-tag { margin-left: auto; }
+  .v-stage { background: var(--surface-2); padding: 20px 16px; display: flex; justify-content: center; align-items: center; border-bottom: 1px solid var(--rule); min-height: 150px; overflow: hidden; }
+  .v-body { padding: 14px 16px 16px; font-family: var(--sans); font-size: .87rem; color: var(--ink-2); line-height: 1.5; }
+  .v-body p { margin: 0 0 8px; max-width: none; }
+  .carries { font-family: var(--mono); font-size: 10.5px; color: var(--ink-3); letter-spacing: .02em; margin: 6px 0 8px; }
+  .carries b { color: var(--ink-2); font-weight: 600; }
+  .pc { display: grid; grid-template-columns: 14px 1fr; gap: 6px; font-size: .84rem; line-height: 1.42; margin-top: 3px; }
+  .pc .m { font-family: var(--mono); font-weight: 700; }
+  .pro .m { color: var(--accent); }
+  .con .m { color: var(--red); }
+
+  /* ============================================================
+     SCHEMATIC PRIMITIVES
+     ============================================================ */
+  .cov { border-radius: 2px; background: linear-gradient(155deg, var(--blue) 0%, var(--ink) 100%); position: relative; flex: none; box-shadow: inset -3px 0 0 rgba(0,0,0,.2); }
+  .cov::after { content: ""; position: absolute; left: 14%; right: 18%; top: 22%; height: 2px; background: rgba(255,255,255,.5); box-shadow: 0 5px 0 rgba(255,255,255,.3), 0 10px 0 rgba(255,255,255,.18); }
+  .cov.g2 { background: linear-gradient(155deg, var(--accent) 0%, var(--ink) 100%); }
+  .cov.g3 { background: linear-gradient(155deg, var(--red) 0%, var(--ink) 100%); }
+  .cov.g4 { background: linear-gradient(155deg, var(--warn) 0%, var(--ink) 100%); }
+  .cov.g5 { background: linear-gradient(155deg, var(--ink-3) 0%, var(--ink) 100%); }
+
+  .b { font-family: var(--sans); font-size: 10.5px; font-weight: 600; border-radius: 3px; padding: 5px 8px; text-align: center; line-height: 1.25; border: 1px solid transparent; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .b-p { background: var(--accent); color: var(--paper); border-color: var(--accent); }
+  .b-s { background: var(--surface); color: var(--ink-2); border-color: var(--rule-2); }
+  .b-o { background: transparent; color: var(--accent); border-color: var(--accent); }
+  .b-q { background: transparent; color: var(--accent); border-color: transparent; padding-left: 0; padding-right: 0; text-align: left; }
+  .b-g { background: var(--surface-2); color: var(--ink-3); border-color: var(--rule); }
+  .b-set { background: var(--accent-bg); color: var(--accent); border-color: var(--accent); }
+  .b-icon { width: 24px; padding: 5px 0; flex: none; }
+  .split { display: flex; }
+  .split .b:first-child { flex: 1; border-top-right-radius: 0; border-bottom-right-radius: 0; border-right-width: 0; }
+  .split .caret { flex: none; width: 22px; border-top-left-radius: 0; border-bottom-left-radius: 0; padding: 5px 0; font-size: 8px; }
+  .hrow { display: flex; gap: 6px; align-items: center; }
+  .kebab { flex: none; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; color: var(--ink-3); font-size: 13px; line-height: 1; border: 1px solid var(--rule-2); border-radius: 3px; background: var(--surface); }
+  .state { font-size: 9.5px; font-family: var(--mono); color: var(--ink-3); letter-spacing: .02em; line-height: 1.3; }
+  .state a, .state .lnk { color: var(--accent); text-decoration: underline; }
+  .badge { position: absolute; top: 5px; left: 5px; font-family: var(--mono); font-size: 8px; padding: 1px 4px; border-radius: 2px; background: rgba(255,255,255,.92); color: #171B19; font-weight: 700; letter-spacing: .04em; }
+  .heart { position: absolute; top: 4px; right: 4px; width: 16px; height: 16px; border-radius: 50%; background: rgba(255,255,255,.92); color: #2E5B4E; font-size: 9px; display: flex; align-items: center; justify-content: center; }
+
+  /* list row */
+  .lrow { width: 100%; max-width: 330px; background: var(--surface); border: 1px solid var(--rule); border-radius: 3px; padding: 10px; display: flex; gap: 10px; font-size: 10.5px; }
+  .lrow .cov { width: 38px; height: 56px; }
+  .lrow .meta { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+  .lrow .t { font-family: var(--sans); font-weight: 700; font-size: 11px; color: var(--ink); line-height: 1.25; }
+  .lrow .a { color: var(--ink-3); font-size: 10px; }
+  .lrow .s { color: var(--warn); font-size: 9px; letter-spacing: .5px; }
+  .lrow .d { color: var(--ink-2); font-size: 9.5px; line-height: 1.35; }
+  .lrow .chips { display: flex; gap: 3px; flex-wrap: wrap; }
+  .lrow .chips span { font-family: var(--mono); font-size: 8px; padding: 1px 4px; border: 1px solid var(--rule); border-radius: 8px; color: var(--ink-3); }
+  .lrow .acts { width: 96px; flex: none; display: flex; flex-direction: column; gap: 5px; }
+  .lrow.dense { padding: 6px 10px; align-items: center; }
+  .lrow.dense .cov { width: 22px; height: 32px; }
+  .lrow.dense .acts { flex-direction: row; width: auto; }
+  .lstack { display: flex; flex-direction: column; gap: 4px; width: 100%; max-width: 330px; }
+  .lstack .lrow { max-width: none; }
+
+  /* grid tile */
+  .tiles { display: flex; gap: 10px; }
+  .tile { width: 78px; display: flex; flex-direction: column; gap: 5px; }
+  .tile .cov { width: 78px; height: 112px; }
+  .tile .t { font-family: var(--sans); font-weight: 700; font-size: 9.5px; color: var(--ink); line-height: 1.2; }
+  .tile .a { color: var(--ink-3); font-size: 8.5px; }
+  .tile .b { font-size: 9px; padding: 4px 5px; }
+  .tile .split .caret { width: 18px; }
+  .tile.hover .cov { outline: 2px solid var(--accent); }
+  .tile .overlay { position: absolute; left: 4px; right: 4px; bottom: 4px; display: flex; gap: 3px; }
+  .tile .overlay .b { flex: 1; font-size: 8.5px; padding: 3px 4px; }
+  .tile .strip { display: flex; gap: 3px; }
+  .tile .strip .b { flex: 1; }
+
+  /* carousel strip */
+  .car { width: 100%; max-width: 330px; }
+  .car .car-h { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 7px; font-family: var(--sans); }
+  .car .car-h .ct { font-weight: 700; font-size: 11px; color: var(--ink); }
+  .car .car-h .cs { font-size: 9px; color: var(--accent); }
+  .car .car-h .cs.b { font-size: 9px; padding: 2px 6px; }
+  .car .track { display: flex; gap: 8px; overflow: hidden; position: relative; }
+  .car .track::after { content: ""; position: absolute; right: 0; top: 0; bottom: 0; width: 34px; background: linear-gradient(90deg, transparent, var(--surface-2)); }
+  .car .tile { width: 66px; }
+  .car .tile .cov { width: 66px; height: 96px; }
+  .car .arrow { position: absolute; right: 6px; top: 36px; width: 20px; height: 20px; border-radius: 50%; background: var(--surface); border: 1px solid var(--rule-2); font-size: 10px; display: flex; align-items: center; justify-content: center; color: var(--ink-2); z-index: 1; }
+
+  /* detailed card */
+  .dcard { width: 100%; max-width: 330px; background: var(--surface); border: 1px solid var(--rule); border-radius: 3px; padding: 12px; display: flex; gap: 12px; font-size: 10px; }
+  .dcard .cov { width: 62px; height: 92px; }
+  .dcard .meta { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+  .dcard .t { font-family: var(--sans); font-weight: 700; font-size: 12px; color: var(--ink); line-height: 1.2; }
+  .dcard .a { color: var(--ink-3); font-size: 10px; }
+  .dcard .d { color: var(--ink-2); font-size: 9.5px; line-height: 1.4; }
+  .dcard .kv { font-family: var(--mono); font-size: 8.5px; color: var(--ink-3); display: flex; gap: 8px; flex-wrap: wrap; }
+  .dcard .eds { display: flex; gap: 3px; }
+  .dcard .eds .cov { width: 16px; height: 24px; box-shadow: none; }
+  .dcard .eds .cov::after { display: none; }
+  .dcard .acts { display: flex; gap: 5px; margin-top: 3px; }
+  .dcard .acts .b { flex: 1; }
+  .dcard .quote { font-style: italic; color: var(--ink-2); font-size: 9.5px; border-left: 2px solid var(--rule-2); padding-left: 6px; }
+  .dcard .tabs { display: flex; gap: 8px; font-family: var(--mono); font-size: 8px; color: var(--ink-3); border-bottom: 1px solid var(--rule); padding-bottom: 3px; }
+  .dcard .tabs .on { color: var(--accent); border-bottom: 2px solid var(--accent); }
+  .dcard.mag { flex-direction: column; }
+  .dcard.mag .top { display: flex; gap: 12px; }
+  .dcard.mag .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 9.5px; color: var(--ink-2); line-height: 1.4; margin-top: 4px; }
+
+  /* menu mock */
+  .menu { margin-top: 5px; background: var(--surface); border: 1px solid var(--rule-2); border-radius: 3px; padding: 5px 0; box-shadow: var(--shadow); font-family: var(--sans); font-size: 9.6px; width: 130px; }
+  .menu .mi { padding: 3px 9px; color: var(--ink-2); display: flex; gap: 6px; align-items: center; }
+  .menu .mi.on { color: var(--accent); font-weight: 700; }
+  .menu .mi .k { margin-left: auto; font-family: var(--mono); font-size: 8px; color: var(--ink-3); }
+  .menu .mg { padding: 5px 9px 2px; font-family: var(--mono); font-size: 7.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); border-top: 1px solid var(--rule); margin-top: 3px; }
+  .menu .mg:first-child { border-top: 0; margin-top: 0; }
+  .menu .stars { color: var(--warn); font-size: 9px; letter-spacing: 1px; padding: 2px 9px; }
+  .menu.tabbed .mtabs { display: flex; gap: 6px; padding: 2px 9px 4px; font-family: var(--mono); font-size: 7.5px; border-bottom: 1px solid var(--rule); }
+  .menu.tabbed .mtabs .on { color: var(--accent); font-weight: 700; }
+  .menu.wide { width: 170px; }
+  .menu.two { display: flex; width: 210px; padding: 0; }
+  .menu.two > div { flex: 1; padding: 5px 0; }
+  .menu.two > div + div { border-left: 1px solid var(--rule); }
+
+  /* switcher mocks */
+  .seg { display: inline-flex; border: 1px solid var(--rule-2); border-radius: 4px; overflow: hidden; font-family: var(--sans); font-size: 10px; background: var(--surface); }
+  .seg span { padding: 4px 9px; color: var(--ink-2); border-right: 1px solid var(--rule); }
+  .seg span:last-child { border-right: 0; }
+  .seg span.on { background: var(--ink); color: var(--paper); }
+  .toolbar { width: 100%; max-width: 330px; display: flex; align-items: center; justify-content: space-between; gap: 8px; background: var(--surface); border: 1px solid var(--rule); border-radius: 3px; padding: 7px 10px; font-family: var(--sans); font-size: 10px; color: var(--ink-2); }
+  .toolbar .sel { border: 1px solid var(--rule-2); border-radius: 3px; padding: 3px 8px; background: var(--surface); }
+  .stage-col { display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 330px; }
+  .stage-lbl { font-family: var(--mono); font-size: 9px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); }
+
+  /* axis diagram */
+  .axes { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin: 22px 0; }
+  .axis { background: var(--surface); border: 1px solid var(--rule); border-top: 3px solid var(--blue); border-radius: 3px; padding: 16px 18px; }
+  .axis:nth-child(2) { border-top-color: var(--accent); }
+  .axis:nth-child(3) { border-top-color: var(--warn); }
+  .axis .lbl { font-family: var(--mono); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 4px; }
+  .axis h3 { margin: 0 0 6px; font-size: 1.02rem; }
+  .axis p { font-family: var(--sans); font-size: .88rem; color: var(--ink-2); margin: 0 0 8px; max-width: none; }
+  .axis ul { padding-left: 16px; font-family: var(--sans); font-size: .86rem; color: var(--ink-2); margin: 0; }
+  .axis li { margin-bottom: 3px; }
+
+  /* challenges */
+  .chal { display: grid; grid-template-columns: 34px minmax(0,1fr); gap: 0 14px; padding: 16px 0; border-top: 1px solid var(--rule); }
+  .chal:last-of-type { border-bottom: 1px solid var(--rule); }
+  .chal .cid { font-family: var(--mono); font-size: 13px; font-weight: 700; color: var(--red); padding-top: 2px; }
+  .chal h3 { margin: 0 0 5px; font-size: 1rem; display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+  .chal p { margin: 0 0 6px; font-family: var(--sans); font-size: .9rem; color: var(--ink-2); max-width: 74ch; }
+  .chal .ev { font-family: var(--mono); font-size: 11px; color: var(--ink-3); }
+  .chal .fix { font-family: var(--sans); font-size: .88rem; color: var(--ink); }
+  .chal .fix b { color: var(--accent); font-weight: 700; }
+
+  hr.div { border: 0; border-top: 1px solid var(--rule); margin: 44px 0; }
+  footer.colophon { border-top: 2px solid var(--ink); padding-top: 20px; margin-top: 20px; font-family: var(--mono); font-size: 11.5px; color: var(--ink-3); line-height: 1.75; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 2px; }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+</head><body>
+
+<div class="wrap">
+
+  <header class="masthead">
+    <p class="eyebrow">Open Library · Design exploration · follows the Book Actions Audit</p>
+    <h1>Views &amp; Verbs</h1>
+    <p class="standfirst">
+      Two questions from the audit review: should <em>views</em> (list, grid, detailed, carousel) be a
+      first-class axis that decides which book features appear where, with each surface picking a
+      default? And can the action row collapse to one <em>Read</em> button plus one menu, with
+      <em>Locate</em> stepping into the Read slot when nothing is readable? This explores both,
+      exhaustively, with the challenges attached.
+    </p>
+    <div class="masthead-meta">
+      <span><b>Builds on</b> Book Actions Audit (10 Aug 2026)</span>
+      <span><b>Method</b> source read of the two existing layout systems + schematic variants</span>
+      <span><b>Date</b> 15 Aug 2026</span>
+    </div>
+  </header>
+
+  <nav class="toc" aria-label="Contents">
+    <h2>Contents</h2>
+    <ol>
+      <li><a href="#answer"><span class="n">↑</span>Short answer</a></li>
+      <li><a href="#axes"><span class="n">01</span>Three axes, not one</a></li>
+      <li><a href="#today"><span class="n">02</span>What exists today</a></li>
+      <li><a href="#ladder"><span class="n">03</span>The feature ladder</a></li>
+      <li><a href="#list"><span class="n">04</span>List view — 6 variants</a></li>
+      <li><a href="#grid"><span class="n">05</span>Grid view — 6 variants</a></li>
+      <li><a href="#detailed"><span class="n">06</span>Detailed view — 5 variants</a></li>
+      <li><a href="#carousel"><span class="n">07</span>Carousel as a view — 6 variants</a></li>
+      <li><a href="#expand"><span class="n">08</span>Expanding a carousel — 5 mechanics</a></li>
+      <li><a href="#switcher"><span class="n">09</span>The view switcher — 5 variants</a></li>
+      <li><a href="#actions"><span class="n">10</span>Read + one menu — 7 variants</a></li>
+      <li><a href="#locate"><span class="n">11</span>Where Locate goes — 6 variants</a></li>
+      <li><a href="#menu"><span class="n">12</span>Inside the menu — 5 variants</a></li>
+      <li><a href="#defaults"><span class="n">13</span>Per-surface defaults</a></li>
+      <li><a href="#challenges"><span class="n">14</span>Challenges</a></li>
+      <li><a href="#rec"><span class="n">15</span>Recommendation &amp; sequence</a></li>
+      <li><a href="#open"><span class="n">16</span>Open questions</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+    <!-- ============================ SHORT ANSWER ============================ -->
+    <section id="answer">
+      <div class="thesis">
+        <p class="eyebrow" style="color:var(--ink-3)">Short answer</p>
+        <p class="big">Yes to views as an axis — but views decide <em>room</em>, not <em>meaning</em>. Intent still decides which verb leads.</p>
+        <p>
+          A view is a density setting. It says how much space a book gets and therefore which slots
+          can physically fit — not which action matters on this page. Keep the two separate and every
+          combination becomes derivable instead of hand-configured. The concrete proposal:
+        </p>
+        <ol>
+          <li><strong>Four views, one component.</strong> <em>Grid</em>, <em>List</em>, <em>Detailed</em>, and <em>Carousel</em>
+            are four renderings of the same <code>BookCollection</code> — a carousel is a horizontally
+            scrolling grid with a header, nothing more. Every collection can be shown in any view;
+            each surface picks a default and says which views it allows.</li>
+          <li><strong>Any carousel can expand.</strong> The carousel header's "See all" becomes a real
+            control that reflows the same books into List (or Grid) in place, and only navigates when
+            the collection is a search query worth its own page.</li>
+          <li><strong>One Access button, one Save menu.</strong> The row is <em>Read</em> (or Borrow / Listen /
+            Preview / Join waitlist — a verb, drawn from a closed set) plus a single <em>Save ▾</em> control
+            that owns everything else. When no copy is readable, <em>Find in a library</em> takes the
+            Access slot in a quieter style, so the slot is never empty and never a dead status.</li>
+          <li><strong>Density decides slots, intent decides emphasis.</strong> Grid gets Access only
+            (Save behind a cover-corner control); List gets Access + Save + state line; Detailed adds
+            inline rating and description; Carousel matches Grid. On a <em>manage</em> surface the two
+            controls swap weight so the shelf leads.</li>
+        </ol>
+      </div>
+      <p>
+        The rest of this document lays out every variant considered for each of those four decisions,
+        the challenges each one runs into, and a sequence that lands the safe parts first.
+      </p>
+    </section>
+
+    <!-- ============================ AXES ============================ -->
+    <section id="axes">
+      <h2 class="sec"><span class="n">01</span>Three axes, not one</h2>
+      <p class="sec-sub">
+        The question "what features go where" has three independent answers, and the audit's
+        confusion comes from letting them bleed into each other. Name them and each surface becomes
+        a coordinate rather than a bespoke template.
+      </p>
+
+      <div class="axes">
+        <div class="axis">
+          <div class="lbl">Axis 1 · density</div>
+          <h3>View</h3>
+          <p>How much room a book gets. Decides which <em>slots exist</em>: is there space for a second control, a state line, a description, inline stars?</p>
+          <ul>
+            <li>Grid · Carousel — cover-led, ~110px wide</li>
+            <li>List — one row, cover + metadata + actions</li>
+            <li>Detailed — description, editions strip, more metadata</li>
+          </ul>
+          <p style="margin-top:8px">User-switchable. Remembered. Never changes what a book <em>can</em> do, only what is visible without a click.</p>
+        </div>
+        <div class="axis">
+          <div class="lbl">Axis 2 · purpose</div>
+          <h3>Surface intent</h3>
+          <p>What the page is for. Decides which action <em>leads</em> and which menu groups appear.</p>
+          <ul>
+            <li>discover — search, trending, subject, home</li>
+            <li>manage — reading log, My Books, own lists</li>
+            <li>commit — book page, editions table</li>
+          </ul>
+          <p style="margin-top:8px">Declared by the template. Not user-switchable. This is the audit's option G.</p>
+        </div>
+        <div class="axis">
+          <div class="lbl">Axis 3 · fact</div>
+          <h3>Book &amp; session state</h3>
+          <p>What is true right now. Decides which <em>verb</em> the Access slot shows and which menu items are enabled.</p>
+          <ul>
+            <li><code>lending_state</code> — borrowable, open, waitlist, none…</li>
+            <li>Shelf, list membership, rating, loan</li>
+            <li>Signed in or not</li>
+          </ul>
+          <p style="margin-top:8px">Derived from data. Already computed today; only the labels change.</p>
+        </div>
+      </div>
+
+      <div class="callout green">
+        <strong>The rule that keeps them separate.</strong> A view may hide a slot; it may never
+        change what goes in it. If Grid can only fit one button, that button is still whatever
+        intent + state say it should be — <em>Borrow</em> on the home page, <em>Currently Reading ▾</em>
+        on the My Books shelf. Today's grid layout breaks this rule by hiding features with CSS while
+        the row template still decides them.
+      </div>
+
+      <h3>Who answers what</h3>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>Question</th><th>Answered by</th><th>Example</th></tr></thead>
+          <tbody>
+            <tr><td class="key">Is there room for a second control?</td><td>View</td><td>Grid: no. List: yes. Detailed: yes plus inline rating.</td></tr>
+            <tr><td class="key">Which control is filled / leads?</td><td>Intent</td><td>discover: Access leads. manage: Save leads.</td></tr>
+            <tr><td class="key">What does the Access button say?</td><td>State</td><td>borrowable → Borrow; none → Find in a library.</td></tr>
+            <tr><td class="key">Is the description shown?</td><td>View</td><td>Detailed only.</td></tr>
+            <tr><td class="key">Does "Remove from this list" appear?</td><td>Intent + state</td><td>manage on an owned list page.</td></tr>
+            <tr><td class="key">Is Save present at all?</td><td>Intent (never View)</td><td>Everywhere but the read-only stats page. Grid moves it, doesn't drop it.</td></tr>
+            <tr><td class="key">Which view is the default?</td><td>Surface config</td><td>Trending → List. Subject page → Carousel. Reading log → remembered, default List.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============================ TODAY ============================ -->
+    <section id="today">
+      <h2 class="sec"><span class="n">02</span>What exists today: two view systems that don't know about each other</h2>
+      <p class="sec-sub">
+        The idea is not new to the codebase — it has been half-built twice, in different places,
+        with overlapping names.
+      </p>
+
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>System</th><th>Where</th><th>Values</th><th>Persistence</th><th>How features differ</th></tr></thead>
+          <tbody>
+            <tr>
+              <td class="key">Results layout</td>
+              <td class="mono">work_search.html:150 · list_books.js · reading_log.html:82 · author/view.html:167 · list/view_body.html:106</td>
+              <td class="mono">details · grid</td>
+              <td><code>LBL</code> cookie, 1 year, via <code>&lt;ol-segmented-control class="tools--layout"&gt;</code></td>
+              <td>Same markup; grid hides details, rating, check-in with <code>display:none</code> (<code>legacy.css:1490–1550</code>)</td>
+            </tr>
+            <tr>
+              <td class="key">Carousel layout</td>
+              <td class="mono">QueryCarousel.html:1 · custom_carousel.html:34</td>
+              <td class="mono">carousel · grid</td>
+              <td>Template parameter only — no user control</td>
+              <td>Same card template; <code>carousel--grid</code> wraps instead of scrolling; lazy-load only in carousel mode</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>
+        So "grid" already means two different things: a wrapped <em>row</em> whose fat parts are hidden,
+        and a wrapped <em>card</em> that was never fat. The list/row world and the carousel/card
+        world have separate templates (<code>SearchResultsWork</code> vs <code>custom_carousel_card</code>),
+        separate CSS, separate action rendering, and no shared notion of a collection. Unifying views
+        is mostly the work of making these two systems one — which is also exactly what the audit's
+        Phase 2 (extract <code>BookActions</code>) needs. The two efforts are the same effort.
+      </p>
+      <div class="callout">
+        <strong>Naming.</strong> The cookie value is <code>details</code>, the UI says "List". If a real
+        Detailed view is added, the word is taken. Propose the values become
+        <code>grid · list · detailed</code> and <code>details</code> is migrated on read.
+      </div>
+    </section>
+
+    <!-- ============================ LADDER ============================ -->
+    <section id="ladder">
+      <h2 class="sec"><span class="n">03</span>The feature ladder</h2>
+      <p class="sec-sub">
+        If views decide room, then each feature has a minimum density at which it becomes visible.
+        Written down as a ladder, "what goes where" stops being a per-surface argument.
+      </p>
+
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Feature</th>
+              <th class="ctr">Grid / Carousel</th>
+              <th class="ctr">List</th>
+              <th class="ctr">Detailed</th>
+              <th>Note</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td class="key">Cover, title</td><td class="ctr"><span class="dot dot-on"></span></td><td class="ctr"><span class="dot dot-on"></span></td><td class="ctr"><span class="dot dot-on"></span></td><td>Grid: title may be cover-only with tooltip on the densest variant</td></tr>
+            <tr><td class="key">Author</td><td class="ctr"><span class="dot dot-cond"></span></td><td class="ctr"><span class="dot dot-on"></span></td><td class="ctr"><span class="dot dot-on"></span></td><td>Grid variants differ</td></tr>
+            <tr><td class="key">Access button (verb)</td><td class="ctr"><span class="dot dot-on"></span></td><td class="ctr"><span class="dot dot-on"></span></td><td class="ctr"><span class="dot dot-on"></span></td><td>Always. The one non-negotiable slot.</td></tr>
+            <tr><td class="key">Save control (labelled)</td><td class="ctr"><span class="dot dot-cond"></span></td><td class="ctr"><span class="dot dot-on"></span></td><td class="ctr"><span class="dot dot-on"></span></td><td>Grid: present but compact (corner control or under-cover strip) — see §05</td></tr>
+            <tr><td class="key">State line</td><td class="ctr"><span class="dot dot-off"></span></td><td class="ctr"><span class="dot dot-on"></span></td><td class="ctr"><span class="dot dot-on"></span></td><td>Grid folds it into a cover badge ("Preview", "Waitlist")</td></tr>
+            <tr><td class="key">Year, edition count, ebook count</td><td class="ctr"><span class="dot dot-off"></span></td><td class="ctr"><span class="dot dot-on"></span></td><td class="ctr"><span class="dot dot-on"></span></td><td></td></tr>
+            <tr><td class="key">Star rating (display)</td><td class="ctr"><span class="dot dot-off"></span></td><td class="ctr"><span class="dot dot-on"></span></td><td class="ctr"><span class="dot dot-on"></span></td><td></td></tr>
+            <tr><td class="key">Star rating (inline input)</td><td class="ctr"><span class="dot dot-off"></span></td><td class="ctr"><span class="dot dot-cond"></span></td><td class="ctr"><span class="dot dot-on"></span></td><td>List: only on manage surfaces; otherwise in menu</td></tr>
+            <tr><td class="key">Check-in prompt</td><td class="ctr"><span class="dot dot-off"></span></td><td class="ctr"><span class="dot dot-cond"></span></td><td class="ctr"><span class="dot dot-on"></span></td><td>manage only</td></tr>
+            <tr><td class="key">Description / first sentence</td><td class="ctr"><span class="dot dot-off"></span></td><td class="ctr"><span class="dot dot-off"></span></td><td class="ctr"><span class="dot dot-on"></span></td><td>Detailed's defining feature — see C3 for the data cost</td></tr>
+            <tr><td class="key">Subject chips</td><td class="ctr"><span class="dot dot-off"></span></td><td class="ctr"><span class="dot dot-off"></span></td><td class="ctr"><span class="dot dot-on"></span></td><td>Optional in Detailed; noise in List</td></tr>
+            <tr><td class="key">Editions strip</td><td class="ctr"><span class="dot dot-off"></span></td><td class="ctr"><span class="dot dot-off"></span></td><td class="ctr"><span class="dot dot-cond"></span></td><td>Detailed variant D2</td></tr>
+            <tr><td class="key">Preview (secondary)</td><td class="ctr"><span class="dot dot-off"></span></td><td class="ctr"><span class="dot dot-off"></span></td><td class="ctr"><span class="dot dot-off"></span></td><td>In the menu everywhere unless it <em>is</em> the Access verb</td></tr>
+            <tr><td class="key">Search inside</td><td class="ctr"><span class="dot dot-off"></span></td><td class="ctr"><span class="dot dot-off"></span></td><td class="ctr"><span class="dot dot-cond"></span></td><td>Menu; inline in Detailed on full-text search results (S2)</td></tr>
+            <tr><td class="key">Remove from list / edit note</td><td class="ctr"><span class="dot dot-off"></span></td><td class="ctr"><span class="dot dot-cond"></span></td><td class="ctr"><span class="dot dot-cond"></span></td><td>Menu; intent = manage on owned list</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="legend">
+        <span><span class="dot dot-on"></span> visible</span>
+        <span><span class="dot dot-cond"></span> visible when intent / state allows</span>
+        <span><span class="dot dot-off"></span> in the menu or absent</span>
+      </div>
+    </section>
+
+    <!-- ============================ LIST ============================ -->
+    <section id="list">
+      <h2 class="sec"><span class="n">04</span>List view — six variants</h2>
+      <p class="sec-sub">
+        The workhorse. Today's search-result row is one point on a density spectrum that runs from a
+        table-like scan line to a card with room for a note. All six carry the same two controls;
+        what changes is what surrounds them.
+      </p>
+
+      <div class="vgrid">
+
+        <div class="v">
+          <div class="v-head"><span class="v-id">L1</span><span class="v-name">Dense scan line</span></div>
+          <div class="v-stage">
+            <div class="lstack">
+              <div class="lrow dense"><div class="cov"></div><div class="meta"><div class="t">Dune Messiah</div><div class="a">Frank Herbert · 1969</div></div><div class="acts"><div class="b b-p" style="width:52px">Borrow</div><div class="kebab">⋮</div></div></div>
+              <div class="lrow dense"><div class="cov g2"></div><div class="meta"><div class="t">Beloved</div><div class="a">Toni Morrison · 1987</div></div><div class="acts"><div class="b b-p" style="width:52px">Read</div><div class="kebab">⋮</div></div></div>
+              <div class="lrow dense"><div class="cov g5"></div><div class="meta"><div class="t">Pachinko</div><div class="a">Min Jin Lee · 2017</div></div><div class="acts"><div class="b b-o" style="width:52px">Find</div><div class="kebab">⋮</div></div></div>
+            </div>
+          </div>
+          <div class="v-body">
+            <p>Thumbnail cover, one line of metadata, controls inline at the right. Roughly 40px per row.</p>
+            <div class="carries"><b>Carries</b> access · save (icon) · title · author · year</div>
+            <div class="pc pro"><span class="m">+</span><span>Fastest triage of long result sets; the closest thing to a catalogue</span></div>
+            <div class="pc pro"><span class="m">+</span><span>Fits an editions table and a reading log equally well</span></div>
+            <div class="pc con"><span class="m">−</span><span>No room for a state line, so availability must become a badge or colour</span></div>
+            <div class="pc con"><span class="m">−</span><span>Save loses its label — the audit's F4/F6 concerns return</span></div>
+          </div>
+        </div>
+
+        <div class="v rec">
+          <div class="v-head"><span class="v-id">L2</span><span class="v-name">Standard row</span><span class="v-tag chip chip-rec">Default</span></div>
+          <div class="v-stage">
+            <div class="lrow"><div class="cov"></div><div class="meta"><div class="t">Dune Messiah</div><div class="a">Frank Herbert · 1969</div><div class="s">★★★★☆ 4.1 · 43 ratings</div><div class="a">21 editions · 6 ebooks</div></div><div class="acts"><div class="b b-p">Borrow</div><div class="state">1 of 3 available</div><div class="split"><div class="b b-s">Want to Read</div><div class="b b-s caret">▾</div></div></div></div>
+          </div>
+          <div class="v-body">
+            <p>Today's row with the audit's action model dropped in: Access, state line, Save ▾. Cover ~55px, three to four lines of metadata.</p>
+            <div class="carries"><b>Carries</b> access · state line · save (labelled) · rating display · counts</div>
+            <div class="pc pro"><span class="m">+</span><span>Zero migration cost for readers; it is what search results look like</span></div>
+            <div class="pc pro"><span class="m">+</span><span>Every slot in the ladder has room except description and inline input</span></div>
+            <div class="pc con"><span class="m">−</span><span>Two stacked controls still need visual separation to beat F1 (weight + the state line between them does most of it)</span></div>
+          </div>
+        </div>
+
+        <div class="v">
+          <div class="v-head"><span class="v-id">L3</span><span class="v-name">Comfortable row</span></div>
+          <div class="v-stage">
+            <div class="lrow" style="padding:14px"><div class="cov" style="width:46px;height:68px"></div><div class="meta"><div class="t">The Left Hand of Darkness</div><div class="a">Ursula K. Le Guin · 1969</div><div class="d">On the planet Winter, an envoy from Earth must navigate a society without fixed gender…</div><div class="s">★★★★★ 4.4</div></div><div class="acts"><div class="b b-p">Borrow</div><div class="state">2 available</div><div class="split"><div class="b b-s">Want to Read</div><div class="b b-s caret">▾</div></div></div></div>
+          </div>
+          <div class="v-body">
+            <p>L2 with more air and a one-line teaser (Solr's <code>first_sentence</code>, already indexed). Halfway to Detailed without the data cost.</p>
+            <div class="carries"><b>Carries</b> L2 + one-line teaser</div>
+            <div class="pc pro"><span class="m">+</span><span>Teaser costs nothing — the field is in the search doc</span></div>
+            <div class="pc pro"><span class="m">+</span><span>Reads well on wide screens where L2 looks stranded</span></div>
+            <div class="pc con"><span class="m">−</span><span>Coverage of <code>first_sentence</code> is patchy; rows with and without will look ragged</span></div>
+            <div class="pc con"><span class="m">−</span><span>Blurs the line with Detailed; if both exist readers won't know which to pick</span></div>
+          </div>
+        </div>
+
+        <div class="v">
+          <div class="v-head"><span class="v-id">L4</span><span class="v-name">Rich row (chips + editions)</span></div>
+          <div class="v-stage">
+            <div class="lrow"><div class="cov g3"></div><div class="meta"><div class="t">Pachinko</div><div class="a">Min Jin Lee · 2017</div><div class="s">★★★★☆ 4.3</div><div class="chips"><span>Historical fiction</span><span>Korea</span><span>Family saga</span></div><div class="a">14 editions in 6 languages</div></div><div class="acts"><div class="b b-o">Find in a library</div><div class="state">Not available online</div><div class="split"><div class="b b-s">Want to Read</div><div class="b b-s caret">▾</div></div></div></div>
+          </div>
+          <div class="v-body">
+            <p>Surfaces the two things the audit said we under-sell (F13): subjects as chips, and the edition/language picker as a real link.</p>
+            <div class="carries"><b>Carries</b> L2 + subject chips + editions link</div>
+            <div class="pc pro"><span class="m">+</span><span>Chips make faceting discoverable inside the results</span></div>
+            <div class="pc con"><span class="m">−</span><span>Chips are the third click-target family in the row; they compete with actions unless clearly quieter</span></div>
+            <div class="pc con"><span class="m">−</span><span>Row height varies with chip count — worse for scanning than L2</span></div>
+          </div>
+        </div>
+
+        <div class="v">
+          <div class="v-head"><span class="v-id">L5</span><span class="v-name">Manage row (shelf leads)</span></div>
+          <div class="v-stage">
+            <div class="lrow"><div class="cov g2"></div><div class="meta"><div class="t">Beloved</div><div class="a">Toni Morrison</div><div class="s">☆☆☆☆☆ <span style="color:var(--ink-3)">rate</span></div><div class="state" style="text-align:left">Started 12 Jul · <span class="lnk">mark finished</span></div></div><div class="acts"><div class="split"><div class="b b-p">Currently Reading</div><div class="b b-p caret">▾</div></div><div class="b b-s">Read</div><div class="state">Loan ends 24 Aug</div></div></div>
+          </div>
+          <div class="v-body">
+            <p>Same slots as L2, emphasis swapped by <code>intent="manage"</code>: the shelf split-button is filled and leads; Access drops to secondary; inline rating and check-in appear in the metadata column.</p>
+            <div class="carries"><b>Carries</b> L2 + inline rating input + check-in</div>
+            <div class="pc pro"><span class="m">+</span><span>Fixes F3 for the reading log without a new layout</span></div>
+            <div class="pc pro"><span class="m">+</span><span>Proves the axis model: view = L2, intent = manage, nothing else changed</span></div>
+            <div class="pc con"><span class="m">−</span><span>Two filled-looking things (green shelf, stars) — needs restraint on the stars</span></div>
+          </div>
+        </div>
+
+        <div class="v">
+          <div class="v-head"><span class="v-id">L6</span><span class="v-name">Grouped rows</span></div>
+          <div class="v-stage">
+            <div class="lstack">
+              <div class="stage-lbl" style="margin-bottom:-2px">Readable now · 2</div>
+              <div class="lrow dense"><div class="cov"></div><div class="meta"><div class="t">Dune Messiah</div><div class="a">Frank Herbert</div></div><div class="acts"><div class="b b-p" style="width:52px">Borrow</div><div class="kebab">⋮</div></div></div>
+              <div class="lrow dense"><div class="cov g2"></div><div class="meta"><div class="t">Beloved</div><div class="a">Toni Morrison</div></div><div class="acts"><div class="b b-p" style="width:52px">Read</div><div class="kebab">⋮</div></div></div>
+              <div class="stage-lbl" style="margin:4px 0 -2px">Find in a library · 3</div>
+              <div class="lrow dense"><div class="cov g5"></div><div class="meta"><div class="t">Pachinko</div><div class="a">Min Jin Lee</div></div><div class="acts"><div class="b b-o" style="width:52px">Find</div><div class="kebab">⋮</div></div></div>
+            </div>
+          </div>
+          <div class="v-body">
+            <p>Rows sectioned by availability (or by shelf on manage surfaces). The state line moves from every row to a group header.</p>
+            <div class="carries"><b>Carries</b> L1 or L2 rows + group headers</div>
+            <div class="pc pro"><span class="m">+</span><span>Answers "what can I read right now" without a filter</span></div>
+            <div class="pc con"><span class="m">−</span><span>Fights the sort order — relevance ranking is destroyed by grouping</span></div>
+            <div class="pc con"><span class="m">−</span><span>Belongs to the results-toolbar filter work, not to the view axis; noted here so it isn't reinvented as a view</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================ GRID ============================ -->
+    <section id="grid">
+      <h2 class="sec"><span class="n">05</span>Grid view — six variants</h2>
+      <p class="sec-sub">
+        Cover-led. The hard question is where Save goes when the tile is ~110px wide, because the
+        rule says a view may hide a slot but not drop the capability. Six answers, from "nowhere"
+        to "everywhere".
+      </p>
+
+      <div class="vgrid">
+
+        <div class="v">
+          <div class="v-head"><span class="v-id">G1</span><span class="v-name">Covers only</span></div>
+          <div class="v-stage">
+            <div class="tiles">
+              <div class="tile"><div class="cov"></div></div>
+              <div class="tile"><div class="cov g2"></div></div>
+              <div class="tile"><div class="cov g3"></div></div>
+            </div>
+          </div>
+          <div class="v-body">
+            <p>Pure bookshelf. Title on hover / focus tooltip; every action lives on the book page.</p>
+            <div class="carries"><b>Carries</b> cover</div>
+            <div class="pc pro"><span class="m">+</span><span>Densest possible; beautiful for a shelf you already know</span></div>
+            <div class="pc con"><span class="m">−</span><span>Breaks the rule — Access and Save vanish, which is exactly today's mobile showcase (S11) failure</span></div>
+            <div class="pc con"><span class="m">−</span><span>Untitled covers are unusable for accessibility and for books with no cover</span></div>
+          </div>
+        </div>
+
+        <div class="v">
+          <div class="v-head"><span class="v-id">G2</span><span class="v-name">Cover + Access</span><span class="v-tag chip chip-mute">Today's carousel</span></div>
+          <div class="v-stage">
+            <div class="tiles">
+              <div class="tile"><div class="cov"></div><div class="t">Dune Messiah</div><div class="b b-p">Borrow</div></div>
+              <div class="tile"><div class="cov g2"></div><div class="t">Beloved</div><div class="b b-p">Read</div></div>
+              <div class="tile"><div class="cov g5"></div><div class="t">Pachinko</div><div class="b b-o">Find in a library</div></div>
+            </div>
+          </div>
+          <div class="v-body">
+            <p>What <code>custom_carousel_card</code> renders now, with the verb vocabulary fixed. Save is absent.</p>
+            <div class="carries"><b>Carries</b> cover · title · access</div>
+            <div class="pc pro"><span class="m">+</span><span>Already built; one control per card is calm</span></div>
+            <div class="pc con"><span class="m">−</span><span>Carousels still can't save (F2) — the audit's largest gap remains</span></div>
+          </div>
+        </div>
+
+        <div class="v rec">
+          <div class="v-head"><span class="v-id">G3</span><span class="v-name">Cover + Access + corner Save</span><span class="v-tag chip chip-rec">Recommended</span></div>
+          <div class="v-stage">
+            <div class="tiles">
+              <div class="tile"><div class="cov"><div class="heart">+</div></div><div class="t">Dune Messiah</div><div class="b b-p">Borrow</div></div>
+              <div class="tile"><div class="cov g2"><div class="heart">✓</div></div><div class="t">Beloved</div><div class="b b-p">Read</div></div>
+              <div class="tile"><div class="cov g5"><div class="heart">+</div><div class="badge" style="top:auto;bottom:5px">NOT ONLINE</div></div><div class="t">Pachinko</div><div class="b b-o">Find in a library</div></div>
+            </div>
+          </div>
+          <div class="v-body">
+            <p>Access under the cover; Save as a persistent circular control in the cover's corner that opens the same menu. State becomes a small badge on the cover.</p>
+            <div class="carries"><b>Carries</b> cover · title · access · save (icon, labelled by tooltip + aria) · state badge</div>
+            <div class="pc pro"><span class="m">+</span><span>Keeps the rule: both controls exist, one is compact</span></div>
+            <div class="pc pro"><span class="m">+</span><span>The set state is visible (check) at grid density — better than today's list row</span></div>
+            <div class="pc pro"><span class="m">+</span><span>Libby, Kindle and every streaming grid have trained this location</span></div>
+            <div class="pc con"><span class="m">−</span><span>Icon-only Save is weaker for discovery than a labelled one; mitigated by tooltip and by the same menu everywhere</span></div>
+            <div class="pc con"><span class="m">−</span><span>Corner control over cover art needs a contrast treatment that survives every cover</span></div>
+          </div>
+        </div>
+
+        <div class="v">
+          <div class="v-head"><span class="v-id">G4</span><span class="v-name">Cover + two-button strip</span></div>
+          <div class="v-stage">
+            <div class="tiles">
+              <div class="tile"><div class="cov"></div><div class="t">Dune Messiah</div><div class="strip"><div class="b b-p">Borrow</div><div class="b b-s b-icon">▾</div></div></div>
+              <div class="tile"><div class="cov g2"></div><div class="t">Beloved</div><div class="strip"><div class="b b-p">Read</div><div class="b b-s b-icon">▾</div></div></div>
+              <div class="tile"><div class="cov g5"></div><div class="t">Pachinko</div><div class="strip"><div class="b b-o">Find</div><div class="b b-s b-icon">▾</div></div></div>
+            </div>
+          </div>
+          <div class="v-body">
+            <p>Access plus a caret-only Save in one strip under the cover. The caret is the whole menu.</p>
+            <div class="carries"><b>Carries</b> cover · title · access · save (caret)</div>
+            <div class="pc pro"><span class="m">+</span><span>Nothing overlays the cover art</span></div>
+            <div class="pc pro"><span class="m">+</span><span>Reads as one composite control — matches the audit's D on a diet</span></div>
+            <div class="pc con"><span class="m">−</span><span>An unlabelled caret is the least self-explanatory Save of the six</span></div>
+            <div class="pc con"><span class="m">−</span><span>Access label truncates at ~70px ("Find in a library" → "Find")</span></div>
+          </div>
+        </div>
+
+        <div class="v">
+          <div class="v-head"><span class="v-id">G5</span><span class="v-name">Cover + shelf leads (manage)</span></div>
+          <div class="v-stage">
+            <div class="tiles">
+              <div class="tile"><div class="cov"><div class="badge">DUE 24 AUG</div></div><div class="t">Dune Messiah</div><div class="split"><div class="b b-set">Reading</div><div class="b b-set caret">▾</div></div></div>
+              <div class="tile"><div class="cov g2"></div><div class="t">Beloved</div><div class="split"><div class="b b-set">Reading</div><div class="b b-set caret">▾</div></div></div>
+              <div class="tile"><div class="cov g3"></div><div class="t">Pachinko</div><div class="split"><div class="b b-set">Reading</div><div class="b b-set caret">▾</div></div></div>
+            </div>
+          </div>
+          <div class="v-body">
+            <p>Same tile as G3/G4 with <code>intent="manage"</code>: the shelf split-button takes the single visible slot; Access moves into the corner or the menu. This is what the My Books shelf carousels should render.</p>
+            <div class="carries"><b>Carries</b> cover · title · shelf ▾ · loan badge</div>
+            <div class="pc pro"><span class="m">+</span><span>Fixes F3: on the Currently Reading shelf every card is one click from Already Read</span></div>
+            <div class="pc con"><span class="m">−</span><span>Shelf names are long ("Currently Reading") — needs short forms at tile width, an i18n cost (C6)</span></div>
+          </div>
+        </div>
+
+        <div class="v">
+          <div class="v-head"><span class="v-id">G6</span><span class="v-name">Hover / focus overlay</span></div>
+          <div class="v-stage">
+            <div class="tiles">
+              <div class="tile"><div class="cov"></div><div class="t">Dune Messiah</div></div>
+              <div class="tile hover"><div class="cov g2" style="filter:brightness(.6)"><div class="overlay"><div class="b b-p">Read</div><div class="b b-s b-icon">+</div></div></div><div class="t">Beloved</div></div>
+              <div class="tile"><div class="cov g3"></div><div class="t">Pachinko</div></div>
+            </div>
+          </div>
+          <div class="v-body">
+            <p>Tiles are cover + title at rest; controls appear over the cover on hover or keyboard focus.</p>
+            <div class="carries"><b>Carries</b> cover · title · (access · save on hover)</div>
+            <div class="pc pro"><span class="m">+</span><span>The calmest grid; the shelf looks like a shelf</span></div>
+            <div class="pc con"><span class="m">−</span><span>No hover on touch — most of our traffic — so it degrades to G1 or needs a tap-to-reveal that steals the navigation tap</span></div>
+            <div class="pc con"><span class="m">−</span><span>Hides availability, which is a primary reason people scan our grids</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================ DETAILED ============================ -->
+    <section id="detailed">
+      <h2 class="sec"><span class="n">06</span>Detailed view — five variants</h2>
+      <p class="sec-sub">
+        The new one. A view where the reader can decide <em>whether to read this book</em> without
+        leaving the list. Its defining feature is a description, and that is also its defining
+        cost: descriptions are not in the search index (challenge C3).
+      </p>
+
+      <div class="vgrid">
+
+        <div class="v rec">
+          <div class="v-head"><span class="v-id">D1</span><span class="v-name">Description inline</span><span class="v-tag chip chip-rec">Recommended</span></div>
+          <div class="v-stage">
+            <div class="dcard"><div class="cov"></div><div class="meta"><div class="t">Dune Messiah</div><div class="a">Frank Herbert · 1969 · 21 editions</div><div class="s" style="color:var(--warn);font-size:9px">★★★★☆ 4.1 · 43 ratings</div><div class="d">Twelve years after his victory over House Harkonnen, Paul Atreides rules as Emperor. But the jihad he unleashed has swept across the universe, and conspirators gather… <span style="color:var(--accent)">more</span></div><div class="acts"><div class="b b-p">Borrow</div><div class="split" style="flex:1"><div class="b b-s">Want to Read</div><div class="b b-s caret">▾</div></div></div><div class="state" style="text-align:left">1 of 3 copies available</div></div></div>
+          </div>
+          <div class="v-body">
+            <p>L2 with a larger cover, the description clamped to three lines with a "more" that expands in place, and the two controls side by side beneath it.</p>
+            <div class="carries"><b>Carries</b> everything in the ladder except editions strip</div>
+            <div class="pc pro"><span class="m">+</span><span>The clearest reason to add a view at all: evaluate without a round-trip</span></div>
+            <div class="pc pro"><span class="m">+</span><span>Horizontal controls read as one row — the F1 stacking problem disappears at this width</span></div>
+            <div class="pc con"><span class="m">−</span><span>Description needs a per-page batch fetch (C3); many works have none, so a fallback (first sentence, subjects) is required</span></div>
+          </div>
+        </div>
+
+        <div class="v">
+          <div class="v-head"><span class="v-id">D2</span><span class="v-name">Description + editions strip</span></div>
+          <div class="v-stage">
+            <div class="dcard"><div class="cov g2"></div><div class="meta"><div class="t">Beloved</div><div class="a">Toni Morrison · 1987</div><div class="d">Sethe, an escaped slave living in post-Civil-War Ohio, is haunted by the ghost of the daughter she killed rather than see returned to slavery…</div><div class="kv"><span>EDITIONS</span></div><div class="eds"><div class="cov g2"></div><div class="cov"></div><div class="cov g3"></div><div class="cov g4"></div><div class="cov g5"></div><span style="font-size:8px;color:var(--accent);align-self:center">+38</span></div><div class="acts"><div class="b b-p">Read</div><div class="split" style="flex:1"><div class="b b-s">Want to Read</div><div class="b b-s caret">▾</div></div></div></div></div>
+          </div>
+          <div class="v-body">
+            <p>D1 plus a strip of edition covers linking to the editions table. Spends the extra room on the thing only Open Library has.</p>
+            <div class="carries"><b>Carries</b> D1 + editions strip</div>
+            <div class="pc pro"><span class="m">+</span><span>Directly answers F13 ("nothing is spent on what makes OL different")</span></div>
+            <div class="pc con"><span class="m">−</span><span>Edition covers are a second image fetch per row; on a 20-row page that is 100 more images</span></div>
+            <div class="pc con"><span class="m">−</span><span>Strip invites "which edition will Borrow open?" — a question the row can't answer</span></div>
+          </div>
+        </div>
+
+        <div class="v">
+          <div class="v-head"><span class="v-id">D3</span><span class="v-name">Description + a review</span></div>
+          <div class="v-stage">
+            <div class="dcard"><div class="cov g3"></div><div class="meta"><div class="t">Pachinko</div><div class="a">Min Jin Lee · 2017</div><div class="d">Four generations of a Korean family in Japan, from a boarding house in Busan to the pachinko parlours of Osaka…</div><div class="quote">"Pacing: slow · Mood: reflective · Difficulty: beginner" — 212 readers</div><div class="acts"><div class="b b-o">Find in a library</div><div class="split" style="flex:1"><div class="b b-s">Want to Read</div><div class="b b-s caret">▾</div></div></div></div></div>
+          </div>
+          <div class="v-body">
+            <p>D1 plus one line of aggregated community observations (pace, mood, difficulty). Data already exists in the observations system.</p>
+            <div class="carries"><b>Carries</b> D1 + observations summary</div>
+            <div class="pc pro"><span class="m">+</span><span>Uses a dataset we collect and rarely show</span></div>
+            <div class="pc con"><span class="m">−</span><span>Coverage is thin outside popular titles; most rows would show nothing</span></div>
+            <div class="pc con"><span class="m">−</span><span>Third fetch per page (descriptions, observations)</span></div>
+          </div>
+        </div>
+
+        <div class="v">
+          <div class="v-head"><span class="v-id">D4</span><span class="v-name">Magazine card</span></div>
+          <div class="v-stage">
+            <div class="dcard mag"><div class="top"><div class="cov g4"></div><div class="meta"><div class="t">A Wizard of Earthsea</div><div class="a">Ursula K. Le Guin · 1968</div><div class="acts" style="margin-top:0"><div class="b b-p">Borrow</div><div class="split" style="flex:1"><div class="b b-s">Want to Read</div><div class="b b-s caret">▾</div></div></div><div class="state" style="text-align:left">3 available</div></div></div><div class="cols"><div>Ged, a boy with a gift for magic, is sent to the school on Roke, where pride leads him to loose a shadow upon the world…</div><div class="kv" style="flex-direction:column;gap:2px;align-items:flex-start"><span>FANTASY · COMING OF AGE</span><span>19 EDITIONS · 4 LANGUAGES</span><span>FIRST PUBLISHED 1968</span><span>PAGES ~ 205</span></div></div></div>
+          </div>
+          <div class="v-body">
+            <p>Full-width card: controls up top beside the cover, description and a metadata column below.</p>
+            <div class="carries"><b>Carries</b> D1 + structured metadata column</div>
+            <div class="pc pro"><span class="m">+</span><span>The most legible on a wide screen; controls in a stable position row to row</span></div>
+            <div class="pc con"><span class="m">−</span><span>Tallest of the five — three to four cards per viewport; a poor default anywhere</span></div>
+            <div class="pc con"><span class="m">−</span><span>Collapses to D1 on mobile anyway, so it is really a wide-screen variant of D1</span></div>
+          </div>
+        </div>
+
+        <div class="v">
+          <div class="v-head"><span class="v-id">D5</span><span class="v-name">Tabbed card</span></div>
+          <div class="v-stage">
+            <div class="dcard"><div class="cov g5"></div><div class="meta"><div class="t">The Left Hand of Darkness</div><div class="a">Ursula K. Le Guin · 1969</div><div class="tabs"><span class="on">ABOUT</span><span>EDITIONS 24</span><span>SUBJECTS</span><span>REVIEWS</span></div><div class="d">Genly Ai, an envoy from the Ekumen, arrives on Gethen to persuade its nations to join…</div><div class="acts"><div class="b b-p">Borrow</div><div class="split" style="flex:1"><div class="b b-s">Want to Read</div><div class="b b-s caret">▾</div></div></div></div></div>
+          </div>
+          <div class="v-body">
+            <p>Everything D2–D4 offer, but behind tabs inside the card so height stays fixed.</p>
+            <div class="carries"><b>Carries</b> D1 by default; editions, subjects, observations on demand</div>
+            <div class="pc pro"><span class="m">+</span><span>Fixed height and lazy fetches; the richest content at D1's cost</span></div>
+            <div class="pc con"><span class="m">−</span><span>Tabs inside a list item is a mini book page — at that point the reader should just open the book page</span></div>
+            <div class="pc con"><span class="m">−</span><span>Tab focus management inside a list of 20 is an accessibility burden</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout">
+        <strong>Is Detailed a view or a toggle?</strong> One reading of the request — "a detailed view
+        which includes descriptions inline" — is a third view in the switcher. Another is that it is
+        L2 with a <em>Show descriptions</em> toggle. The second is cheaper to build and explain, avoids
+        a three-way segmented control, and lets Detailed be remembered independently of Grid/List.
+        Recommendation: build it as D1, but expose it as a toggle on List rather than a third
+        segment (see S3 in §09). If usage is high, promote it.
+      </div>
+    </section>
+
+    <!-- ============================ CAROUSEL ============================ -->
+    <section id="carousel">
+      <h2 class="sec"><span class="n">07</span>Carousel as a view — six variants</h2>
+      <p class="sec-sub">
+        Should carousel be one of the views? Yes — with one qualification. A carousel is a Grid that
+        scrolls sideways and has a header, so it should share the Grid <em>tile</em> and differ only
+        in its <em>container</em>. Treating it as a fourth tile design is how we got two card systems.
+      </p>
+
+      <div class="vgrid">
+
+        <div class="v">
+          <div class="v-head"><span class="v-id">C1</span><span class="v-name">Cover strip</span><span class="v-tag chip chip-mute">Mobile showcase today</span></div>
+          <div class="v-stage">
+            <div class="car"><div class="car-h"><span class="ct">Currently Reading</span><span class="cs">See all</span></div><div class="track"><div class="tile"><div class="cov"></div></div><div class="tile"><div class="cov g2"></div></div><div class="tile"><div class="cov g3"></div></div><div class="tile"><div class="cov g4"></div></div><div class="tile"><div class="cov g5"></div></div></div></div>
+          </div>
+          <div class="v-body">
+            <p>G1 tiles in a scrolling track. Zero controls; the header links to the full page.</p>
+            <div class="pc pro"><span class="m">+</span><span>Fast, pretty, cacheable, no per-user state</span></div>
+            <div class="pc con"><span class="m">−</span><span>Every action is two clicks away; on My Books this is the F3 failure</span></div>
+          </div>
+        </div>
+
+        <div class="v">
+          <div class="v-head"><span class="v-id">C2</span><span class="v-name">Cover + Access</span><span class="v-tag chip chip-mute">Home today</span></div>
+          <div class="v-stage">
+            <div class="car"><div class="car-h"><span class="ct">Trending this week</span><span class="cs">See all</span></div><div class="track"><div class="tile"><div class="cov"></div><div class="b b-p">Borrow</div></div><div class="tile"><div class="cov g2"></div><div class="b b-p">Read</div></div><div class="tile"><div class="cov g3"></div><div class="b b-o">Find</div></div><div class="tile"><div class="cov g4"></div><div class="b b-p">Borrow</div></div><div class="tile"><div class="cov g5"></div><div class="b b-p">Read</div></div></div></div>
+          </div>
+          <div class="v-body">
+            <p>G2 tiles in a track — what <code>custom_carousel</code> renders now.</p>
+            <div class="pc pro"><span class="m">+</span><span>Access is one click; the state is legible at a glance</span></div>
+            <div class="pc con"><span class="m">−</span><span>Cannot save (F2)</span></div>
+          </div>
+        </div>
+
+        <div class="v rec">
+          <div class="v-head"><span class="v-id">C3</span><span class="v-name">Grid tile in a track</span><span class="v-tag chip chip-rec">Recommended</span></div>
+          <div class="v-stage">
+            <div class="car"><div class="car-h"><span class="ct">Trending this week</span><span class="cs b b-s" style="font-size:9px">Show as list ▾</span></div><div class="track"><div class="tile"><div class="cov"><div class="heart">+</div></div><div class="b b-p">Borrow</div></div><div class="tile"><div class="cov g2"><div class="heart">✓</div></div><div class="b b-p">Read</div></div><div class="tile"><div class="cov g3"><div class="heart">+</div></div><div class="b b-o">Find</div></div><div class="tile"><div class="cov g4"><div class="heart">+</div></div><div class="b b-p">Borrow</div></div><div class="tile"><div class="cov g5"><div class="heart">+</div></div><div class="b b-p">Read</div></div><div class="arrow">›</div></div></div>
+          </div>
+          <div class="v-body">
+            <p>Exactly the G3 tile, in a track, with the header's "See all" replaced by a view control. The carousel <em>is</em> Grid; nothing tile-level is carousel-specific.</p>
+            <div class="pc pro"><span class="m">+</span><span>One tile template for S9, S10, S11 and the grid layout of S1/S6 — the unification the audit's Phase 2 needs</span></div>
+            <div class="pc pro"><span class="m">+</span><span>Save arrives in carousels with the same control it has everywhere</span></div>
+            <div class="pc con"><span class="m">−</span><span>Shelf state must hydrate client-side because carousel HTML is cached (C1)</span></div>
+          </div>
+        </div>
+
+        <div class="v">
+          <div class="v-head"><span class="v-id">C4</span><span class="v-name">Peek card</span></div>
+          <div class="v-stage">
+            <div class="car"><div class="car-h"><span class="ct">Because you read Dune</span><span class="cs">See all</span></div><div class="track"><div class="tile" style="width:150px;display:flex;flex-direction:row;gap:6px"><div class="cov" style="width:56px;height:82px"></div><div style="display:flex;flex-direction:column;gap:3px;min-width:0"><div class="t">Dune Messiah</div><div class="a">Herbert</div><div class="b b-p">Borrow</div><div class="split"><div class="b b-s" style="font-size:8px">Want to Read</div><div class="b b-s caret">▾</div></div></div></div><div class="tile"><div class="cov g2"></div><div class="b b-p">Read</div></div><div class="tile"><div class="cov g3"></div><div class="b b-o">Find</div></div><div class="tile"><div class="cov g4"></div></div></div></div>
+          </div>
+          <div class="v-body">
+            <p>The focused / first card expands into a mini list row (L2 slots); the rest stay tiles. Tapping a tile makes it the peek card.</p>
+            <div class="pc pro"><span class="m">+</span><span>Full controls without leaving the strip; nice on mobile where a tap is already needed</span></div>
+            <div class="pc con"><span class="m">−</span><span>Layout shift on every tap; keyboard model is unusual</span></div>
+            <div class="pc con"><span class="m">−</span><span>Two tile designs again — the thing C3 avoids</span></div>
+          </div>
+        </div>
+
+        <div class="v">
+          <div class="v-head"><span class="v-id">C5</span><span class="v-name">Two-row strip</span></div>
+          <div class="v-stage">
+            <div class="car"><div class="car-h"><span class="ct">Science fiction</span><span class="cs">See all</span></div><div class="track" style="flex-wrap:wrap;height:104px;gap:6px"><div class="tile" style="width:44px"><div class="cov" style="width:44px;height:48px"></div></div><div class="tile" style="width:44px"><div class="cov g2" style="width:44px;height:48px"></div></div><div class="tile" style="width:44px"><div class="cov g3" style="width:44px;height:48px"></div></div><div class="tile" style="width:44px"><div class="cov g4" style="width:44px;height:48px"></div></div><div class="tile" style="width:44px"><div class="cov g5" style="width:44px;height:48px"></div></div><div class="tile" style="width:44px"><div class="cov g3" style="width:44px;height:48px"></div></div><div class="tile" style="width:44px"><div class="cov" style="width:44px;height:48px"></div></div><div class="tile" style="width:44px"><div class="cov g4" style="width:44px;height:48px"></div></div><div class="tile" style="width:44px"><div class="cov g2" style="width:44px;height:48px"></div></div><div class="tile" style="width:44px"><div class="cov g5" style="width:44px;height:48px"></div></div><div class="tile" style="width:44px"><div class="cov g3" style="width:44px;height:48px"></div></div><div class="tile" style="width:44px"><div class="cov" style="width:44px;height:48px"></div></div></div></div>
+          </div>
+          <div class="v-body">
+            <p>Smaller covers, two rows deep, scrolling as a block. Twice the books per screen.</p>
+            <div class="pc pro"><span class="m">+</span><span>Best for "browse a subject" where breadth beats detail</span></div>
+            <div class="pc con"><span class="m">−</span><span>Tiles too small for any control; it is a G1 strip and inherits G1's problems</span></div>
+            <div class="pc con"><span class="m">−</span><span>Two-axis scrolling confuses on touch</span></div>
+          </div>
+        </div>
+
+        <div class="v">
+          <div class="v-head"><span class="v-id">C6</span><span class="v-name">Featured + strip</span></div>
+          <div class="v-stage">
+            <div class="car"><div class="car-h"><span class="ct">Staff picks</span><span class="cs">See all</span></div><div style="display:flex;gap:8px"><div class="dcard" style="max-width:150px;padding:8px;gap:8px"><div class="cov" style="width:44px;height:66px"></div><div class="meta"><div class="t" style="font-size:10px">Dune Messiah</div><div class="d" style="font-size:8.5px">Paul Atreides rules as Emperor…</div><div class="b b-p" style="font-size:9px">Borrow</div></div></div><div class="track" style="flex:1"><div class="tile" style="width:44px"><div class="cov g2" style="width:44px;height:66px"></div></div><div class="tile" style="width:44px"><div class="cov g3" style="width:44px;height:66px"></div></div><div class="tile" style="width:44px"><div class="cov g4" style="width:44px;height:66px"></div></div><div class="tile" style="width:44px"><div class="cov g5" style="width:44px;height:66px"></div></div></div></div></div>
+          </div>
+          <div class="v-body">
+            <p>One D-style card leads; the rest of the collection follows as tiles. Editorial rather than catalogue.</p>
+            <div class="pc pro"><span class="m">+</span><span>Right for curated collections (staff picks, a subject's "start here")</span></div>
+            <div class="pc con"><span class="m">−</span><span>Needs an editorially chosen lead; a query carousel has none</span></div>
+            <div class="pc con"><span class="m">−</span><span>Not a general view — a special-case container for one or two surfaces</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout green">
+        <strong>So: is Carousel a view?</strong> In the switcher's vocabulary it is <em>Grid, scrolling</em>.
+        The reader-facing choice on a carousel is not "Grid / List / Detailed" but "keep scrolling /
+        show all of these as a list". That is a different control (§08 and S5 in §09), and it should
+        live in the carousel header, not in a global toolbar.
+      </div>
+    </section>
+
+    <!-- ============================ EXPAND ============================ -->
+    <section id="expand">
+      <h2 class="sec"><span class="n">08</span>Expanding a carousel — five mechanics</h2>
+      <p class="sec-sub">
+        "Expand any carousel into list view or similar" can mean five different interactions. They
+        differ in whether the URL changes, whether the page reflows, and what data is fetched.
+      </p>
+
+      <div class="vgrid">
+
+        <div class="v">
+          <div class="v-head"><span class="v-id">X1</span><span class="v-name">Navigate (today's "See all")</span></div>
+          <div class="v-stage">
+            <div class="stage-col">
+              <div class="car"><div class="car-h"><span class="ct">Trending this week</span><span class="cs">See all →</span></div><div class="track"><div class="tile"><div class="cov"></div></div><div class="tile"><div class="cov g2"></div></div><div class="tile"><div class="cov g3"></div></div><div class="tile"><div class="cov g4"></div></div></div></div>
+              <div class="stage-lbl">→ /trending?view=list</div>
+            </div>
+          </div>
+          <div class="v-body">
+            <p>Header link goes to the collection's own page — search results, trending, subject — which opens in List.</p>
+            <div class="pc pro"><span class="m">+</span><span>Already works for every QueryCarousel (title links to <code>/search?q=</code>)</span></div>
+            <div class="pc pro"><span class="m">+</span><span>The full page has the toolbar, filters, pagination</span></div>
+            <div class="pc con"><span class="m">−</span><span>Loses context — the home page is gone; back button is the only return</span></div>
+            <div class="pc con"><span class="m">−</span><span>Hand-curated carousels (My Books shelves, collections) need a matching page to exist</span></div>
+          </div>
+        </div>
+
+        <div class="v rec">
+          <div class="v-head"><span class="v-id">X2</span><span class="v-name">Reflow in place</span><span class="v-tag chip chip-rec">Recommended</span></div>
+          <div class="v-stage">
+            <div class="stage-col">
+              <div class="car"><div class="car-h"><span class="ct">Trending this week</span><span class="seg" style="font-size:8px"><span class="on">⊞</span><span>☰</span></span></div></div>
+              <div class="lstack" style="max-width:none">
+                <div class="lrow dense"><div class="cov"></div><div class="meta"><div class="t">Dune Messiah</div><div class="a">Frank Herbert</div></div><div class="acts"><div class="b b-p" style="width:52px">Borrow</div><div class="split" style="width:70px"><div class="b b-s" style="font-size:8px">Want to Read</div><div class="b b-s caret" style="width:16px">▾</div></div></div></div>
+                <div class="lrow dense"><div class="cov g2"></div><div class="meta"><div class="t">Beloved</div><div class="a">Toni Morrison</div></div><div class="acts"><div class="b b-p" style="width:52px">Read</div><div class="split" style="width:70px"><div class="b b-s" style="font-size:8px">Want to Read</div><div class="b b-s caret" style="width:16px">▾</div></div></div></div>
+                <div class="stage-lbl" style="text-align:center">Show 12 more · See all →</div>
+              </div>
+            </div>
+          </div>
+          <div class="v-body">
+            <p>A per-carousel Grid/List toggle in the header. The books already in the DOM re-render as L2 rows below the header; "Show more" pages the same query in.</p>
+            <div class="pc pro"><span class="m">+</span><span>Keeps the page; the reader compares two carousels' contents side by side</span></div>
+            <div class="pc pro"><span class="m">+</span><span>Same <code>BookCollection</code> component with <code>view</code> flipped — the cleanest proof that views are one axis</span></div>
+            <div class="pc con"><span class="m">−</span><span>Needs the carousel's book data as JSON in the page (or a re-fetch) — today the cards are server-rendered HTML with no data payload (C2)</span></div>
+            <div class="pc con"><span class="m">−</span><span>Long pages get longer; each expanded carousel needs a collapse and a sensible cap</span></div>
+          </div>
+        </div>
+
+        <div class="v">
+          <div class="v-head"><span class="v-id">X3</span><span class="v-name">Wrap to grid</span></div>
+          <div class="v-stage">
+            <div class="stage-col">
+              <div class="car"><div class="car-h"><span class="ct">Science fiction</span><span class="cs">Show all 24 ▾</span></div><div class="track" style="flex-wrap:wrap;gap:6px 8px;height:auto"><div class="tile" style="width:44px"><div class="cov" style="width:44px;height:64px"></div></div><div class="tile" style="width:44px"><div class="cov g2" style="width:44px;height:64px"></div></div><div class="tile" style="width:44px"><div class="cov g3" style="width:44px;height:64px"></div></div><div class="tile" style="width:44px"><div class="cov g4" style="width:44px;height:64px"></div></div><div class="tile" style="width:44px"><div class="cov g5" style="width:44px;height:64px"></div></div><div class="tile" style="width:44px"><div class="cov" style="width:44px;height:64px"></div></div><div class="tile" style="width:44px"><div class="cov g3" style="width:44px;height:64px"></div></div><div class="tile" style="width:44px"><div class="cov g2" style="width:44px;height:64px"></div></div><div class="tile" style="width:44px"><div class="cov g4" style="width:44px;height:64px"></div></div><div class="tile" style="width:44px"><div class="cov g5" style="width:44px;height:64px"></div></div><div class="tile" style="width:44px"><div class="cov" style="width:44px;height:64px"></div></div><div class="tile" style="width:44px"><div class="cov g2" style="width:44px;height:64px"></div></div></div></div>
+            </div>
+          </div>
+          <div class="v-body">
+            <p>The track stops scrolling and wraps — the tiles stay tiles. This is literally <code>QueryCarousel(layout='grid')</code> toggled at runtime.</p>
+            <div class="pc pro"><span class="m">+</span><span>Trivial: one class flip on the container, and it already exists</span></div>
+            <div class="pc pro"><span class="m">+</span><span>No new data — the tiles are already rendered</span></div>
+            <div class="pc con"><span class="m">−</span><span>Doesn't answer the ask — no more information per book, just more books</span></div>
+            <div class="pc con"><span class="m">−</span><span>Only shows what was in the track (18–20); still needs a "load more"</span></div>
+          </div>
+        </div>
+
+        <div class="v">
+          <div class="v-head"><span class="v-id">X4</span><span class="v-name">Drawer / sheet</span></div>
+          <div class="v-stage">
+            <div class="stage-col">
+              <div class="car" style="opacity:.45"><div class="car-h"><span class="ct">Trending this week</span></div><div class="track"><div class="tile"><div class="cov"></div></div><div class="tile"><div class="cov g2"></div></div><div class="tile"><div class="cov g3"></div></div></div></div>
+              <div style="background:var(--surface);border:1px solid var(--rule-2);border-radius:6px 6px 0 0;padding:10px;box-shadow:var(--shadow)"><div class="stage-lbl" style="margin-bottom:6px">Trending this week · 24 books · ✕</div><div class="lstack" style="max-width:none"><div class="lrow dense"><div class="cov"></div><div class="meta"><div class="t">Dune Messiah</div></div><div class="acts"><div class="b b-p" style="width:52px">Borrow</div></div></div><div class="lrow dense"><div class="cov g2"></div><div class="meta"><div class="t">Beloved</div></div><div class="acts"><div class="b b-p" style="width:52px">Read</div></div></div></div></div>
+            </div>
+          </div>
+          <div class="v-body">
+            <p>The full collection opens in an overlay (bottom sheet on mobile, side drawer on desktop) as an L2 list, with the page underneath intact.</p>
+            <div class="pc pro"><span class="m">+</span><span>No page reflow; a natural mobile gesture</span></div>
+            <div class="pc pro"><span class="m">+</span><span>Reuses <code>&lt;ol-dialog&gt;</code></span></div>
+            <div class="pc con"><span class="m">−</span><span>Modal context: filters, sort and pagination all have to live inside the sheet, duplicating the results page</span></div>
+            <div class="pc con"><span class="m">−</span><span>Deep-linking a sheet is awkward; scroll position and history need custom handling</span></div>
+          </div>
+        </div>
+
+        <div class="v">
+          <div class="v-head"><span class="v-id">X5</span><span class="v-name">Page-level view switch</span></div>
+          <div class="v-stage">
+            <div class="stage-col">
+              <div class="toolbar"><span>Home · 6 collections</span><span class="seg"><span class="on">Carousels</span><span>Lists</span></span></div>
+              <div class="stage-lbl">every carousel on the page reflows at once</div>
+            </div>
+          </div>
+          <div class="v-body">
+            <p>One control at the top of a carousel-heavy page (home, subject) switches all of them.</p>
+            <div class="pc pro"><span class="m">+</span><span>Consistent; a remembered preference for readers who dislike carousels</span></div>
+            <div class="pc con"><span class="m">−</span><span>Six carousels × 20 rows is a 120-row page — needs per-collection caps, at which point it is X2 with a global switch</span></div>
+            <div class="pc con"><span class="m">−</span><span>Rarely what the reader wants; they want <em>this</em> collection expanded</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================ SWITCHER ============================ -->
+    <section id="switcher">
+      <h2 class="sec"><span class="n">09</span>The view switcher — five variants</h2>
+      <p class="sec-sub">
+        How the reader changes view, and how the choice is remembered. Today: a two-segment
+        <code>&lt;ol-segmented-control&gt;</code> and a one-year <code>LBL</code> cookie shared by
+        every list surface.
+      </p>
+
+      <div class="vgrid">
+
+        <div class="v">
+          <div class="v-head"><span class="v-id">S1</span><span class="v-name">Three segments</span></div>
+          <div class="v-stage"><div class="toolbar"><span>1,204 results · Sort: Relevance ▾</span><span class="seg"><span>⊞ Grid</span><span class="on">☰ List</span><span>≣ Detailed</span></span></div></div>
+          <div class="v-body">
+            <p>Add Detailed as a third segment to the existing control.</p>
+            <div class="pc pro"><span class="m">+</span><span>Obvious; one control, one cookie</span></div>
+            <div class="pc con"><span class="m">−</span><span>Three labelled segments crowd the toolbar on mobile — icon-only there</span></div>
+            <div class="pc con"><span class="m">−</span><span>List vs Detailed is a subtle distinction to spend a segment on</span></div>
+          </div>
+        </div>
+
+        <div class="v">
+          <div class="v-head"><span class="v-id">S2</span><span class="v-name">Icon-only segments</span></div>
+          <div class="v-stage"><div class="toolbar"><span>1,204 results</span><span class="seg"><span>⊞</span><span class="on">☰</span><span>≣</span></span></div></div>
+          <div class="v-body">
+            <p>Same as S1 with icons and tooltips.</p>
+            <div class="pc pro"><span class="m">+</span><span>Compact; the convention everywhere from Finder to Google Drive</span></div>
+            <div class="pc con"><span class="m">−</span><span>List vs Detailed icons are near-identical at 16px</span></div>
+            <div class="pc con"><span class="m">−</span><span>Needs the icon system, which is in flight</span></div>
+          </div>
+        </div>
+
+        <div class="v rec">
+          <div class="v-head"><span class="v-id">S3</span><span class="v-name">Two segments + density toggle</span><span class="v-tag chip chip-rec">Recommended</span></div>
+          <div class="v-stage"><div class="toolbar"><span>1,204 results</span><span class="hrow"><span class="seg"><span>⊞ Grid</span><span class="on">☰ List</span></span><span class="sel">Show descriptions ☐</span></span></div></div>
+          <div class="v-body">
+            <p>Keep Grid/List. Detailed is a checkbox ("Show descriptions") available when List is active; remembered separately.</p>
+            <div class="pc pro"><span class="m">+</span><span>The existing control is untouched; the new thing is additive</span></div>
+            <div class="pc pro"><span class="m">+</span><span>Names the benefit, not the layout — readers understand "descriptions"</span></div>
+            <div class="pc con"><span class="m">−</span><span>Two remembered preferences instead of one</span></div>
+            <div class="pc con"><span class="m">−</span><span>Where does it go in the mobile toolbar? Probably inside the sort/filter sheet</span></div>
+          </div>
+        </div>
+
+        <div class="v">
+          <div class="v-head"><span class="v-id">S4</span><span class="v-name">View dropdown</span></div>
+          <div class="v-stage"><div class="stage-col" style="align-items:flex-end"><div class="toolbar"><span>1,204 results</span><span class="sel">View: List ▾</span></div><div class="menu" style="margin-top:-4px"><div class="mi">⊞ Grid</div><div class="mi on">☰ List ✓</div><div class="mi">≣ Detailed</div><div class="mg">Density</div><div class="mi">Compact</div><div class="mi on">Comfortable ✓</div></div></div></div>
+          <div class="v-body">
+            <p>An <code>&lt;ol-select-popover&gt;</code> holding view and, optionally, density (L1 vs L2).</p>
+            <div class="pc pro"><span class="m">+</span><span>Scales to more options without widening the toolbar</span></div>
+            <div class="pc con"><span class="m">−</span><span>Hides the most-used toggle behind a click; Grid/List switching is frequent</span></div>
+            <div class="pc con"><span class="m">−</span><span>Density is a power-user setting few would find or use</span></div>
+          </div>
+        </div>
+
+        <div class="v">
+          <div class="v-head"><span class="v-id">S5</span><span class="v-name">Per-collection control</span></div>
+          <div class="v-stage"><div class="stage-col"><div class="car"><div class="car-h"><span class="ct">Trending this week</span><span class="seg" style="font-size:8px"><span class="on">⊞</span><span>☰</span></span></div><div class="track"><div class="tile"><div class="cov"></div></div><div class="tile"><div class="cov g2"></div></div><div class="tile"><div class="cov g3"></div></div><div class="tile"><div class="cov g4"></div></div></div></div><div class="stage-lbl">not remembered · per carousel · resets on reload</div></div></div>
+          <div class="v-body">
+            <p>The carousel-header toggle from X2. Ephemeral, local to one collection.</p>
+            <div class="pc pro"><span class="m">+</span><span>The only switcher that makes sense on a multi-collection page</span></div>
+            <div class="pc con"><span class="m">−</span><span>Two switchers in the product (toolbar + header) — they must look related and share icons</span></div>
+          </div>
+        </div>
+      </div>
+
+      <h3>Persistence: what should be remembered, and where</h3>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>Preference</th><th>Scope</th><th>Storage</th><th>Why</th></tr></thead>
+          <tbody>
+            <tr><td class="key">Grid / List</td><td>Global across list surfaces</td><td><code>LBL</code> cookie (exists) → rename values to <code>grid | list</code></td><td>Readers who like grids like them everywhere; today's behaviour</td></tr>
+            <tr><td class="key">Show descriptions</td><td>Global</td><td>New cookie or the same cookie as a flag</td><td>A taste, not a task; consistent with the results-toolbar's global stickiness for availability/language</td></tr>
+            <tr><td class="key">Carousel expanded</td><td>None</td><td>—</td><td>Ephemeral; remembering it would turn the home page into a wall of lists</td></tr>
+            <tr><td class="key">Surface default</td><td>Per template</td><td>Template config</td><td>Trending → List, subject → Carousel; the cookie overrides only where the surface allows the switch</td></tr>
+            <tr><td class="key">Query-string override</td><td>Per URL</td><td><code>?view=grid</code></td><td>Shareable links and "See all" targets; wins over the cookie for that load only</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============================ ACTIONS ============================ -->
+    <section id="actions">
+      <h2 class="sec"><span class="n">10</span>Read + one menu — seven variants</h2>
+      <p class="sec-sub">
+        The second question: one distinct Read button, everything else in one dropdown. Seven ways
+        to draw that, differing in what the dropdown is <em>called</em>, whether it shows state, and
+        whether the two controls are one composite or two neighbours.
+      </p>
+
+      <div class="vgrid">
+
+        <div class="v">
+          <div class="v-head"><span class="v-id">R1</span><span class="v-name">Read + kebab</span></div>
+          <div class="v-stage"><div class="lrow"><div class="cov"></div><div class="meta"><div class="t">Dune Messiah</div><div class="a">Frank Herbert · 1969</div><div class="s">★★★★☆ 4.1</div></div><div class="acts"><div class="hrow"><div class="b b-p" style="flex:1">Borrow</div><div class="kebab">⋮</div></div><div class="state" style="text-align:left">1 of 3 available</div></div></div></div>
+          <div class="v-body">
+            <p>The literal reading of the ask: one filled verb, one anonymous overflow. The kebab menu holds shelves, lists, rating, share, everything.</p>
+            <div class="pc pro"><span class="m">+</span><span>The quietest possible row; Access is unmistakably the action</span></div>
+            <div class="pc pro"><span class="m">+</span><span>Fits every view including Grid tiles unchanged</span></div>
+            <div class="pc con"><span class="m">−</span><span>Save — the second most important action on the site — is invisible and unlabelled; every comparable product labels it</span></div>
+            <div class="pc con"><span class="m">−</span><span>Shelf state ("Currently Reading") has nowhere to show; the manage surfaces lose their verb</span></div>
+          </div>
+        </div>
+
+        <div class="v">
+          <div class="v-head"><span class="v-id">R2</span><span class="v-name">Read + "More ▾"</span></div>
+          <div class="v-stage"><div class="lrow"><div class="cov"></div><div class="meta"><div class="t">Dune Messiah</div><div class="a">Frank Herbert · 1969</div><div class="s">★★★★☆ 4.1</div></div><div class="acts"><div class="b b-p">Borrow</div><div class="state">1 of 3 available</div><div class="b b-s">More ▾</div></div></div></div>
+          <div class="v-body">
+            <p>R1 with the overflow labelled generically.</p>
+            <div class="pc pro"><span class="m">+</span><span>Labelled, so discoverable; still one disclosure</span></div>
+            <div class="pc con"><span class="m">−</span><span>"More" promises nothing; the reader has to open it to learn saving exists</span></div>
+            <div class="pc con"><span class="m">−</span><span>Same shelf-state problem as R1</span></div>
+          </div>
+        </div>
+
+        <div class="v rec">
+          <div class="v-head"><span class="v-id">R3</span><span class="v-name">Read + "Save ▾" (label = shelf state)</span><span class="v-tag chip chip-rec">Recommended</span></div>
+          <div class="v-stage"><div class="stage-col"><div class="lrow"><div class="cov"></div><div class="meta"><div class="t">Dune Messiah</div><div class="a">Frank Herbert · 1969</div><div class="s">★★★★☆ 4.1</div></div><div class="acts"><div class="b b-p">Borrow</div><div class="state">1 of 3 available</div><div class="split"><div class="b b-s">Want to Read</div><div class="b b-s caret">▾</div></div></div></div><div class="lrow"><div class="cov g2"></div><div class="meta"><div class="t">Beloved</div><div class="a">Toni Morrison · 1987</div><div class="s">★★★★★ 4.4</div></div><div class="acts"><div class="b b-p">Read</div><div class="state">Free to read</div><div class="split"><div class="b b-set">✓ Reading</div><div class="b b-set caret">▾</div></div></div></div></div></div>
+          <div class="v-body">
+            <p>The audit's option D. The one dropdown is the Save split-button: its label is the current shelf (or "Want to Read" when unset), its caret opens the single menu that owns everything else. Set state changes fill and adds a check.</p>
+            <div class="pc pro"><span class="m">+</span><span>Satisfies the ask — one Read, one dropdown — while keeping Save labelled and stateful</span></div>
+            <div class="pc pro"><span class="m">+</span><span>The label does double duty as the shelf indicator, so manage surfaces work with the same control</span></div>
+            <div class="pc pro"><span class="m">+</span><span>Matches Hardcover, Goodreads, StoryGraph, Libby in shape</span></div>
+            <div class="pc con"><span class="m">−</span><span>Two visible controls, so F1's separation work is still needed: weight difference + the state line between them</span></div>
+            <div class="pc con"><span class="m">−</span><span>The main body of the split does one thing (toggle Want to Read) and the caret another — some readers never learn the caret</span></div>
+          </div>
+        </div>
+
+        <div class="v">
+          <div class="v-head"><span class="v-id">R4</span><span class="v-name">Single split (Hardcover)</span></div>
+          <div class="v-stage"><div class="stage-col"><div class="lrow"><div class="cov"></div><div class="meta"><div class="t">Dune Messiah</div><div class="a">Frank Herbert · 1969</div><div class="s">★★★★☆ 4.1</div></div><div class="acts"><div class="split"><div class="b b-p">Borrow</div><div class="b b-p caret">▾</div></div><div class="state">1 of 3 available</div></div></div><div class="menu" style="align-self:flex-end;margin-top:-6px"><div class="mg">Read it</div><div class="mi">Borrow</div><div class="mi">Preview</div><div class="mi">Listen</div><div class="mg">Save</div><div class="mi">Want to Read</div><div class="mi">Currently Reading</div><div class="mi">Already Read</div><div class="mg">Lists · Rate · Share…</div></div></div></div>
+          <div class="v-body">
+            <p>One control whose body is the Access verb and whose caret holds <em>everything</em>, Save included.</p>
+            <div class="pc pro"><span class="m">+</span><span>Truly one control; the tightest possible Grid tile</span></div>
+            <div class="pc pro"><span class="m">+</span><span>The dropdown is unambiguously "the book's menu"</span></div>
+            <div class="pc con"><span class="m">−</span><span>Save is a click deep with no visible state; the audit rejected this trade and nothing here reverses it</span></div>
+            <div class="pc con"><span class="m">−</span><span>Coupling Access and Save in one control means the caret's colour follows Access — a green Borrow caret opening a Save menu is odd</span></div>
+          </div>
+        </div>
+
+        <div class="v">
+          <div class="v-head"><span class="v-id">R5</span><span class="v-name">Read + Save icon + kebab</span></div>
+          <div class="v-stage"><div class="lrow"><div class="cov"></div><div class="meta"><div class="t">Dune Messiah</div><div class="a">Frank Herbert · 1969</div><div class="s">★★★★☆ 4.1</div></div><div class="acts"><div class="hrow"><div class="b b-p" style="flex:1">Borrow</div><div class="b b-s b-icon">🔖</div><div class="kebab">⋮</div></div><div class="state" style="text-align:left">1 of 3 available</div></div></div></div>
+          <div class="v-body">
+            <p>Libby's row: filled Access, a quiet one-tap save, and a kebab for the rest.</p>
+            <div class="pc pro"><span class="m">+</span><span>Save is one tap with no menu; the kebab stays clean</span></div>
+            <div class="pc con"><span class="m">−</span><span>Two disclosures / three controls — the exact thing "one dropdown" was asking to avoid</span></div>
+            <div class="pc con"><span class="m">−</span><span>Which shelf does the bookmark set? Want to Read only; the others move to the kebab, so shelf state is split across two controls</span></div>
+          </div>
+        </div>
+
+        <div class="v">
+          <div class="v-head"><span class="v-id">R6</span><span class="v-name">Read + Save, horizontal</span></div>
+          <div class="v-stage"><div class="lrow"><div class="cov"></div><div class="meta"><div class="t">Dune Messiah</div><div class="a">Frank Herbert · 1969</div><div class="s">★★★★☆ 4.1</div><div class="state" style="text-align:left">1 of 3 copies available</div></div><div class="acts" style="width:150px;flex-direction:row;align-items:flex-start"><div class="b b-p" style="flex:1">Borrow</div><div class="split" style="flex:1.2"><div class="b b-s" style="font-size:9px">Want to Read</div><div class="b b-s caret" style="width:16px">▾</div></div></div></div></div>
+          <div class="v-body">
+            <p>R3's two controls side by side instead of stacked; the state line moves into the metadata column.</p>
+            <div class="pc pro"><span class="m">+</span><span>Reads as one action bar, not two stacked buttons — the strongest answer to F1</span></div>
+            <div class="pc pro"><span class="m">+</span><span>Halves the row's control height; the natural layout for Detailed (D1)</span></div>
+            <div class="pc con"><span class="m">−</span><span>Needs ~150px; on narrow List rows and all Grid tiles it wraps back to R3</span></div>
+            <div class="pc con"><span class="m">−</span><span>Two labels of similar length side by side compete more than stacked ones of different weight</span></div>
+          </div>
+        </div>
+
+        <div class="v">
+          <div class="v-head"><span class="v-id">R7</span><span class="v-name">Read + Save, no caret (menu on the whole button)</span></div>
+          <div class="v-stage"><div class="lrow"><div class="cov"></div><div class="meta"><div class="t">Dune Messiah</div><div class="a">Frank Herbert · 1969</div><div class="s">★★★★☆ 4.1</div></div><div class="acts"><div class="b b-p">Borrow</div><div class="state">1 of 3 available</div><div class="b b-s">Want to Read ▾</div></div></div></div>
+          <div class="v-body">
+            <p>Like R3, but the whole Save button opens the menu; there is no one-click default.</p>
+            <div class="pc pro"><span class="m">+</span><span>No split-button ambiguity; one target, one behaviour</span></div>
+            <div class="pc pro"><span class="m">+</span><span>Larger tap target on touch</span></div>
+            <div class="pc con"><span class="m">−</span><span>Adds a click to the most common save; every comparable keeps the one-click default</span></div>
+            <div class="pc con"><span class="m">−</span><span>Logged-out login-intent gets murkier — which item did they mean?</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout green">
+        <strong>Reading the seven together.</strong> R1/R2 honour "one Read + one dropdown" most literally
+        and pay for it by hiding Save. R4 goes further and hides it deeper. R5 splits Save in two.
+        R3 (stacked) and R6 (horizontal) are the same model at two widths, and R7 is R3 minus its
+        one-click default. Recommendation: <strong>R3 as the model, rendered as R6 wherever the row
+        is wide enough</strong> — and the "one dropdown" is the Save caret.
+      </div>
+    </section>
+
+    <!-- ============================ LOCATE ============================ -->
+    <section id="locate">
+      <h2 class="sec"><span class="n">11</span>Where Locate goes — six variants</h2>
+      <p class="sec-sub">
+        Locate is an access action — it gets you a copy — so it belongs in the Access family. The
+        question is whether it may take the Access <em>slot</em>, and only when nothing online exists.
+        Six answers, plus a data problem that any of them has to solve.
+      </p>
+
+      <div class="callout red">
+        <strong>The data problem first.</strong> <code>LocateButton</code> needs an <em>edition</em> key
+        (<code>/books/OL…M/-/borrow?action=locate</code>), and <code>WorldcatLink</code> needs an ISBN or
+        OCLC number. Search results are <em>works</em>. That is the real reason <code>LoanStatus</code>
+        falls through to <em>Not in Library</em> for works — not an oversight but a missing input.
+        Fixing it means picking a representative edition per work in the row (Solr already returns
+        <code>edition_key</code>, <code>isbn</code>, <code>oclc</code> arrays for the work doc), and accepting that
+        "Find in a library" from a work row searches for <em>an</em> edition, not <em>the</em> edition.
+        Challenge C5 covers this. Every variant below assumes it is solved.
+      </div>
+
+      <div class="vgrid">
+
+        <div class="v rec">
+          <div class="v-head"><span class="v-id">F1</span><span class="v-name">Same slot, quieter style</span><span class="v-tag chip chip-rec">Recommended</span></div>
+          <div class="v-stage"><div class="stage-col"><div class="lrow"><div class="cov"></div><div class="meta"><div class="t">Dune Messiah</div><div class="a">Frank Herbert</div></div><div class="acts"><div class="b b-p">Borrow</div><div class="state">1 of 3 available</div><div class="split"><div class="b b-s">Want to Read</div><div class="b b-s caret">▾</div></div></div></div><div class="lrow"><div class="cov g5"></div><div class="meta"><div class="t">Pachinko</div><div class="a">Min Jin Lee</div></div><div class="acts"><div class="b b-o">Find in a library</div><div class="state">Not available online</div><div class="split"><div class="b b-s">Want to Read</div><div class="b b-s caret">▾</div></div></div></div></div></div>
+          <div class="v-body">
+            <p>Locate takes the Access slot when no online copy exists, in an <em>outlined</em> style rather than filled, so a filled button always means "read now, here". State line says why.</p>
+            <div class="pc pro"><span class="m">+</span><span>The slot is never empty and never a dead label; the most common search row gains a working action</span></div>
+            <div class="pc pro"><span class="m">+</span><span>The style difference tells the scanning eye "not online" before the label does — preserves the fast-triage signal that <em>Not in Library</em> gave</span></div>
+            <div class="pc con"><span class="m">−</span><span>External link in the primary slot; needs the external-link glyph and target=_blank convention</span></div>
+            <div class="pc con"><span class="m">−</span><span>Long label at Grid width — "Find" or "Locate" as the short form</span></div>
+          </div>
+        </div>
+
+        <div class="v">
+          <div class="v-head"><span class="v-id">F2</span><span class="v-name">Same slot, same style</span></div>
+          <div class="v-stage"><div class="lrow"><div class="cov g5"></div><div class="meta"><div class="t">Pachinko</div><div class="a">Min Jin Lee</div></div><div class="acts"><div class="b b-p">Find in a library</div><div class="state">Not available online</div><div class="split"><div class="b b-s">Want to Read</div><div class="b b-s caret">▾</div></div></div></div></div>
+          <div class="v-body">
+            <p>Locate is just another Access verb: filled green like Borrow.</p>
+            <div class="pc pro"><span class="m">+</span><span>Simplest rule: the slot is always filled, whatever the verb</span></div>
+            <div class="pc con"><span class="m">−</span><span>Rows that can and cannot be read look identical at a glance — the audit's "losing a real signal" risk, fully realised</span></div>
+            <div class="pc con"><span class="m">−</span><span>Filled = "leaves the site" would be the only such case in the vocabulary</span></div>
+          </div>
+        </div>
+
+        <div class="v">
+          <div class="v-head"><span class="v-id">F3</span><span class="v-name">Slot empty, Locate in the menu</span></div>
+          <div class="v-stage"><div class="lrow"><div class="cov g5"></div><div class="meta"><div class="t">Pachinko</div><div class="a">Min Jin Lee</div></div><div class="acts"><div class="state" style="text-align:left;padding:5px 0">Not available online</div><div class="split"><div class="b b-s">Want to Read</div><div class="b b-s caret">▾</div></div></div></div></div>
+          <div class="v-body">
+            <p>No online copy → no Access button. The state line explains; Locate lives under "More ways to read" in the Save menu.</p>
+            <div class="pc pro"><span class="m">+</span><span>Purest "filled means readable"; the row visibly demotes itself</span></div>
+            <div class="pc con"><span class="m">−</span><span>The majority of the catalogue renders with a hole where the action goes; Save becomes the de-facto primary on those rows, which is confusing</span></div>
+            <div class="pc con"><span class="m">−</span><span>Locate clicks from search stay at zero</span></div>
+          </div>
+        </div>
+
+        <div class="v">
+          <div class="v-head"><span class="v-id">F4</span><span class="v-name">State line with inline link</span></div>
+          <div class="v-stage"><div class="lrow"><div class="cov g5"></div><div class="meta"><div class="t">Pachinko</div><div class="a">Min Jin Lee</div></div><div class="acts"><div class="state" style="text-align:left;padding:3px 0">Not online · <span class="lnk">find in a library</span></div><div class="split"><div class="b b-s">Want to Read</div><div class="b b-s caret">▾</div></div></div></div></div>
+          <div class="v-body">
+            <p>F3, but the state line carries the Locate link inline.</p>
+            <div class="pc pro"><span class="m">+</span><span>Locate is reachable in one click without occupying a button slot</span></div>
+            <div class="pc con"><span class="m">−</span><span>Tiny tap target; text links in an action column are the pattern F9 (duplicate preview link) just cleaned up</span></div>
+            <div class="pc con"><span class="m">−</span><span>Grid tiles have no state line, so Grid needs a different answer anyway</span></div>
+          </div>
+        </div>
+
+        <div class="v">
+          <div class="v-head"><span class="v-id">F5</span><span class="v-name">Always second, never first</span></div>
+          <div class="v-stage"><div class="lrow"><div class="cov g5"></div><div class="meta"><div class="t">Pachinko</div><div class="a">Min Jin Lee</div></div><div class="acts"><div class="b b-o">Find in a library</div><div class="split"><div class="b b-s">Want to Read</div><div class="b b-s caret">▾</div></div><div class="state">Also in Save ▾ · More ways to read</div></div></div></div>
+          <div class="v-body">
+            <p>F1's behaviour in the slot <em>and</em> Locate always present in the menu, even for readable books ("More ways to read → Find in a library").</p>
+            <div class="pc pro"><span class="m">+</span><span>A reader who prefers print can always find the library route, even when Borrow leads</span></div>
+            <div class="pc pro"><span class="m">+</span><span>Consistent menu contents across rows</span></div>
+            <div class="pc con"><span class="m">−</span><span>Same item in two places for no-copy rows; acceptable if the menu simply omits it when it is already the Access verb</span></div>
+          </div>
+        </div>
+
+        <div class="v">
+          <div class="v-head"><span class="v-id">F6</span><span class="v-name">Cover badge (Grid answer)</span></div>
+          <div class="v-stage"><div class="tiles"><div class="tile"><div class="cov"><div class="heart">+</div></div><div class="b b-p">Borrow</div></div><div class="tile"><div class="cov g5"><div class="heart">+</div><div class="badge" style="top:auto;bottom:5px">NOT ONLINE</div></div><div class="b b-o">Find</div></div><div class="tile"><div class="cov g3"><div class="heart">+</div><div class="badge" style="top:auto;bottom:5px">WAITLIST</div></div><div class="b b-p">Join</div></div></div></div>
+          <div class="v-body">
+            <p>At Grid density: outlined "Find" under the cover, and the state moves to a badge on the cover ("Not online", "Waitlist", "Preview").</p>
+            <div class="pc pro"><span class="m">+</span><span>Keeps F1's signal where there is no state line</span></div>
+            <div class="pc con"><span class="m">−</span><span>Badges over art need the same contrast treatment as the corner Save</span></div>
+            <div class="pc con"><span class="m">−</span><span>Badge vocabulary must be short and translated; "Not online" is 9 chars in English and 20 in German</span></div>
+          </div>
+        </div>
+      </div>
+
+      <h3>The resulting Access slot rule</h3>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>lending_state</th><th>Slot shows</th><th>Style</th><th>State line / badge</th><th>Locate in menu?</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">borrowed · open · printdisabled</td><td class="key">Read</td><td>Filled</td><td>Loan ends {date} · Free to read · Special access</td><td>Yes (More ways to read)</td></tr>
+            <tr><td class="mono">borrowable</td><td class="key">Borrow</td><td>Filled</td><td>{n} of {m} available</td><td>Yes</td></tr>
+            <tr><td class="mono">partner (read)</td><td class="key">Read on {Provider}</td><td>Filled + external glyph</td><td>Free · leaves Open Library</td><td>Yes</td></tr>
+            <tr><td class="mono">partner (audio)</td><td class="key">Listen</td><td>Filled</td><td>Audiobook · {Provider}</td><td>Yes</td></tr>
+            <tr><td class="mono">waitlist</td><td class="key">Join waitlist</td><td>Filled</td><td>{n} readers in line</td><td>Yes</td></tr>
+            <tr><td class="mono">checkedout</td><td class="key">Find in a library</td><td><strong>Outlined</strong></td><td>All copies checked out</td><td>No — it is the slot</td></tr>
+            <tr><td class="mono">preview_only</td><td class="key">Preview</td><td>Filled</td><td>Preview only · no full text</td><td>Yes</td></tr>
+            <tr><td class="mono">locate (none)</td><td class="key">Find in a library</td><td><strong>Outlined</strong></td><td>Not available online</td><td>No — it is the slot</td></tr>
+            <tr><td class="mono">locate, no identifiers</td><td class="key">—</td><td>Slot empty (F3 fallback)</td><td>Not available online</td><td>—</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="font-family:var(--sans);font-size:.9rem;color:var(--ink-2)">
+        Two styles, one rule: <strong>filled means "you can read this here, now or soon"; outlined means
+        "we can point you somewhere"</strong>. Both are verbs. Neither is a status.
+      </p>
+    </section>
+
+    <!-- ============================ MENU ============================ -->
+    <section id="menu">
+      <h2 class="sec"><span class="n">12</span>Inside the menu — five variants</h2>
+      <p class="sec-sub">
+        If one dropdown owns everything except Access, its internal structure carries a lot. Five
+        arrangements of the same twenty items.
+      </p>
+
+      <div class="vgrid">
+        <div class="v rec">
+          <div class="v-head"><span class="v-id">M1</span><span class="v-name">Grouped, shelf first</span><span class="v-tag chip chip-rec">Recommended</span></div>
+          <div class="v-stage"><div class="menu wide" style="margin-top:0"><div class="mg">Shelf</div><div class="mi on">✓ Want to Read</div><div class="mi">Currently Reading</div><div class="mi">Already Read</div><div class="mi">Stopped Reading</div><div class="mi" style="color:var(--ink-3)">Remove from shelf</div><div class="mg">Rate</div><div class="stars">★★★★☆</div><div class="mg">Lists</div><div class="mi">☑ Summer 2026</div><div class="mi">☐ Sci-fi to reread</div><div class="mi">+ New list…</div><div class="mg">More ways to read</div><div class="mi">Preview</div><div class="mi">Search inside</div><div class="mi">Find in a library ↗</div><div class="mg">Elsewhere</div><div class="mi">Share</div><div class="mi">Buy this book ↗</div><div class="mi">All 21 editions</div></div></div>
+          <div class="v-body">
+            <p>The audit's grouped menu. Groups appear only when they apply; the order never changes.</p>
+            <div class="pc pro"><span class="m">+</span><span>Shelf at the top means the split-button body and the first menu item agree</span></div>
+            <div class="pc pro"><span class="m">+</span><span>Group headers double as the i18n-friendly labels for the icon-less menu</span></div>
+            <div class="pc con"><span class="m">−</span><span>Long on a book page (7 groups); short on a carousel card. Acceptable because it is predictable</span></div>
+          </div>
+        </div>
+
+        <div class="v">
+          <div class="v-head"><span class="v-id">M2</span><span class="v-name">Flat, no groups</span></div>
+          <div class="v-stage"><div class="menu" style="margin-top:0"><div class="mi on">✓ Want to Read</div><div class="mi">Currently Reading</div><div class="mi">Already Read</div><div class="mi">Add to list…</div><div class="mi">Rate…</div><div class="mi">Preview</div><div class="mi">Find in a library</div><div class="mi">Share</div></div></div>
+          <div class="v-body">
+            <p>Eight top items; sub-actions ("Add to list…", "Rate…") open a second step.</p>
+            <div class="pc pro"><span class="m">+</span><span>Short; scans fast</span></div>
+            <div class="pc con"><span class="m">−</span><span>Two-step for lists and rating — the two actions with the highest per-use frequency after shelving</span></div>
+          </div>
+        </div>
+
+        <div class="v">
+          <div class="v-head"><span class="v-id">M3</span><span class="v-name">Tabbed</span></div>
+          <div class="v-stage"><div class="menu tabbed wide" style="margin-top:0"><div class="mtabs"><span class="on">Shelf</span><span>Lists</span><span>Read</span><span>More</span></div><div class="mi on">✓ Want to Read</div><div class="mi">Currently Reading</div><div class="mi">Already Read</div><div class="mi">Stopped Reading</div><div class="stars">★★★★☆</div></div></div>
+          <div class="v-body">
+            <p>Tabs across the top of the popover; each tab is one group.</p>
+            <div class="pc pro"><span class="m">+</span><span>Fixed height; nothing scrolls</span></div>
+            <div class="pc con"><span class="m">−</span><span>Tabs in a menu is a novel widget; keyboard model (arrow keys move tabs or items?) is unclear</span></div>
+            <div class="pc con"><span class="m">−</span><span>Hides Lists behind a tab; the current dropper shows list checkboxes directly</span></div>
+          </div>
+        </div>
+
+        <div class="v">
+          <div class="v-head"><span class="v-id">M4</span><span class="v-name">Two-pane</span></div>
+          <div class="v-stage"><div class="menu two" style="margin-top:0"><div><div class="mg">Shelf</div><div class="mi on">✓ Want to Read</div><div class="mi">Currently Reading</div><div class="mi">Already Read</div><div class="mi">Stopped Reading</div><div class="stars">★★★★☆</div></div><div><div class="mg">Lists</div><div class="mi">☑ Summer 2026</div><div class="mi">☐ Sci-fi to reread</div><div class="mi">+ New list…</div><div class="mg">Also</div><div class="mi">Preview</div><div class="mi">Share</div></div></div></div>
+          <div class="v-body">
+            <p>Shelf + rating on the left, lists + everything else on the right; the popover is wider and shorter.</p>
+            <div class="pc pro"><span class="m">+</span><span>Everything visible without scrolling on desktop</span></div>
+            <div class="pc con"><span class="m">−</span><span>Collapses to M1 on mobile anyway; two layouts to maintain</span></div>
+            <div class="pc con"><span class="m">−</span><span>Wider than a Grid tile; the popover would overhang</span></div>
+          </div>
+        </div>
+
+        <div class="v">
+          <div class="v-head"><span class="v-id">M5</span><span class="v-name">Sheet on mobile</span></div>
+          <div class="v-stage"><div style="width:180px;background:var(--surface);border:1px solid var(--rule-2);border-radius:8px 8px 0 0;padding:8px 0 4px;box-shadow:var(--shadow)"><div style="width:30px;height:3px;border-radius:2px;background:var(--rule-2);margin:0 auto 6px"></div><div class="menu wide" style="margin:0;border:0;box-shadow:none;width:auto"><div class="mi" style="font-weight:700;color:var(--ink)">Dune Messiah</div><div class="mg">Shelf</div><div class="mi on">✓ Want to Read</div><div class="mi">Currently Reading</div><div class="mi">Already Read</div><div class="mg">Lists</div><div class="mi">☑ Summer 2026</div><div class="mi">+ New list…</div><div class="mg">More</div><div class="mi">Preview · Share · Find in a library</div></div></div></div>
+          <div class="v-body">
+            <p>M1's content, presented as a bottom sheet under ~600px with the book's title as a header.</p>
+            <div class="pc pro"><span class="m">+</span><span>The only presentation that works for a 20-item menu on a phone</span></div>
+            <div class="pc pro"><span class="m">+</span><span><code>ol-menu-popover</code> can grow a sheet mode once and every menu benefits</span></div>
+            <div class="pc con"><span class="m">−</span><span>Not free: sheet mode is new component work</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================ DEFAULTS ============================ -->
+    <section id="defaults">
+      <h2 class="sec"><span class="n">13</span>Per-surface defaults</h2>
+      <p class="sec-sub">
+        Putting the axes together. Each surface declares a default view, which views it allows,
+        and its intent. Everything else is derived.
+      </p>
+
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>Surface</th><th>Default view</th><th>Allowed views</th><th>Intent</th><th>Leads with</th><th>Second control</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td class="key">Search results (S1)</td><td>List (L2)</td><td>Grid · List · +descriptions</td><td>discover</td><td>Access</td><td>Save ▾</td><td>Cookie remembered</td></tr>
+            <tr><td class="key">Search inside (S2)</td><td>List (L2)</td><td>List · +descriptions</td><td>discover</td><td>Access</td><td>Save ▾</td><td>Search-inside snippet replaces the description; Grid disabled — the snippet is the point</td></tr>
+            <tr><td class="key">Trending (S3)</td><td>List (L2)</td><td>Grid · List · +descriptions</td><td>discover</td><td>Access</td><td>Save ▾</td><td></td></tr>
+            <tr><td class="key">Author page works (S4)</td><td>Grid (G3)</td><td>Grid · List</td><td>discover</td><td>Access</td><td>Save (corner)</td><td>Authors are browsed by cover; the page already leans visual</td></tr>
+            <tr><td class="key">List page — owner (S5)</td><td>List (L2)</td><td>Grid · List · +descriptions</td><td>manage</td><td>Access</td><td>Save ▾ + This list group</td><td>Owner's notes need List width</td></tr>
+            <tr><td class="key">List page — visitor (S5)</td><td>Grid (G3)</td><td>Grid · List</td><td>discover</td><td>Access</td><td>Save (corner)</td><td>Reading someone else's list is browsing</td></tr>
+            <tr><td class="key">Reading log (S6)</td><td>List (L5)</td><td>Grid (G5) · List</td><td>manage</td><td>Save shelf ▾</td><td>Access</td><td>Inline rating + check-in in List</td></tr>
+            <tr><td class="key">Loan history (S7)</td><td>List (L1)</td><td>List</td><td>manage</td><td>Access</td><td>Save ▾</td><td>Dense; it is a ledger</td></tr>
+            <tr><td class="key">Stats (S8)</td><td>List (L1)</td><td>List</td><td>discover</td><td>Access</td><td>—</td><td>Read-only analysis view</td></tr>
+            <tr><td class="key">Home / subject / publisher carousels (S9)</td><td>Carousel (C3)</td><td>Carousel · List (in place, X2)</td><td>discover</td><td>Access</td><td>Save (corner)</td><td>Expansion capped at ~24 with "See all"</td></tr>
+            <tr><td class="key">My Books shelf carousels (S10)</td><td>Carousel (C3 with G5 tiles)</td><td>Carousel · List (L5)</td><td>manage</td><td>Save shelf ▾</td><td>Access (corner / menu)</td><td>Expanding in place = the reading log for that shelf</td></tr>
+            <tr><td class="key">Mobile showcase (S11)</td><td>Carousel (C3 with G5)</td><td>Carousel</td><td>manage</td><td>Save shelf ▾</td><td>—</td><td>Replaces the cover-only strip</td></tr>
+            <tr><td class="key">Editions table (S12)</td><td>List (L1)</td><td>List</td><td>commit</td><td>Access</td><td>—</td><td>Edition-level; Save stays a work concept (open question)</td></tr>
+            <tr><td class="key">Book page related works</td><td>Carousel (C3)</td><td>Carousel · List</td><td>discover</td><td>Access</td><td>Save (corner)</td><td></td></tr>
+            <tr><td class="key">Collections pages</td><td>Carousel (C6 or C3)</td><td>Carousel · Grid · List</td><td>discover</td><td>Access</td><td>Save (corner)</td><td>Curated → may use featured lead</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h4>What the config looks like</h4>
+      <p style="font-family:var(--sans);font-size:.92rem;color:var(--ink-2)">
+        One macro call per surface, three arguments that mean something, no booleans:
+      </p>
+      <pre style="font-family:var(--mono);font-size:12.5px;background:var(--surface);border:1px solid var(--rule);border-radius:3px;padding:14px 16px;overflow-x:auto;color:var(--ink-2);max-width:68ch;line-height:1.5">$:macros.BookCollection(books,
+    intent="discover",          # discover | manage | commit
+    view=view_pref or "list",   # grid | list | carousel ; +descriptions flag
+    allow=["grid","list"],      # which the switcher offers; [] hides it
+    title=..., see_all_url=...)</pre>
+      <p style="font-family:var(--sans);font-size:.92rem;color:var(--ink-2)">
+        Inside, one tile template (Grid/Carousel) and one row template (List/Detailed) both call the
+        same <code>BookActions(book, intent, density)</code> — which is the audit's Phase 2 component,
+        with <code>density</code> replacing the six booleans and telling it whether it has a state
+        line, a labelled Save, or a corner control.
+      </p>
+    </section>
+
+    <!-- ============================ CHALLENGES ============================ -->
+    <section id="challenges">
+      <h2 class="sec"><span class="n">14</span>Challenges</h2>
+      <p class="sec-sub">
+        Everything that makes this harder than drawing it. Grouped by kind, roughly ordered by how
+        much they constrain the recommendation. Each names the variant it bites and the way out.
+      </p>
+
+      <h3>Data &amp; caching</h3>
+
+      <div class="chal">
+        <div class="cid">C1</div>
+        <div>
+          <h3>Carousel HTML is cached; shelf state is per user <span class="chip chip-risk">Blocks C3, G3, G5</span></h3>
+          <p><code>QueryCarousel</code> renders through <code>CacheableMacro</code> or a lazy partial, shared across users. A Save control that shows "✓ Reading" cannot be baked in. Every carousel and every Grid tile has to hydrate its shelf/list state after load.</p>
+          <p class="ev">QueryCarousel.html:29 · custom_carousel.html:37 data-config · MyBooksDropper async_load path already used by search results</p>
+          <p class="fix"><b>Way out:</b> one batched request per page — <code>GET /account/books/state?keys=OL1W,OL2W,…</code> — returning shelf, list-membership and rating for up to ~120 works; tiles render the neutral "+" state and flip on response. The dropper's <code>async_load</code> is the seed of this; it currently fires per-row.</p>
+        </div>
+      </div>
+
+      <div class="chal">
+        <div class="cid">C2</div>
+        <div>
+          <h3>Carousels have no data payload, only HTML <span class="chip chip-risk">Blocks X2</span></h3>
+          <p>Reflowing a carousel into List in place needs the books' data (title, author, availability, ratings, counts) to render an L2 row. Today the card is server-rendered; the only client-side data is the <code>load_more</code> query config.</p>
+          <p class="ev">custom_carousel.html:18–37 · custom_carousel_card.html renders straight from the Solr doc</p>
+          <p class="fix"><b>Way out (pick one):</b> (a) embed a trimmed JSON of the docs in the carousel's <code>data-config</code> — cheap, but roughly doubles carousel HTML weight; (b) on expand, re-fetch the same query via <code>/search.json</code> with <code>view=list</code> and render server-side partials — no weight cost, one round-trip on expand; (c) render both tile and row markup and toggle with CSS — simplest, heaviest, and Detailed can't work this way. Recommendation: (b), because the "Show more" pager needs that endpoint anyway.</p>
+        </div>
+      </div>
+
+      <div class="chal">
+        <div class="cid">C3</div>
+        <div>
+          <h3>Descriptions are not in the search index <span class="chip chip-risk">Blocks D1–D5</span></h3>
+          <p>Solr work docs carry <code>first_sentence</code> and subjects but not <code>description</code>. A Detailed view over 20 search results needs 20 work fetches from the DB (or a batch <code>get_many</code>), and a large share of works have no description at all.</p>
+          <p class="ev">openlibrary/solr schema · works' description lives on the Infogami work object</p>
+          <p class="fix"><b>Way out:</b> lazy-load descriptions when Detailed is toggled on (one <code>get_many</code> for the visible page, rendered as a partial), and define the fallback ladder: description → first_sentence → "Subjects: …" → nothing (row collapses to L2 height). Consider indexing a 300-char <code>description_snippet</code> in Solr later if Detailed earns it. Never make Detailed the default until the fetch is measured.</p>
+        </div>
+      </div>
+
+      <div class="chal">
+        <div class="cid">C4</div>
+        <div>
+          <h3>Availability is per-edition; the row is per-work <span class="chip chip-warn">Affects every view</span></h3>
+          <p>Borrow/Read/Preview state comes from the work's "best" IA edition (<code>lending_edition_s</code> / <code>ia</code> in the doc). Detailed's editions strip (D2) will show covers whose availability differs from the row's button, prompting "which one am I borrowing?"</p>
+          <p class="fix"><b>Way out:</b> the strip links to the editions table; the button always acts on the lending edition; the state line may say "This edition: 1 of 3 available". Don't try to make the strip interactive.</p>
+        </div>
+      </div>
+
+      <div class="chal">
+        <div class="cid">C5</div>
+        <div>
+          <h3>Locate needs an edition; search rows are works <span class="chip chip-risk">Blocks F1–F6</span></h3>
+          <p><code>LocateButton</code> builds <code>/books/{edition}/-/borrow?action=locate</code>; <code>WorldcatLink</code> needs ISBN/OCLC. Work docs have arrays of both, but no notion of "the representative edition for a library lookup" — and 20–30% of works have neither identifier.</p>
+          <p class="ev">LocateButton.html:3 · WorldcatLink.html:1 · LoanStatus.html:158–168 falls through to NotInLibrary when not is_edition</p>
+          <p class="fix"><b>Way out:</b> in the row, pick <code>cover_edition_key</code> if it has an ISBN/OCLC, else the first edition with one; pass it as <code>locate_edition</code>. Rows with no identifiers at all fall to F3 (slot empty, state line only) — measure how many; if it is large, the "Find in a library" story is weaker than it looks.</p>
+        </div>
+      </div>
+
+      <h3>Layout &amp; language</h3>
+
+      <div class="chal">
+        <div class="cid">C6</div>
+        <div>
+          <h3>Label width at tile density <span class="chip chip-warn">Affects G3–G5, C3, F1</span></h3>
+          <p>"Find in a library", "Currently Reading", "Join waitlist" at ~110px in English are marginal; in German, Finnish, Tamil they overflow. Today's carousel dodges this by having only "Borrow"/"Read".</p>
+          <p class="fix"><b>Way out:</b> a short-form string for every verb and shelf ("Find", "Reading", "Waitlist"), chosen by density not by locale, and a tested minimum tile width (~120px) below which the tile drops the label and keeps the icon + tooltip. Both short and long forms go through i18n as separate msgids.</p>
+        </div>
+      </div>
+
+      <div class="chal">
+        <div class="cid">C7</div>
+        <div>
+          <h3>Controls over cover art <span class="chip chip-warn">Affects G3, F6</span></h3>
+          <p>The corner Save and the state badge sit on top of arbitrary images. Light covers wash out a light control; dark covers hide a dark one.</p>
+          <p class="fix"><b>Way out:</b> a fixed light chip with a subtle shadow ring (as drawn), never adaptive to the cover; and never place a control over the cover's centre. Also plan the no-cover placeholder — controls need to look right on it too.</p>
+        </div>
+      </div>
+
+      <div class="chal">
+        <div class="cid">C8</div>
+        <div>
+          <h3>Two controls at Grid width is one too many <span class="chip chip-warn">Affects G4, R6</span></h3>
+          <p>R6 (horizontal pair) needs ~150px; a Grid tile has ~110px. Any variant that puts two labelled buttons under a tile either truncates or wraps.</p>
+          <p class="fix"><b>Way out:</b> the density parameter. Below ~140px, <code>BookActions</code> renders G3's arrangement (one button + corner control); above, R3 stacked; above ~260px, R6 horizontal. Three breakpoints inside one component, no per-view templates.</p>
+        </div>
+      </div>
+
+      <div class="chal">
+        <div class="cid">C9</div>
+        <div>
+          <h3>Grid currently hides features with CSS <span class="chip chip-mute">Cleanup</span></h3>
+          <p>The existing grid layout ships the full row markup and hides rating, check-in and details with <code>display:none</code>. Moving to a tile template means the grid class flip becomes a re-render, not a restyle — the switcher can no longer be a pure CSS toggle.</p>
+          <p class="ev">legacy.css:1490–1550 · list_books.js:22 toggles a class only</p>
+          <p class="fix"><b>Way out:</b> either render both tile and row markup server-side and toggle visibility (heavy, but instant, and keeps the no-JS story), or re-fetch a partial on switch (light, one round-trip). For search results — the one surface where the switch is used a lot — rendering both is defensible; for everything else, re-fetch.</p>
+        </div>
+      </div>
+
+      <h3>Interaction &amp; accessibility</h3>
+
+      <div class="chal">
+        <div class="cid">C10</div>
+        <div>
+          <h3>Two switchers must feel like one system <span class="chip chip-warn">Affects S3 + S5</span></h3>
+          <p>A toolbar segmented control on list pages and a header toggle on carousels are different widgets in different places controlling the same concept.</p>
+          <p class="fix"><b>Way out:</b> same icons, same order (Grid before List), same component (<code>ol-segmented-control</code> in a compact size), and the carousel version never persists. Document it in the design-system page.</p>
+        </div>
+      </div>
+
+      <div class="chal">
+        <div class="cid">C11</div>
+        <div>
+          <h3>Announcing a view change and preserving focus <span class="chip chip-warn">All switchers</span></h3>
+          <p>Re-rendering 20 rows on a view switch drops keyboard focus and tells screen readers nothing. Expanding a carousel in place inserts a large region below the reader's current position.</p>
+          <p class="fix"><b>Way out:</b> keep focus on the switcher; <code>aria-live="polite"</code> "Showing 20 results as a grid"; expanded carousel gets <code>aria-expanded</code> on the toggle and moves focus to the first row's title. Reduced motion: no reflow animation.</p>
+        </div>
+      </div>
+
+      <div class="chal">
+        <div class="cid">C12</div>
+        <div>
+          <h3>Touch has no hover <span class="chip chip-risk">Kills G6, weakens C4</span></h3>
+          <p>Any variant that reveals controls on hover has to reveal them on tap on touch, and the tap is already spoken for (navigate to the book).</p>
+          <p class="fix"><b>Way out:</b> don't ship hover-reveal. Controls are always rendered; density decides how compact.</p>
+        </div>
+      </div>
+
+      <div class="chal">
+        <div class="cid">C13</div>
+        <div>
+          <h3>Split-button semantics <span class="chip chip-warn">R3, R6, G5</span></h3>
+          <p>A split button is two buttons that look like one: the body submits a form (POST to reading log), the caret opens a menu. They need separate accessible names ("Want to Read", "More save options"), separate focus stops, and the caret needs <code>aria-haspopup</code>/<code>aria-expanded</code> — none of which today's dropper has (audit F6).</p>
+          <p class="fix"><b>Way out:</b> build it once on <code>ol-button</code> + <code>ol-menu-popover</code> and give it a name (<code>ol-split-button</code>); the results-sort control has already solved the popover half.</p>
+        </div>
+      </div>
+
+      <div class="chal">
+        <div class="cid">C14</div>
+        <div>
+          <h3>Logged-out Save in every tile means more login interruptions <span class="chip chip-warn">G3, C3</span></h3>
+          <p>Putting Save on every carousel cover multiplies the places an anonymous reader can hit a login wall.</p>
+          <p class="fix"><b>Way out:</b> the login-intent flow already exists and returns the reader to the action; measure interruption→completion. If it grates, render the corner Save on carousels only with a session, but keep it in List everywhere.</p>
+        </div>
+      </div>
+
+      <h3>Product &amp; scope</h3>
+
+      <div class="chal">
+        <div class="cid">C15</div>
+        <div>
+          <h3>Fourteen call sites, two template systems <span class="chip chip-warn">Cost</span></h3>
+          <p>Unifying row and tile under one collection component touches every surface in the audit's table, across Templetor macros and Jinja, and the carousel JS (<code>OlCarousel</code>, lazy-load, load-more) is coupled to the current card markup.</p>
+          <p class="fix"><b>Way out:</b> the sequence in §15 — the collection component is introduced under the carousel first (fewest features, biggest gap), then adopted by the row shell.</p>
+        </div>
+      </div>
+
+      <div class="chal">
+        <div class="cid">C16</div>
+        <div>
+          <h3>Detailed may not earn its keep <span class="chip chip-mute">Risk of over-building</span></h3>
+          <p>Descriptions in results is a genuine reader benefit and also a real fetch, layout, and coverage cost. It is the least certain of the four views.</p>
+          <p class="fix"><b>Way out:</b> ship it as a toggle (S3), behind a flag, on search results only; promote to a first-class view if the toggle sees use. Do not build D2–D5 until D1 has numbers.</p>
+        </div>
+      </div>
+
+      <div class="chal">
+        <div class="cid">C17</div>
+        <div>
+          <h3>Grouped rows (L6) and view are different axes <span class="chip chip-mute">Scope guard</span></h3>
+          <p>Grouping by availability or shelf is a sort/filter concern that belongs to the results-toolbar work. If it lands as a "view", the two efforts will fight over the same control.</p>
+          <p class="fix"><b>Way out:</b> keep L6 out of the switcher; if wanted, it is a toolbar option ("Group by availability") that any view can honour.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================ RECOMMENDATION ============================ -->
+    <section id="rec">
+      <h2 class="sec"><span class="n">15</span>Recommendation &amp; sequence</h2>
+      <p class="sec-sub">
+        The set of choices, then an order that lands each without waiting on the next.
+      </p>
+
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>Decision</th><th>Pick</th><th>Not</th><th>Because</th></tr></thead>
+          <tbody>
+            <tr><td class="key">Views as an axis?</td><td>Yes — density only</td><td>Views that change which actions exist</td><td>Keeps intent and state as the only things that decide meaning</td></tr>
+            <tr><td class="key">Which views</td><td>Grid · List · Carousel, plus a descriptions toggle</td><td>A fourth Detailed segment</td><td>Detailed is L2 + a fetch; prove it before promoting it (C16)</td></tr>
+            <tr><td class="key">List</td><td>L2 (default) · L1 for ledgers · L5 = L2 on manage</td><td>L3, L4, L6</td><td>L3/L4 blur into Detailed; L6 is a toolbar concern</td></tr>
+            <tr><td class="key">Grid tile</td><td>G3 (corner Save) · G5 on manage</td><td>G1, G2, G6</td><td>Only G3/G5 keep both controls at tile width without hover</td></tr>
+            <tr><td class="key">Carousel</td><td>C3 = G3 tile in a track</td><td>C4–C6 as general views</td><td>One tile template; C6 stays a special container for curated pages</td></tr>
+            <tr><td class="key">Expand a carousel</td><td>X2 in place, capped, with X1's "See all" kept</td><td>X4, X5</td><td>Keeps context; reuses the collection component</td></tr>
+            <tr><td class="key">Switcher</td><td>S3 in toolbars · S5 in carousel headers</td><td>S1, S4</td><td>Additive to what exists; two remembered prefs</td></tr>
+            <tr><td class="key">Action row</td><td>R3, rendered as R6 when wide</td><td>R1, R2, R4</td><td>"One Read + one dropdown" with Save labelled and stateful</td></tr>
+            <tr><td class="key">Locate</td><td>F1 (+ F5 in the menu, F6 at tile density)</td><td>F2, F3 as the norm</td><td>Slot never empty; outline preserves the "not online" scan signal</td></tr>
+            <tr><td class="key">Menu</td><td>M1, presented as M5 on mobile</td><td>M2–M4</td><td>Predictable order; the sheet is component work worth doing once</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Sequence</h3>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>Step</th><th>Ships</th><th>Depends on</th><th>Retires</th></tr></thead>
+          <tbody>
+            <tr><td class="key">1 · Vocabulary + state line + Locate in the slot</td><td>Audit Phase 0, plus F1's outlined style and the C5 edition pick</td><td>Nothing</td><td>NotInLibrary.html, "Preview Only", "Checked Out" as buttons</td></tr>
+            <tr><td class="key">2 · Split-button + one menu</td><td><code>ol-split-button</code>, M1 menu on <code>ol-menu-popover</code>, R3 in List rows; logged-out label fix</td><td>Step 1</td><td>lib/dropper.html, the &lt;details&gt; read menu, is_carousel string test</td></tr>
+            <tr><td class="key">3 · Grid tile with corner Save, in carousels</td><td>G3/G5 tile as the carousel card, batched state hydration (C1), density param in BookActions</td><td>Step 2</td><td>custom_carousel_card's own action rendering; mobile_carousel cover-only</td></tr>
+            <tr><td class="key">4 · Collection component + view switch</td><td><code>BookCollection</code> with grid|list|carousel; search/reading-log grid becomes the same tile; cookie values renamed; per-carousel expand (X2) via search.json partials (C2)</td><td>Step 3</td><td>legacy.css grid overrides, QueryCarousel's separate layout param</td></tr>
+            <tr><td class="key">5 · Intent</td><td>intent replaces the six booleans across all call sites; manage surfaces lead with shelf</td><td>Step 4 (or in parallel with 3 for List rows)</td><td>cta, include_dropper, secondary_action, listen, rating, decorations</td></tr>
+            <tr><td class="key">6 · Descriptions toggle</td><td>D1 behind a flag on search results, lazy get_many (C3)</td><td>Step 4</td><td>—</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="font-family:var(--sans);font-size:.92rem;color:var(--ink-2)">
+        Steps 1–2 are the audit's Phases 0–1 unchanged. Step 3 is the audit's Phase 2 with a
+        specific tile design. Steps 4–6 are the new work this document adds — and step 4 is where
+        "views" stops being a cookie on a class name and becomes the thing that decides what a book
+        shows.
+      </p>
+    </section>
+
+    <!-- ============================ OPEN ============================ -->
+    <section id="open">
+      <h2 class="sec"><span class="n">16</span>Open questions</h2>
+      <ul>
+        <li><strong>Is the corner Save (G3) enough Save for a carousel, or should discover carousels
+          get the two-button strip (G4) at the cost of a caret-only menu?</strong> Recommendation is
+          G3; a quick prototype on the home page would settle it.</li>
+        <li><strong>Should "Show descriptions" be a segment or a checkbox?</strong> Checkbox proposed
+          (S3); if readers treat it as a distinct mode, promote it.</li>
+        <li><strong>Should the expanded carousel remember itself for the session?</strong> Proposed no —
+          but a My Books reader who always wants the Currently Reading shelf as a list has a case.</li>
+        <li><strong>Where does the collapsed row for works with no identifiers land?</strong> F3 (slot
+          empty) is the fallback; if that population is large, "Find in a library" is a smaller win
+          than §11 implies. Needs a count.</li>
+        <li><strong>Does the editions table (S12) get a Save at edition granularity?</strong> Left as
+          the audit left it: shelving stays a work concept until there is a reason otherwise.</li>
+        <li><strong>Should Grid ever be the search-results default on mobile?</strong> Two columns of
+          G3 tiles fit a phone well and put more results above the fold; List is the safe answer,
+          Grid the interesting one. Worth an experiment once the tile exists.</li>
+        <li><strong>Buy this book in the menu on discover surfaces?</strong> Still a policy call, unchanged
+          from the audit.</li>
+      </ul>
+    </section>
+
+  </main>
+
+  <footer class="colophon">
+    Views &amp; Verbs · Open Library · design exploration · 15 August 2026<br>
+    Follows the Book Actions Audit (10 Aug 2026). Grounded in the two existing layout systems:
+    the LBL cookie / ol-segmented-control on list surfaces, and QueryCarousel's layout parameter.
+    Mockups are schematic, not pixel-accurate.
+  </footer>
+
+</div>
+</body></html>

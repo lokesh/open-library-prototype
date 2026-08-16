@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Subject - Open Library</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,100..900&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles/index.css">
+  <script type="module" src="/src/components/index.js"></script>
+  <script type="module">
+    import catalogService from '/src/catalog-service.js';
+    async function init() {
+      await catalogService.ensureLoaded();
+      const p = new URLSearchParams(location.search);
+      const subject = p.get('subject') || 'Science fiction';
+      const books = subject === 'Classics' ? catalogService.classics(60) : catalogService.bySubject(subject, 60);
+      document.title = `${subject} - Open Library`;
+      document.getElementById('name').textContent = subject;
+      document.getElementById('count').textContent = `${books.length} work${books.length === 1 ? '' : 's'}`;
+      document.getElementById('chips').innerHTML = catalogService.allSubjects().slice(0, 14).map(s => `<a href="subject.html?subject=${encodeURIComponent(s.name)}" aria-current="${s.name === subject}">${s.name}</a>`).join('');
+      // Featured: a carousel of the most-read; then the full grid/list with a switcher
+      const feat = document.getElementById('featured'); feat.keys = [...books].sort((a, b) => b.ratingCount - a.ratingCount).slice(0, 14).map(b => b.key); feat.heading = 'Most read'; feat.view = 'carousel'; feat.expandable = true;
+      const tb = document.getElementById('toolbar'); const col = document.getElementById('all');
+      let view = localStorage.getItem('ol-view') || 'grid';
+      const setView = v => { view = v; tb.view = v; col.view = v; };
+      tb.addEventListener('ol-view-change', e => setView(e.detail.view));
+      tb.count = `All ${books.length}`; tb.hideSort = true;
+      col.keys = books.map(b => b.key); setView(view);
+      const peek = document.querySelector('ol-peek-panel'); peek.keys = col.keys;
+      peek.addEventListener('ol-peek-change', e => { col.activeKey = e.detail.key || ''; feat.activeKey = e.detail.key || ''; });
+      document.addEventListener('ol-book-peek', e => { const c = e.composedPath().find(el => el.tagName === 'OL-BOOK-COLLECTION'); if (c) peek.keys = c.keys; }, true);
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+  </script>
+</head>
+<body>
+  <ol-main-nav></ol-main-nav>
+  <main>
+    <h1 class="page-title" id="name">Subject</h1>
+    <p class="page-sub" id="count"></p>
+    <div class="subject-chips" id="chips"></div>
+    <div class="collections"><ol-book-collection id="featured" intent="discover"></ol-book-collection></div>
+    <ol-results-toolbar id="toolbar"></ol-results-toolbar>
+    <ol-book-collection id="all" view="grid" intent="discover"></ol-book-collection>
+  </main>
+  <ol-peek-panel intent="discover"></ol-peek-panel>
+  <ol-prototype-controls></ol-prototype-controls>
+</body>
+</html>

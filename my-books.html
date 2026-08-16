@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>My Books - Open Library</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,100..900&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles/index.css">
+  <script type="module" src="/src/components/index.js"></script>
+  <script type="module">
+    import catalogService from '/src/catalog-service.js';
+    import bookStateService, { SHELVES, SHELF_SLUG } from '/src/book-state-service.js';
+    import prototypeSettings from '/src/prototype-settings-service.js';
+
+    async function init() {
+      await catalogService.ensureLoaded();
+      render();
+      document.addEventListener('ol-book-state-change', render);
+      document.addEventListener('ol-settings-change', render);
+      const peek = document.querySelector('ol-peek-panel');
+      document.addEventListener('ol-book-peek', e => { const c = e.composedPath().find(el => el.tagName === 'OL-BOOK-COLLECTION'); if (c) peek.keys = c.keys; }, true);
+      peek.addEventListener('ol-peek-change', e => document.querySelectorAll('ol-book-collection').forEach(el => { el.activeKey = e.detail.key || ''; }));
+    }
+    function render() {
+      const c = bookStateService.shelfCounts(); const li = bookStateService.lists;
+      document.getElementById('nav').innerHTML = `
+        <ul><li><a href="my-books.html" aria-current="page">My Books</a></li><li><a href="#">Loans <span>2</span></a></li><li><a href="my-books.html#lists">Lists <span>${li.length}</span></a></li><li><a href="#">Reading stats</a></li></ul>
+        <h4>Reading log</h4><ul>${Object.entries(SHELVES).map(([k, l]) => `<li><a href="reading-log.html?shelf=${SHELF_SLUG[k]}">${l} <span>${c[k]}</span></a></li>`).join('')}</ul>`;
+      const wrap = document.getElementById('shelves');
+      const existing = new Map([...wrap.querySelectorAll('ol-book-collection')].map(el => [el.dataset.shelf, el]));
+      for (const k of ['reading', 'want', 'read', 'stopped']) { const label = SHELVES[k];
+        let el = existing.get(k);
+        if (!el) { el = document.createElement('ol-book-collection'); el.dataset.shelf = k; el.intent = 'manage'; el.view = 'carousel'; el.expandable = true; wrap.appendChild(el); }
+        el.heading = label; el.seeAllHref = `reading-log.html?shelf=${SHELF_SLUG[k]}`; el.keys = bookStateService.keysOnShelf(k); el.emptyText = 'Nothing on this shelf yet.';
+      }
+      document.getElementById('lists').innerHTML = li.map(l => `<a class="list-card" href="list.html?list=${l.id}"><b>${l.name}</b><span>${l.keys.length} works${l.description ? ' · ' + l.description : ''}</span></a>`).join('');
+      const s = prototypeSettings.get();
+      const note = document.getElementById('today-note');
+      note.hidden = s.row !== 'today' && s.intent;
+      note.textContent = s.row === 'today' ? 'Today: shelf carousels reuse the standard carousel, so every card says Borrow / Read and there is no way to move a book between shelves from here.' : 'Intent-aware is off: these are manage surfaces, but the tile leads with Access. Turn on the flag in ⚙ to see the shelf lead.';
+      document.getElementById('signed-out').hidden = bookStateService.loggedIn;
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+  </script>
+  <style>
+    .list-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: var(--spacing-3); margin-top: var(--spacing-3); }
+    .list-card { display: flex; flex-direction: column; gap: 4px; padding: var(--spacing-3) var(--spacing-4); border: var(--border-card); border-radius: var(--radius-card); background: var(--color-bg-elevated); text-decoration: none; color: var(--color-text); }
+    .list-card:hover { background: var(--color-bg-elevated-hovered); }
+    .list-card b { font-family: var(--heading-font-family); color: var(--color-text-strong); }
+    .list-card span { font-size: var(--font-size-xs); color: var(--color-text-secondary); }
+  </style>
+</head>
+<body>
+  <ol-main-nav></ol-main-nav>
+  <main>
+    <div class="page-cols">
+      <aside class="side-nav" id="nav"></aside>
+      <div>
+        <h1 class="page-title">My Books</h1>
+        <p class="today-note" id="signed-out" hidden>You're signed out. Sign in from ⚙ to see your shelves.</p>
+        <p class="today-note" id="today-note" hidden></p>
+        <div class="collections" id="shelves"></div>
+        <h2 id="lists-h" style="margin-top:var(--spacing-8)">Lists</h2>
+        <div class="list-cards" id="lists"></div>
+      </div>
+    </div>
+  </main>
+  <ol-peek-panel intent="manage"></ol-peek-panel>
+  <ol-prototype-controls></ol-prototype-controls>
+</body>
+</html>

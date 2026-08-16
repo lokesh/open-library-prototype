@@ -1,266 +1,94 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <title>Search - Open Library</title>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>Search - Open Library</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,100..900&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/styles/index.css">
   <script type="module" src="/src/components/index.js"></script>
   <script type="module">
-    import searchDataService from '/src/search-data-service.js';
+    import catalogService from '/src/catalog-service.js';
+    import prototypeSettings from '/src/prototype-settings-service.js';
 
-    const CATEGORIES = [
-      { id: 'books', label: 'Books' },
-      { id: 'authors', label: 'Authors' },
-      { id: 'search-inside', label: 'Search Inside' },
-      { id: 'subjects', label: 'Subjects' },
-      { id: 'lists', label: 'Lists' },
-    ];
-
-    let currentCategory = 'books';
-    let currentQuery = '';
-    let debounceTimer = null;
+    const state = { q: '', readable: false, subject: '', author: '', sort: 'Relevance', view: 'list' };
+    let results = [];
 
     async function init() {
-      await searchDataService.ensureLoaded();
-
-      const params = new URLSearchParams(window.location.search);
-      currentQuery = params.get('q') || '';
-      currentCategory = params.get('category') || 'books';
-
-      const input = document.getElementById('search-input');
-      const clearBtn = document.getElementById('search-clear-btn');
-      input.value = currentQuery;
-      clearBtn.hidden = !currentQuery;
-
-      renderTabs();
-      runSearch();
-
-      // Input handler with debounce
-      input.addEventListener('input', (e) => {
-        currentQuery = e.target.value;
-        clearBtn.hidden = !currentQuery;
-        clearTimeout(debounceTimer);
-        debounceTimer = setTimeout(() => {
-          updateUrl();
-          runSearch();
-        }, 200);
+      await catalogService.ensureLoaded();
+      const p = new URLSearchParams(location.search);
+      state.q = p.get('q') ?? 'austen'; state.readable = p.get('readable') === '1'; state.subject = p.get('subject') || ''; state.author = p.get('author') || '';
+      state.view = p.get('view') || localStorage.getItem('ol-view') || 'list';
+      const input = document.getElementById('q'); input.value = state.q;
+      let t; input.addEventListener('input', () => { clearTimeout(t); t = setTimeout(() => { state.q = input.value; sync(); }, 180); });
+      document.getElementById('search-form').addEventListener('submit', e => { e.preventDefault(); state.q = input.value; sync(); });
+      const tb = document.getElementById('toolbar'); tb.view = state.view;
+      tb.addEventListener('ol-view-change', e => { state.view = e.detail.view; render(); });
+      tb.addEventListener('ol-sort-change', e => { state.sort = e.detail.sort; sync(); });
+      document.getElementById('facets').addEventListener('click', e => {
+        const a = e.target.closest('a[data-facet]'); if (!a) return; e.preventDefault();
+        const [k, v] = [a.dataset.facet, a.dataset.value];
+        if (k === 'readable') state.readable = v === '1'; else state[k] = (state[k] === v ? '' : v);
+        sync();
       });
-
-      // Clear button
-      clearBtn.addEventListener('click', () => {
-        input.value = '';
-        currentQuery = '';
-        clearBtn.hidden = true;
-        input.focus();
-        updateUrl();
-        runSearch();
-      });
-
-      // Enter key to save search
-      input.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' && currentQuery.trim()) {
-          searchDataService.addPastSearch(currentQuery.trim());
-        }
-      });
-
-      // Sidebar filter changes
-      const filters = document.querySelector('ol-search-filters');
-      if (filters) {
-        filters.addEventListener('ol-filters-change', (e) => {
-          runSearch(e.detail.filters);
-        });
-        filters.addEventListener('ol-filters-clear', () => {
-          runSearch();
-        });
-      }
-
-      // Filter bar changes
-      const filterBar = document.querySelector('ol-search-filter-bar');
-      if (filterBar) {
-        filterBar.addEventListener('ol-filter-bar-change', (e) => {
-          runSearch(e.detail);
-        });
-      }
-
-      // Filter modal
-      const filterModal = document.getElementById('filter-modal');
-      if (filterBar && filterModal) {
-        // Restore saved modal filters
-        const countFilters = (f) => Object.values(f).reduce((sum, v) => sum + (Array.isArray(v) ? v.length : 0), 0);
-        const saved = localStorage.getItem('ol-modal-filters');
-        if (saved) {
-          try {
-            const parsed = JSON.parse(saved);
-            filterModal.filters = parsed;
-            filterBar.modalFilterCount = countFilters(parsed);
-          } catch {}
-        }
-
-        filterBar.addEventListener('ol-filter-bar-more', () => {
-          filterModal.open = true;
-        });
-        filterModal.addEventListener('ol-filter-modal-apply', (e) => {
-          filterModal.open = false;
-          const f = e.detail.filters;
-          filterModal.filters = f;
-          filterBar.modalFilterCount = countFilters(f);
-          localStorage.setItem('ol-modal-filters', JSON.stringify(f));
-          runSearch(f);
-        });
-        filterModal.addEventListener('ol-filter-modal-close', () => {
-          filterModal.open = false;
-        });
-      }
+      const peek = document.querySelector('ol-peek-panel');
+      peek.addEventListener('ol-peek-change', e => { document.getElementById('results').activeKey = e.detail.key || ''; });
+      const note = document.getElementById('today-note');
+      const syncNote = () => { note.hidden = !(prototypeSettings.get().row === 'today' && state.view === 'grid'); };
+      document.addEventListener('ol-settings-change', syncNote);
+      sync();
     }
-
-    function renderTabs() {
-      const tabsContainer = document.getElementById('search-tabs');
-      tabsContainer.innerHTML = CATEGORIES.map(cat =>
-        `<button class="search-page-tab ${cat.id === currentCategory ? 'active' : ''}" data-category="${cat.id}">${cat.label}</button>`
-      ).join('');
-
-      tabsContainer.addEventListener('click', (e) => {
-        const btn = e.target.closest('.search-page-tab');
-        if (!btn) return;
-        currentCategory = btn.dataset.category;
-        tabsContainer.querySelectorAll('.search-page-tab').forEach(t => t.classList.remove('active'));
-        btn.classList.add('active');
-        updateUrl();
-        runSearch();
-      });
+    function sync() {
+      results = catalogService.search(state.q, { readableOnly: state.readable, subjects: state.subject ? [state.subject] : [], authors: state.author ? [state.author] : [] });
+      if (state.sort === 'Most editions') results = [...results].sort((a, b) => b.editions - a.editions);
+      else if (state.sort === 'First published') results = [...results].sort((a, b) => a.year - b.year);
+      else if (state.sort === 'Rating') results = [...results].sort((a, b) => b.rating - a.rating);
+      const p = new URLSearchParams(); if (state.q) p.set('q', state.q); if (state.readable) p.set('readable', '1'); if (state.subject) p.set('subject', state.subject); if (state.author) p.set('author', state.author);
+      history.replaceState(null, '', location.pathname + '?' + p);
+      renderFacets(); render();
     }
-
-    function runSearch(filters = null) {
-      const q = currentQuery.trim();
-      const resultsContainer = document.getElementById('search-results');
-
-      if (!q) {
-        resultsContainer.innerHTML = '<p style="color: var(--color-text-secondary); padding: var(--spacing-6) 0; text-align: center;">Enter a search term above</p>';
-        return;
-      }
-
-      let results = [];
-      switch (currentCategory) {
-        case 'books':
-          results = searchDataService.searchBooks(q);
-          if (filters) {
-            results = applyFilters(results, filters);
-          }
-          break;
-        case 'authors':
-          results = searchDataService.searchAuthors(q);
-          break;
-        default:
-          resultsContainer.innerHTML = '<p style="color: var(--color-text-secondary); padding: var(--spacing-6) 0; text-align: center;">Coming soon</p>';
-          return;
-      }
-
-      if (!results.length) {
-        resultsContainer.innerHTML = `<p style="color: var(--color-text-secondary); padding: var(--spacing-6) 0; text-align: center;">No results for "${q}"</p>`;
-        return;
-      }
-
-      if (currentCategory === 'books') {
-        resultsContainer.innerHTML = '';
-        results.forEach(book => {
-          const el = document.createElement('ol-search-result-item');
-          el.title = book.title;
-          el.author = book.author || '';
-          el.year = book.firstPublished || '';
-          el.coverUrl = book.coverUrl || '';
-          el.query = currentQuery;
-          resultsContainer.appendChild(el);
-        });
-      } else if (currentCategory === 'authors') {
-        resultsContainer.innerHTML = results.map(a =>
-          `<div style="padding: var(--spacing-3) var(--spacing-4); border-bottom: 1px solid var(--color-border-subtle); min-height: 44px; display: flex; align-items: center; gap: var(--spacing-2); flex-wrap: wrap;">
-            <strong>${a.name}</strong>
-            <span style="color: var(--color-text-secondary); font-size: var(--body-font-size-sm);">${a.bookCount} book${a.bookCount !== 1 ? 's' : ''}</span>
-          </div>`
-        ).join('');
-      }
+    function renderFacets() {
+      const all = catalogService.search(state.q, {});
+      const count = (fn) => all.filter(fn).length;
+      const subj = new Map(), auth = new Map();
+      for (const b of all) { for (const s of b.subjects || []) subj.set(s, (subj.get(s) || 0) + 1); auth.set(b.author, (auth.get(b.author) || 0) + 1); }
+      const top = (m, n) => [...m.entries()].sort((a, b) => b[1] - a[1]).slice(0, n);
+      const li = (k, v, label, n, cur) => `<li><a href="#" data-facet="${k}" data-value="${v}" aria-current="${cur}">${label}</a><span>${n}</span></li>`;
+      document.getElementById('facets').innerHTML = `
+        <h4>Ebook</h4><ul>${li('readable', '0', 'Any', all.length, !state.readable)}${li('readable', '1', 'Readable now', count(b => catalogService.access(b).readable), state.readable)}</ul>
+        <h4>Subject</h4><ul>${top(subj, 8).map(([s, n]) => li('subject', s, s, n, state.subject === s)).join('')}</ul>
+        <h4>Author</h4><ul>${top(auth, 6).map(([a, n]) => li('author', a, a, n, state.author === a)).join('')}</ul>`;
     }
-
-    function applyFilters(results, filters) {
-      return results.filter(book => {
-        if (filters.yearMin && book.firstPublished < parseInt(filters.yearMin)) return false;
-        if (filters.yearMax && book.firstPublished > parseInt(filters.yearMax)) return false;
-        if (filters.authors && filters.authors.length > 0) {
-          if (!filters.authors.includes(book.author)) return false;
-        }
-        return true;
-      });
+    function render() {
+      const col = document.getElementById('results');
+      col.keys = results.map(b => b.key); col.view = state.view; col.intent = 'discover';
+      col.emptyText = state.q ? `No results for “${state.q}”` : 'Enter a search term above';
+      document.getElementById('toolbar').count = `${results.length.toLocaleString()} result${results.length === 1 ? '' : 's'}${state.q ? ` for “${state.q}”` : ''}`;
+      const peek = document.querySelector('ol-peek-panel'); peek.keys = col.keys; peek.intent = 'discover';
+      document.getElementById('today-note').hidden = !(prototypeSettings.get().row === 'today' && state.view === 'grid');
     }
-
-    function updateUrl() {
-      const params = new URLSearchParams();
-      if (currentQuery) params.set('q', currentQuery);
-      if (currentCategory !== 'books') params.set('category', currentCategory);
-      const newUrl = `${window.location.pathname}?${params.toString()}`;
-      history.replaceState(null, '', newUrl);
-    }
-
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', init);
-    } else {
-      init();
-    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
   </script>
 </head>
 <body>
-
   <ol-main-nav hide-search></ol-main-nav>
-
   <main>
-    <a href="javascript:history.back()" class="search-back-link">&lsaquo; Back</a>
-
-    <div class="search-page-layout">
-      <!-- Filter sidebar (desktop) -->
-      <aside class="search-sidebar">
-        <ol-search-filters></ol-search-filters>
-      </aside>
-
-      <!-- Main content -->
-      <div class="search-main">
-        <!-- Mobile filter toggle -->
-        <div class="search-mobile-filter">
-          <ol-search-filters></ol-search-filters>
-        </div>
-
-        <!-- Search input -->
-        <div class="search-page-input-row">
-          <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="11" cy="11" r="8"/>
-            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
-          </svg>
-          <input type="search" id="search-input" placeholder="Search for a book, author or series..." />
-          <button class="search-clear-btn" id="search-clear-btn" aria-label="Clear search" hidden>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
-            </svg>
-          </button>
-        </div>
-
-        <!-- Filter bar -->
-        <ol-search-filter-bar></ol-search-filter-bar>
-        <ol-filter-modal id="filter-modal"></ol-filter-modal>
-
-        <!-- Category tabs -->
-        <div class="search-page-tabs" id="search-tabs" role="tablist">
-          <!-- Rendered by JS -->
-        </div>
-
-        <!-- Results -->
-        <div class="search-page-results" id="search-results">
-          <!-- Rendered by JS -->
-        </div>
+    <div class="page-cols">
+      <aside class="facets" id="facets"></aside>
+      <div>
+        <form id="search-form" class="search" style="display:flex;gap:var(--spacing-2);margin-bottom:var(--spacing-4);max-width:640px">
+          <input type="search" id="q" placeholder="Search for a book, author or subject…" aria-label="Search">
+          <ol-button type="submit">Search</ol-button>
+        </form>
+        <ol-results-toolbar id="toolbar"></ol-results-toolbar>
+        <p class="today-note" id="today-note" hidden>Today: grid is the same row markup with details, rating and check-in hidden by CSS.</p>
+        <ol-book-collection id="results" view="list" intent="discover"></ol-book-collection>
       </div>
     </div>
   </main>
-
+  <ol-peek-panel intent="discover"></ol-peek-panel>
+  <ol-prototype-controls></ol-prototype-controls>
 </body>
 </html>

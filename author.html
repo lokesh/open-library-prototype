@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Author - Open Library</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,100..900&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles/index.css">
+  <script type="module" src="/src/components/index.js"></script>
+  <script type="module">
+    import catalogService from '/src/catalog-service.js';
+    const BIOS = {
+      'suzanne-collins': 'American author and television writer, best known for The Hunger Games trilogy and its prequels, and for The Underland Chronicles.',
+      'agatha-christie': 'English writer known for her sixty-six detective novels and fourteen short story collections, particularly those revolving around Hercule Poirot and Miss Marple. The best-selling fiction writer of all time.',
+      'charles-dickens': 'English writer and social critic who created some of the world\'s best-known fictional characters and is regarded by many as the greatest novelist of the Victorian era.',
+      'jane-austen': 'English novelist known primarily for her six novels, which implicitly interpret, critique and comment upon the British landed gentry at the end of the 18th century.',
+      'stephen-king': 'American author of horror, supernatural fiction, suspense, crime, science-fiction, and fantasy novels. His books have sold more than 350 million copies.',
+    };
+    async function init() {
+      await catalogService.ensureLoaded();
+      const p = new URLSearchParams(location.search);
+      const key = p.get('author') || 'suzanne-collins';
+      const works = catalogService.byAuthorKey(key);
+      const name = works[0]?.author || key;
+      document.title = `${name} - Open Library`;
+      document.getElementById('name').textContent = name;
+      document.getElementById('bio').textContent = BIOS[key] || `${name} has ${works.length} work${works.length === 1 ? '' : 's'} in Open Library.`;
+      const years = works.map(w => w.year); document.getElementById('years').textContent = years.length ? `Works from ${Math.min(...years)} to ${Math.max(...years)}` : '';
+      document.getElementById('other').innerHTML = catalogService.authors().slice(0, 8).map(a => `<a href="author.html?author=${a.key}" aria-current="${a.key === key}">${a.name}</a>`).join('');
+      const tb = document.getElementById('toolbar'); const col = document.getElementById('works');
+      let view = localStorage.getItem('ol-view-author') || 'grid';
+      const setView = v => { view = v; tb.view = v; col.view = v; localStorage.setItem('ol-view-author', v); };
+      tb.addEventListener('ol-view-change', e => setView(e.detail.view));
+      tb.addEventListener('ol-sort-change', e => { const s = e.detail.sort; const arr = [...works]; if (s === 'First published') arr.sort((a, b) => a.year - b.year); else if (s === 'Rating') arr.sort((a, b) => b.rating - a.rating); else if (s === 'Most editions') arr.sort((a, b) => b.editions - a.editions); col.keys = arr.map(w => w.key); peek.keys = col.keys; });
+      tb.count = `${works.length} work${works.length === 1 ? '' : 's'}`; tb.sorts = ['Most editions', 'First published', 'Rating']; tb.sort = 'Most editions';
+      col.keys = [...works].sort((a, b) => b.editions - a.editions).map(w => w.key); col.intent = 'discover'; setView(view);
+      const peek = document.querySelector('ol-peek-panel'); peek.keys = col.keys;
+      peek.addEventListener('ol-peek-change', e => { col.activeKey = e.detail.key || ''; });
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+  </script>
+</head>
+<body>
+  <ol-main-nav></ol-main-nav>
+  <main>
+    <div class="author-head">
+      <div class="author-photo" aria-hidden="true"></div>
+      <div>
+        <h1 class="page-title" id="name">Author</h1>
+        <p class="page-sub" id="years"></p>
+        <p class="author-bio" id="bio"></p>
+      </div>
+    </div>
+    <p class="page-sub" style="font-size:var(--body-font-size-sm)">Other authors: <span class="subject-chips" id="other" style="display:inline-flex;margin:0 0 0 var(--spacing-2)"></span></p>
+    <ol-results-toolbar id="toolbar"></ol-results-toolbar>
+    <ol-book-collection id="works" view="grid" intent="discover"></ol-book-collection>
+  </main>
+  <ol-peek-panel intent="discover"></ol-peek-panel>
+  <ol-prototype-controls></ol-prototype-controls>
+</body>
+</html>

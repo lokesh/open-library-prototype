@@ -1,87 +1,67 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Open Library - Home</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,100..900&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/styles/index.css">
   <script type="module" src="/src/components/index.js"></script>
   <script type="module">
-    // Load random books for trending section
-    async function loadTrendingBooks() {
-      try {
-        const response = await fetch('./data/books.json');
-        const books = await response.json();
+    import catalogService from '/src/catalog-service.js';
+    import prototypeSettings from '/src/prototype-settings-service.js';
 
-        // Randomly select 8 books
-        const shuffled = [...books].sort(() => Math.random() - 0.5);
-        const selectedBooks = shuffled.slice(0, 8);
-
-        // Populate the trending covers
-        const trendingContainer = document.querySelector('.trending-covers');
-        trendingContainer.innerHTML = selectedBooks.map(book => {
-          const buttonLabel = book.status.charAt(0).toUpperCase() + book.status.slice(1);
-          return `
-            <div class="trending-book">
-              <div class="trending-cover-wrapper">
-                <img src="${book.coverUrl}" alt="${book.title} cover" class="trending-cover">
-              </div>
-              <ol-button variant="secondary" size="small" full-width>${buttonLabel}</ol-button>
-            </div>
-          `;
-        }).join('');
-      } catch (error) {
-        console.error('Error loading trending books:', error);
+    async function init() {
+      await catalogService.ensureLoaded();
+      const keys = list => list.map(b => b.key);
+      const c = document.getElementById('collections');
+      const defs = [
+        { id: 'trending', heading: 'Trending Books', keys: keys(catalogService.trending(18)), href: 'search.html?q=&sort=trending' },
+        { id: 'classics', heading: 'Classic Books', keys: keys(catalogService.classics(18)), href: 'subject.html?subject=Classics' },
+        { id: 'scifi', heading: 'Science Fiction', keys: keys(catalogService.bySubject('Science fiction', 18)), href: 'subject.html?subject=Science%20fiction' },
+        { id: 'mystery', heading: 'Mysteries & Detectives', keys: keys([...catalogService.bySubject('Detective fiction'), ...catalogService.bySubject('Mystery'), ...catalogService.bySubject('Thriller')].filter((b, i, a) => a.indexOf(b) === i)), href: 'subject.html?subject=Detective%20fiction' },
+        { id: 'love', heading: 'Books We Love', keys: keys([...catalogService.books].filter(b => b.description).sort((a, b) => b.rating - a.rating).slice(0, 18)), href: 'search.html?q=' },
+      ];
+      c.innerHTML = '';
+      for (const d of defs) {
+        const el = document.createElement('ol-book-collection');
+        el.keys = d.keys; el.view = 'carousel'; el.intent = 'discover'; el.heading = d.heading; el.seeAllHref = d.href; el.expandable = true;
+        c.appendChild(el);
       }
-    }
+      const note = document.getElementById('today-note');
+      const sync = () => { note.hidden = prototypeSettings.get().row !== 'today'; };
+      sync(); document.addEventListener('ol-settings-change', sync);
 
-    // Load books when DOM is ready
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', loadTrendingBooks);
-    } else {
-      loadTrendingBooks();
+      const peek = document.querySelector('ol-peek-panel');
+      document.addEventListener('ol-collection-view-change', e => { /* keys for the panel follow whichever carousel is expanded */ });
+      document.addEventListener('ol-book-peek', e => {
+        const col = e.target.closest ? e.target.closest('ol-book-collection') : null;
+        if (col) { peek.keys = col.keys; }
+      }, true);
+      peek.addEventListener('ol-peek-change', e => { document.querySelectorAll('ol-book-collection').forEach(el => { el.activeKey = e.detail.key || ''; }); });
     }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
   </script>
 </head>
 <body>
-
   <ol-main-nav></ol-main-nav>
-
   <main>
-    <ol-section>
-      <ol-heading element="h1" size="display-2">Welcome to Open Library</ol-heading>
-      <p class="lead">An open, editable library catalog, building towards a web page for every book ever published.</p>
-    </ol-section>
-
-    <ol-section>
-      <ol-heading element="h2" size="title-1">Trending Books</ol-heading>
-      <p class="trending-subtitle">Here are the most popular books in the last 3 months.</p>
-      <div class="trending-covers">
-        <!-- Book covers dynamically loaded here -->
+    <section class="hero">
+      <div>
+        <h1 class="page-title">Welcome to Open Library</h1>
+        <p>Read, borrow, and discover more than 3M books for free.</p>
+        <form class="search" action="search.html" method="get">
+          <input type="search" name="q" placeholder="Search for a book, author or subject…" aria-label="Search">
+          <ol-button type="submit">Search</ol-button>
+        </form>
       </div>
-    </ol-section>
-
-    <ol-section>
-      <div class="cards-grid">
-        <ol-card>
-          <ol-heading element="h3" size="title-3" icon="📚">Read Free Books Online</ol-heading>
-          <p>Millions of books available through Controlled Digital Lending</p>
-        </ol-card>
-        <ol-card>
-          <ol-heading element="h3" size="title-3" icon="🎯">Set a Yearly Reading Goal</ol-heading>
-          <p>Learn how to set a yearly reading goal and track what you read</p>
-        </ol-card>
-        <ol-card>
-          <ol-heading element="h3" size="title-3" icon="📖">Track Your Favorites</ol-heading>
-          <p>Organize your Books using Lists & the Reading Log</p>
-        </ol-card>
-      </div>
-    </ol-section>
+    </section>
+    <p class="today-note" id="today-note" hidden>Today: carousels render the access button only — there is no way to save a book from here, and the My Books shelf carousels say Borrow / Read.</p>
+    <div class="collections" id="collections"></div>
   </main>
-
+  <ol-peek-panel intent="discover"></ol-peek-panel>
+  <ol-prototype-controls></ol-prototype-controls>
 </body>
 </html>
-

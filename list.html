@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>List - Open Library</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,100..900&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles/index.css">
+  <script type="module" src="/src/components/index.js"></script>
+  <script type="module">
+    import catalogService from '/src/catalog-service.js';
+    import bookStateService from '/src/book-state-service.js';
+    let listId = 'summer-2026', view = 'list', owner = true;
+    async function init() {
+      await catalogService.ensureLoaded();
+      const p = new URLSearchParams(location.search);
+      listId = p.get('list') || 'summer-2026';
+      owner = p.get('as') !== 'visitor';
+      view = localStorage.getItem('ol-view-list') || (owner ? 'list' : 'grid');
+      const tb = document.getElementById('toolbar'); tb.view = view; tb.hideSort = true;
+      tb.addEventListener('ol-view-change', e => { view = e.detail.view; localStorage.setItem('ol-view-list', view); render(); });
+      document.getElementById('as-owner').addEventListener('click', e => { e.preventDefault(); owner = true; view = 'list'; render(); });
+      document.getElementById('as-visitor').addEventListener('click', e => { e.preventDefault(); owner = false; view = 'grid'; render(); });
+      const peek = document.querySelector('ol-peek-panel');
+      peek.addEventListener('ol-peek-change', e => { document.getElementById('books').activeKey = e.detail.key || ''; });
+      render();
+      document.addEventListener('ol-book-state-change', render);
+    }
+    function render() {
+      const l = bookStateService.list(listId) || bookStateService.lists[0];
+      const signedIn = bookStateService.loggedIn;
+      const isOwner = owner && signedIn;
+      document.title = `${l.name} - Open Library`;
+      document.getElementById('name').textContent = l.name;
+      document.getElementById('sub').innerHTML = `A list by <a href="my-books.html">lokesh</a> · ${l.keys.length} works${l.description ? ' · ' + l.description : ''} · <span style="color:var(--color-text-secondary)">viewing as</span> <a href="#" id="as-owner-x">${isOwner ? '<b>owner</b>' : 'owner'}</a> / <a href="#" id="as-visitor-x">${isOwner ? 'visitor' : '<b>visitor</b>'}</a>`;
+      document.getElementById('as-owner-x').onclick = e => { e.preventDefault(); document.getElementById('as-owner').click(); };
+      document.getElementById('as-visitor-x').onclick = e => { e.preventDefault(); document.getElementById('as-visitor').click(); };
+      const tb = document.getElementById('toolbar'); tb.count = isOwner ? 'Your list' : 'Reading someone else\'s list'; tb.view = view;
+      const col = document.getElementById('books'); col.keys = [...l.keys]; col.view = view; col.intent = isOwner ? 'manage' : 'discover'; col.context = { listId: l.id, owner: isOwner };
+      col.emptyText = 'This list is empty.';
+      const peek = document.querySelector('ol-peek-panel'); peek.keys = col.keys; peek.intent = col.intent; peek.context = col.context;
+      document.getElementById('other').innerHTML = bookStateService.lists.map(x => `<a href="list.html?list=${x.id}" aria-current="${x.id === l.id}">${x.name}</a>`).join('');
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+  </script>
+</head>
+<body>
+  <ol-main-nav></ol-main-nav>
+  <main>
+    <h1 class="page-title" id="name">List</h1>
+    <p class="page-sub" id="sub"></p>
+    <a href="#" id="as-owner" hidden>owner</a><a href="#" id="as-visitor" hidden>visitor</a>
+    <p class="page-sub" style="font-size:var(--body-font-size-sm)">Your lists: <span class="subject-chips" id="other" style="display:inline-flex;margin:0 0 0 var(--spacing-2)"></span></p>
+    <ol-results-toolbar id="toolbar"></ol-results-toolbar>
+    <ol-book-collection id="books" view="list"></ol-book-collection>
+  </main>
+  <ol-peek-panel></ol-peek-panel>
+  <ol-prototype-controls></ol-prototype-controls>
+</body>
+</html>
