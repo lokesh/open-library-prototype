@@ -47,9 +47,7 @@ export class OlBookTile extends LitElement {
   _cornerSave(e) {
     e.preventDefault(); e.stopPropagation();
     const b = catalogService.get(this.bookKey);
-    if (!bookStateService.loggedIn) { toast("Sign in to save — we'll add it to Want to Read when you're back"); return; }
-    if (bookStateService.shelfOf(b.key)) { openBookMenu(e.currentTarget, { bookKey: b.key, context: this.context }); return; }
-    bookStateService.setShelf(b.key, 'want'); toast('Added to Want to Read');
+    openBookMenu(e.currentTarget, { bookKey: b.key, context: this.context });
   }
   _cornerAccess(e, a) { e.preventDefault(); e.stopPropagation(); toast(`→ ${a.label}`); }
 
@@ -67,7 +65,7 @@ export class OlBookTile extends LitElement {
         const d = bookStateService.dateOf(b.key);
         if (bookStateService.shelfOf(b.key) === 'reading' && d) badge = html`<div class="badge">Started ${new Date(d).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</div>`;
       } else {
-        if (s.tile === 'G3') corner = html`<button class="corner ${set ? 'set' : ''}" title=${set ? SHELVES[bookStateService.shelfOf(b.key)] : 'Want to Read'} aria-label=${set ? `On your ${SHELVES[bookStateService.shelfOf(b.key)]} shelf — change` : 'Save to Want to Read'} @click=${this._cornerSave}>${set ? '✓' : '+'}</button>`;
+        if (s.tile === 'G3') corner = html`<button class="corner ${set ? 'set' : ''}" title=${set ? SHELVES[bookStateService.shelfOf(b.key)] : 'Save'} aria-label=${set ? `On your ${SHELVES[bookStateService.shelfOf(b.key)]} shelf — change` : 'Save to a shelf'} aria-haspopup="menu" @click=${this._cornerSave}>${set ? '✓' : '+'}</button>`;
         if (s.tile !== 'G2' && a.badge) badge = html`<div class="badge">${a.badge}</div>`;
       }
     }
