@@ -8,7 +8,7 @@ import bookStateService from '../book-state-service.js';
 import prototypeSettings from '../prototype-settings-service.js';
 
 /**
- * List row (the searchResultItem, rebuilt): cover, metadata, optional teaser
+ * List row (the searchResultItem, rebuilt): cover, metadata, optional description
  * or paragraph, manage-only extras (inline rating, check-in), and the action row.
  * Clicking the row (not a control) opens the peek panel when enabled.
  *
@@ -46,7 +46,6 @@ export class OlBookRow extends LitElement {
     .k { font-size: var(--font-size-xs); color: var(--color-text-secondary); }
     .k a { color: var(--color-link); text-decoration: none; }
     .stars { display: flex; align-items: center; gap: 6px; font-size: var(--font-size-xs); color: var(--color-text-secondary); }
-    .teaser { font-size: var(--body-font-size-sm); color: var(--color-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 60ch; margin-top: 2px; }
     .desc { font-size: var(--body-font-size-sm); color: var(--color-text); line-height: 1.45; max-width: 62ch; margin-top: 4px; }
     .desc.fallback { color: var(--color-text-secondary); font-style: italic; }
     .desc .more { color: var(--color-link); cursor: pointer; }
@@ -107,8 +106,6 @@ export class OlBookRow extends LitElement {
         desc = b.description
           ? html`<div class="desc">${b.description.length > 220 ? b.description.slice(0, 220).replace(/\s\S*$/, '') + '…' : b.description} <span class="more">more</span></div>`
           : html`<div class="desc fallback">No description yet — ${b.editions} editions, first published ${b.year}.</div>`;
-      } else if (s.descMode === 'teaser' && b.firstSentence) {
-        desc = html`<div class="teaser" title=${b.firstSentence}>${b.firstSentence}</div>`;
       }
     }
     let extra = nothing;
