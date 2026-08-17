@@ -48,13 +48,20 @@ export class OlPopover extends LitElement {
     this._reposition = this._reposition.bind(this);
   }
   connectedCallback() { super.connectedCallback(); document.addEventListener('click', this._onDocClick, true); document.addEventListener('keydown', this._onKey); window.addEventListener('resize', this._reposition); window.addEventListener('scroll', this._reposition, true); }
-  disconnectedCallback() { super.disconnectedCallback(); document.removeEventListener('click', this._onDocClick, true); document.removeEventListener('keydown', this._onKey); window.removeEventListener('resize', this._reposition); window.removeEventListener('scroll', this._reposition, true); }
+  disconnectedCallback() { super.disconnectedCallback(); document.removeEventListener('click', this._onDocClick, true); document.removeEventListener('keydown', this._onKey); window.removeEventListener('resize', this._reposition); window.removeEventListener('scroll', this._reposition, true); this._ro?.disconnect(); this._ro = null; }
 
   updated(changed) {
     if (changed.has('open') || changed.has('anchor')) {
-      if (this.open) { this._reposition(); requestAnimationFrame(() => this._reposition()); }
+      if (this.open) { this._reposition(); requestAnimationFrame(() => this._reposition()); this._observe(); }
       else if (changed.get('open') === true && this.anchor && this._returnFocus) { try { this.anchor.focus(); } catch {} }
     }
+  }
+  /** Re-measure when the slotted content changes size (e.g. lazy content, sub-views). */
+  _observe() {
+    if (this._ro || typeof ResizeObserver === 'undefined') return;
+    const panel = this.renderRoot.querySelector('.panel'); if (!panel) return;
+    this._ro = new ResizeObserver(() => this._reposition());
+    this._ro.observe(panel);
   }
   _reposition() {
     if (!this.open || !this.anchor) return;
@@ -65,8 +72,18 @@ export class OlPopover extends LitElement {
     const h = panel.offsetHeight || 300;
     let left = this.placement === 'bottom-start' ? r.left : r.right - w;
     left = Math.max(8, Math.min(left, window.innerWidth - w - 8));
-    let top = r.bottom + 6;
-    if (top + h > window.innerHeight - 8 && r.top - h - 6 > 8) top = r.top - h - 6;
+    // Vertical: prefer below; flip above if that's where it fits; if it fits
+    // neither side, take the roomier side and clamp so it stays on screen.
+    const margin = 8, gap = 6;
+    const below = window.innerHeight - margin - (r.bottom + gap);
+    const above = r.top - gap - margin;
+    let top;
+    if (h <= below) top = r.bottom + gap;
+    else if (h <= above) top = r.top - h - gap;
+    else {
+      top = below >= above ? r.bottom + gap : r.top - h - gap;
+      top = Math.max(margin, Math.min(top, window.innerHeight - margin - h));
+    }
     panel.style.left = `${left}px`; panel.style.top = `${top}px`; panel.style.width = `${w}px`;
   }
   _onDocClick(e) {

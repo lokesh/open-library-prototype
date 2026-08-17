@@ -31,7 +31,6 @@ const ICONS = {
   // Write
   'Review': svg`<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>`,
   'Notes': svg`<path d="M16 3H5a2 2 0 0 0-2 2v14c0 1.1.9 2 2 2h14a2 2 0 0 0 2-2V9Z"/><path d="M15 3v4a2 2 0 0 0 2 2h4"/>`,
-  'Check in': svg`<path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="m9 16 2 2 4-4"/>`,
 };
 const CHECK = svg`<path d="M20 6 9 17l-5-5"/>`;
 const icon = (paths) => paths ? html`<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths}</svg>` : html`<span class="ico"></span>`;
@@ -56,11 +55,37 @@ export class OlBookMenu extends LitElement {
     _newList: { state: true },
     _view: { state: true },
     _filter: { state: true },
+    _loading: { state: true },
+    _listsMounted: { state: true },
+    _stageH: { state: true },
   };
 
   static styles = css`
     :host { display: contents; }
+    /* Two panes (main · lists) side by side on a sliding track; the stage keeps
+       the main pane's height so switching views doesn't resize the popover. */
+    .stage { position: relative; overflow: hidden; }
+    .track { display: flex; width: 200%; height: 100%; transition: transform 260ms cubic-bezier(.32,.72,0,1); will-change: transform; }
+    .stage.lists .track { transform: translateX(-50%); }
+    .pane { width: 50%; flex: none; box-sizing: border-box; min-width: 0; }
+    .pane.lists { display: flex; flex-direction: column; }
+    .pane.lists .scroll { flex: 1; min-height: 0; overflow-y: auto; }
+    .stage.fixed .pane.main { overflow-y: auto; }
+    @media (prefers-reduced-motion: reduce) { .track { transition: none; } }
     .menu { padding: var(--spacing-1) 0 var(--spacing-2); font-family: var(--body-font-family); font-size: var(--body-font-size-sm); }
+    .pane.lists .menu { padding-bottom: 0; }
+    /* Loading skeleton for the lists pane */
+    .skel { padding: 4px 0; }
+    .skel .row { display: flex; align-items: center; gap: var(--spacing-2); padding: 8px var(--spacing-3); }
+    .skel .sq { width: 16px; height: 16px; border-radius: 3px; flex: none; }
+    .skel .bar { height: 10px; border-radius: 5px; }
+    .skel .pill { width: 26px; height: 14px; border-radius: 7px; margin-left: auto; flex: none; }
+    .skel .sq, .skel .bar, .skel .pill { background: linear-gradient(90deg, var(--color-bg-elevated-hovered) 25%, var(--color-border-subtle) 50%, var(--color-bg-elevated-hovered) 75%); background-size: 200% 100%; animation: shimmer 1.2s ease-in-out infinite; }
+    @keyframes shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+    @media (prefers-reduced-motion: reduce) { .skel .sq, .skel .bar, .skel .pill { animation: none; } }
+    .fade-in { animation: fadeIn 180ms ease-out both; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(2px); } to { opacity: 1; transform: none; } }
+    @media (prefers-reduced-motion: reduce) { .fade-in { animation: none; } }
     .title { padding: var(--spacing-2) var(--spacing-3) var(--spacing-1); font-size: var(--font-size-xs); color: var(--color-text-secondary); border-bottom: 1px solid var(--color-border-subtle); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .title b { font-weight: var(--font-weight-semibold); color: var(--color-text-strong); }
     .sep { border-top: 1px solid var(--color-border-subtle); margin-top: var(--spacing-1); padding-top: var(--spacing-1); }
@@ -96,18 +121,20 @@ export class OlBookMenu extends LitElement {
     .signin a { color: var(--color-link); font-weight: var(--font-weight-semibold); }
   `;
 
-  constructor() { super(); this.bookKey = ''; this.withAccess = false; this.context = {}; this.open = false; this._anchor = null; this._newList = false; this._view = 'main'; this._filter = ''; }
+  constructor() { super(); this.bookKey = ''; this.withAccess = false; this.context = {}; this.open = false; this._anchor = null; this._newList = false; this._view = 'main'; this._filter = ''; this._loading = false; this._listsMounted = false; this._stageH = null; }
   connectedCallback() { super.connectedCallback(); this._rerender = () => this.requestUpdate(); document.addEventListener('ol-book-state-change', this._rerender); }
-  disconnectedCallback() { super.disconnectedCallback(); document.removeEventListener('ol-book-state-change', this._rerender); }
+  disconnectedCallback() { super.disconnectedCallback(); document.removeEventListener('ol-book-state-change', this._rerender); clearTimeout(this._loadTimer); clearTimeout(this._focusTimer); }
+  static get _slideMs() { return matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 260; }
 
   openFor(anchor, { bookKey, withAccess = false, context = {} } = {}) {
     if (this.open && this._anchor === anchor) { this.close(); return; }
     this.bookKey = bookKey; this.withAccess = withAccess; this.context = context; this._anchor = anchor; this._newList = false; this._view = 'main'; this._filter = '';
+    this._loading = false; this._listsMounted = false; this._stageH = null; clearTimeout(this._loadTimer); clearTimeout(this._focusTimer);
     this.open = true;
     this._setAnchorExpanded(true);
     this.updateComplete.then(() => { const first = this.renderRoot.querySelector('button.mi'); first?.focus({ preventScroll: true }); });
   }
-  close() { this.open = false; this._setAnchorExpanded(false); }
+  close() { this.open = false; this._setAnchorExpanded(false); clearTimeout(this._loadTimer); clearTimeout(this._focusTimer); }
   _setAnchorExpanded(v) {
     const a = this._anchor; if (!a) return;
     // anchor may be the host of an ol-split-button, or a plain button
@@ -125,8 +152,22 @@ export class OlBookMenu extends LitElement {
   _rate(e) { const n = e.detail?.value ?? e.target.value; bookStateService.setRating(this.bookKey, n); toast(n ? `Rated ${n} star${n > 1 ? 's' : ''}` : 'Rating cleared'); }
   _list(id) { const on = bookStateService.toggleList(id, this.bookKey); toast(on ? `Added to ${bookStateService.list(id).name}` : `Removed from ${bookStateService.list(id).name}`); }
   _createList(e) { e.preventDefault(); const input = this.renderRoot.querySelector('.newlist input'); const name = input?.value.trim(); if (!name) return; bookStateService.createList(name, this.bookKey); toast(`Created "${name}"`); this._newList = false; }
-  _showLists() { this._view = 'lists'; this._filter = ''; this._newList = false; this.updateComplete.then(() => this.renderRoot.querySelector('.filter input')?.focus({ preventScroll: true })); }
-  _showMain() { this._view = 'main'; this.updateComplete.then(() => this.renderRoot.querySelector('button.mi.lists-entry')?.focus({ preventScroll: true })); }
+  _showLists() {
+    // Lock the stage to the main pane's height so the popover doesn't resize as we slide.
+    const main = this.renderRoot.querySelector('.pane.main');
+    if (main) this._stageH = main.offsetHeight;
+    this._view = 'lists'; this._filter = ''; this._newList = false; this._listsMounted = true;
+    // Mock a fetch: skeleton for a beat, then the real lists.
+    this._loading = true; clearTimeout(this._loadTimer);
+    this._loadTimer = setTimeout(() => { this._loading = false; }, 650);
+    clearTimeout(this._focusTimer);
+    this._focusTimer = setTimeout(() => this.renderRoot.querySelector('.filter input')?.focus({ preventScroll: true }), OlBookMenu._slideMs);
+  }
+  _showMain() {
+    this._view = 'main'; clearTimeout(this._loadTimer); this._loading = false;
+    clearTimeout(this._focusTimer);
+    this._focusTimer = setTimeout(() => this.renderRoot.querySelector('button.mi.lists-entry')?.focus({ preventScroll: true }), OlBookMenu._slideMs);
+  }
   _startNewList() { this._newList = true; this.updateComplete.then(() => this.renderRoot.querySelector('.newlist input')?.focus()); }
   _go(label) { toast(`→ ${label}`); this.close(); }
   _removeFromList() { bookStateService.removeFromList(this.context.listId, this.bookKey); toast('Removed from this list'); this.close(); }
@@ -134,7 +175,8 @@ export class OlBookMenu extends LitElement {
   _menuKey(e) {
     if (e.key === 'Escape' && this._view === 'lists') { e.preventDefault(); e.stopPropagation(); this._showMain(); return; }
     if (e.key === 'ArrowLeft' && this._view === 'lists' && e.composedPath()[0]?.tagName !== 'INPUT') { e.preventDefault(); this._showMain(); return; }
-    const items = [...this.renderRoot.querySelectorAll('.filter input, button.mi, .newlist input, ol-star-rating')];
+    const pane = this.renderRoot.querySelector(this._view === 'lists' ? '.pane.lists' : '.pane.main') || this.renderRoot;
+    const items = [...pane.querySelectorAll('.filter input, button.mi, .newlist input, ol-star-rating')];
     const i = items.indexOf(e.composedPath()[0]) >= 0 ? items.indexOf(e.composedPath()[0]) : items.findIndex(el => el === this.renderRoot.activeElement);
     if (e.key === 'ArrowDown') { e.preventDefault(); (items[i + 1] || items[0])?.focus(); }
     else if (e.key === 'ArrowUp') { e.preventDefault(); (items[i - 1] || items[items.length - 1])?.focus(); }
@@ -145,8 +187,11 @@ export class OlBookMenu extends LitElement {
   _renderLists(b) {
     const q = this._filter.trim().toLowerCase();
     const lists = bookStateService.lists.filter(l => !q || l.name.toLowerCase().includes(q));
-    return html`<ol-popover .anchor=${this._anchorEl()} .open=${this.open} .width=${268} @ol-popover-close=${() => this.close()}>
-      <div class="menu" role="menu" aria-label="Add to list" @keydown=${this._menuKey}>
+    const skeleton = html`<div class="skel" aria-busy="true" aria-label="Loading your lists">
+      ${[92, 64, 78].map(w => html`<div class="row"><span class="sq"></span><span class="bar" style="width:${w}px"></span><span class="pill"></span></div>`)}
+    </div>`;
+    return html`
+      <div class="menu">
         <div class="sub-head">
           <button class="back" @click=${() => this._showMain()} aria-label="Back to book actions">‹ Back</button>
           ${this._newList ? nothing : html`<button class="create" @click=${() => this._startNewList()}>+ Create a list</button>`}
@@ -154,11 +199,14 @@ export class OlBookMenu extends LitElement {
         ${this._newList
           ? html`<form class="newlist" @submit=${this._createList}><input placeholder="List name" aria-label="New list name"><button type="submit">Create</button></form>`
           : html`<div class="filter"><input type="search" placeholder="Filter lists…" aria-label="Filter lists" .value=${this._filter} @input=${e => { this._filter = e.target.value; }}></div>`}
-        ${lists.length ? lists.map(l => { const on = l.keys.includes(b.key); return html`
-          <button class="mi ${on ? 'on' : ''}" role="menuitemcheckbox" aria-checked=${on} @click=${() => this._list(l.id)}><span class="box">${on ? '✓' : ''}</span>${l.name}<span class="count">${l.keys.length}</span></button>`; })
-          : html`<div class="empty">${q ? 'No lists match.' : 'No lists yet — create one above.'}</div>`}
       </div>
-    </ol-popover>`;
+      <div class="scroll" role="menu" aria-label="Add to list">
+        ${this._loading ? skeleton : html`<div class="fade-in">
+          ${lists.length ? lists.map(l => { const on = l.keys.includes(b.key); return html`
+            <button class="mi ${on ? 'on' : ''}" role="menuitemcheckbox" aria-checked=${on} @click=${() => this._list(l.id)}><span class="box">${on ? '✓' : ''}</span>${l.name}<span class="count">${l.keys.length}</span></button>`; })
+            : html`<div class="empty">${q ? 'No lists match.' : 'No lists yet — create one above.'}</div>`}
+        </div>`}
+      </div>`;
   }
 
   render() {
@@ -169,7 +217,6 @@ export class OlBookMenu extends LitElement {
     const a = catalogService.access(b, prototypeSettings.get());
     const ctx = this.context || {};
     const inLists = bookStateService.listsContaining(b.key);
-    if (this._view === 'lists') return this._renderLists(b);
     const item = (label, { icon: ic = ICONS[label], on = false, dim = false, ext = false, onClick } = {}) => html`
       <button class="mi ${on ? 'on' : ''} ${dim ? 'dim' : ''}" role="menuitem" @click=${onClick}>${icon(ic)}${label}${ext ? html`<span class="ext">↗</span>` : nothing}${on ? html`<svg class="chk" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${CHECK}</svg>` : nothing}</button>`;
     let first = true;
@@ -181,8 +228,12 @@ export class OlBookMenu extends LitElement {
     if (!a.isLocate) more.push(item('Find in a library', { ext: true, onClick: () => this._go('Find in a library') }));
     if (b.ebooks) more.push(item('Download options', { dim: true, onClick: () => this._go('Download options') }));
 
+    const onLists = this._view === 'lists';
     return html`<ol-popover .anchor=${this._anchorEl()} .open=${this.open} .width=${268} @ol-popover-close=${() => this.close()}>
-      <div class="menu" role="menu" aria-label="Book actions" @keydown=${this._menuKey}>
+      <div class="stage ${onLists ? 'lists' : ''} ${this._stageH ? 'fixed' : ''}" style=${this._stageH ? `height:${this._stageH}px` : ''} @keydown=${this._menuKey}>
+      <div class="track">
+      <div class="pane main" ?inert=${onLists} aria-hidden=${onLists ? 'true' : 'false'}>
+      <div class="menu" role="menu" aria-label="Book actions">
         <div class="title" title=${b.author ? `${b.title} by ${b.author}` : b.title}><b>${b.title}</b>${b.author ? html` by ${b.author}` : nothing}</div>
         ${this.withAccess && a.label ? html`${sep()}${item(a.label, { icon: accessIcon(a.label), ext: a.ext, onClick: () => this._go(a.label) })}` : nothing}
         ${sep()}
@@ -194,9 +245,13 @@ export class OlBookMenu extends LitElement {
           <button class="mi lists-entry ${inLists.length ? 'in' : ''}" role="menuitem" aria-haspopup="true" @click=${() => this._showLists()}>${icon(ICONS['Add to list'])}Add to list${inLists.length ? html`<span class="hint">In ${inLists.length} list${inLists.length > 1 ? 's' : ''}</span>` : nothing}<span class="chev">›</span></button>
         ` : nothing}
         ${sep()}${more}
-        ${loggedIn && shelf ? html`${sep()}${item('Review', { onClick: () => this._go('Review') })}${item('Notes', { onClick: () => this._go('Notes') })}${item('Check in', { onClick: () => this._go('Check in') })}` : nothing}
+        ${loggedIn && shelf ? html`${sep()}${item('Review', { onClick: () => this._go('Review') })}${item('Notes', { onClick: () => this._go('Notes') })}` : nothing}
         ${ctx.listId && ctx.owner ? html`${sep()}${item('Remove from this list', { onClick: () => this._removeFromList() })}${item('Edit note', { onClick: () => this._go('Edit note') })}` : nothing}
         ${!loggedIn ? html`<div class="signin"><a href="#" @click=${e => { e.preventDefault(); bookStateService.loggedIn = true; toast('Signed in — you\'re right where you were'); }}>Sign in</a> to save — you'll come right back here.</div>` : nothing}
+      </div>
+      </div>
+      <div class="pane lists" ?inert=${!onLists} aria-hidden=${onLists ? 'false' : 'true'}>${this._listsMounted ? this._renderLists(b) : nothing}</div>
+      </div>
       </div>
     </ol-popover>`;
   }
